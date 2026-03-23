@@ -1,0 +1,45 @@
+  <nav class="top-nav">
+    <div class="nav-left">
+      <div class="logo">
+        <div class="logo-icon">
+          @if (!themeService.isDarkMode())
+          {
+            <img src="images/logo.svg" width="50" height="50" alt="Syntra Logo">
+          }
+          @else
+          {
+            <img src="images/logo_white.svg" width="50" height="50" alt="Syntra Logo">
+          }
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="#" class="nav-link active" id="nav-dashboard">Dashboard</a>
+        <a href="#" class="nav-link" id="nav-leads">Leads</a>
+        <a href="#" class="nav-link" id="nav-sales">Sales</a>
+        <a href="#" class="nav-link" id="nav-hr">HR</a>
+        <a href="#" class="nav-link" id="nav-recruitment">Recruitment</a>
+        <a href="#" class="nav-link" id="nav-support">Support</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="nav-icon-btn theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode">
+        @if (!themeService.isDarkMode())
+        {
+          <i class="fas fa-moon"></i>
+        }
+        @else
+        {
+          <i class="fas fa-sun"></i>
+        }
+      </button>
+      <button class="nav-icon-btn" id="btn-search" title="Search"><i class="fas fa-search"></i></button>
+      <button class="nav-icon-btn" id="btn-mail" title="Mail"><i class="fas fa-envelope"></i></button>
+      <button class="nav-icon-btn" id="btn-bell" title="Notifications">
+        <i class="fas fa-bell"></i>
+        <span class="notification-dot"></span>
+      </button>
+      <div class="avatar" id="user-avatar">
+        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="User Avatar">
+      </div>
+    </div>
+  </nav>

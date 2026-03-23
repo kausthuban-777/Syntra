@@ -1,0 +1,91 @@
+:root {
+    /* Light Theme Colors */
+    --bg-primary: #F5F5F8;
+    --bg-card: #FFFFFF;
+    --bg-nav: #FFFFFF;
+    --text-primary: #1A1A2E;
+    --text-secondary: #6B7280;
+    --text-muted: #9CA3AF;
+    --border-color: #E5E7EB;
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.08);
+
+    /* Accent Colors */
+    --accent-primary: #8B1A4A;
+    --accent-primary-light: #A0325E;
+    --accent-green: #00B894;
+    --accent-green-bg: #E8FFF5;
+    --accent-green-border: #00B894;
+    --accent-purple: #6C5CE7;
+    --accent-purple-bg: #F0EDFF;
+    --accent-purple-border: #6C5CE7;
+    --accent-orange: #E67E22;
+    --accent-orange-bg: #FFF4E6;
+    --accent-orange-border: #E67E22;
+    --accent-red: #E74C3C;
+    --accent-red-bg: #FFECEC;
+    --accent-red-border: #E74C3C;
+
+    /* Nav */
+    --nav-active-bg: #8B1A4A;
+    --nav-active-text: #FFFFFF;
+    --nav-link-text: #4B5563;
+    --nav-hover-bg: rgba(139, 26, 74, 0.08);
+
+    /* Chart */
+    --chart-bar-1: #D946EF;
+    --chart-bar-2: #A855F7;
+    --chart-bar-3: #8B5CF6;
+    --chart-grid-color: #F3F4F6;
+
+    /* Task */
+    --task-checkbox-bg: #E5E7EB;
+    --task-checkbox-checked: #8B1A4A;
+    --add-task-bg: #E74C3C;
+    --add-task-text: #FFFFFF;
+}
+
+[data-theme="dark"] {
+    --bg-primary: #0F0F1A;
+    --bg-card: #1A1A2E;
+    --bg-nav: #12121F;
+    --text-primary: #EAEAEA;
+    --text-secondary: #A0A0B8;
+    --text-muted: #6B6B82;
+    --border-color: #2A2A40;
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-card-hover: 0 6px 20px rgba(0,0,0,0.4);
+
+    --accent-green-bg: rgba(0,184,148,0.15);
+    --accent-purple-bg: rgba(108,92,231,0.15);
+    --accent-orange-bg: rgba(230,126,34,0.15);
+    --accent-red-bg: rgba(231,76,60,0.15);
+
+    --nav-active-bg: #8B1A4A;
+    --nav-active-text: #FFFFFF;
+    --nav-link-text: #A0A0B8;
+    --nav-hover-bg: rgba(139, 26, 74, 0.2);
+
+    --chart-grid-color: #2A2A40;
+
+    --task-checkbox-bg: #2A2A40;
+}
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background 0.3s ease, color 0.3s ease;
+}
