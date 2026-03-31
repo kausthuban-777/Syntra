@@ -1,45 +1,53 @@
+@if (authService.isAuthenticated())
+{
   <nav class="top-nav">
     <div class="nav-left">
       <div class="logo">
         <div class="logo-icon">
           @if (!themeService.isDarkMode())
           {
-            <img src="images/logo.svg" width="50" height="50" alt="Syntra Logo">
+            <img src="/images/logo.svg" width="50" height="50" alt="Syntra Logo">
           }
           @else
           {
-            <img src="images/logo_white.svg" width="50" height="50" alt="Syntra Logo">
+            <img src="/images/logo_white.svg" width="50" height="50" alt="Syntra Logo">
           }
         </div>
       </div>
       <div class="nav-links">
-        <a href="#" class="nav-link active" id="nav-dashboard">Dashboard</a>
-        <a href="#" class="nav-link" id="nav-leads">Leads</a>
-        <a href="#" class="nav-link" id="nav-sales">Sales</a>
-        <a href="#" class="nav-link" id="nav-hr">HR</a>
-        <a href="#" class="nav-link" id="nav-recruitment">Recruitment</a>
-        <a href="#" class="nav-link" id="nav-support">Support</a>
+        <a routerLink="/home" [class.active]="activeLink() === 'home'" class="nav-link" id="nav-dashboard">Dashboard</a>
+        <a routerLink="/hr" [class.active]="activeLink() === 'hr'" class="nav-link" id="nav-hr">HR</a>
+        <a routerLink="/recruitment" [class.active]="activeLink() === 'recruitment'" class="nav-link" id="nav-recruitment">Recruitment</a>
+        <a routerLink="/crm" [class.active]="activeLink() === 'crm'" class="nav-link" id="nav-crm">CRM</a>
+        <a routerLink="/analytics" [class.active]="activeLink() === 'analytics'" class="nav-link" id="nav-analytics">Analytics</a>
+        <a routerLink="/support" [class.active]="activeLink() === 'support'" class="nav-link" id="nav-support">Support</a>
+        <a routerLink="/administration" [class.active]="activeLink() === 'administration'" class="nav-link" id="nav-administration">Administration</a>
+        <a routerLink="/integrations" [class.active]="activeLink() === 'integrations'" class="nav-link" id="nav-integrations">Integrations</a>
       </div>
     </div>
     <div class="nav-right">
       <button class="nav-icon-btn theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode">
         @if (!themeService.isDarkMode())
         {
-          <i class="fas fa-moon"></i>
+          <i class="bi bi-moon"></i>
         }
         @else
         {
-          <i class="fas fa-sun"></i>
+          <i class="bi bi-sun"></i>
         }
       </button>
-      <button class="nav-icon-btn" id="btn-search" title="Search"><i class="fas fa-search"></i></button>
-      <button class="nav-icon-btn" id="btn-mail" title="Mail"><i class="fas fa-envelope"></i></button>
+      <button class="nav-icon-btn" id="btn-search" title="Search"><i class="bi bi-search"></i></button>
+      <button class="nav-icon-btn" id="btn-mail" title="Mail"><i class="bi bi-envelope"></i></button>
       <button class="nav-icon-btn" id="btn-bell" title="Notifications">
-        <i class="fas fa-bell"></i>
+        <i class="bi bi-bell"></i>
         <span class="notification-dot"></span>
+      </button>
+      <button class="nav-icon-btn logout-btn" (click)="logout()" title="Logout">
+        <i class="bi bi-box-arrow-right"></i>
       </button>
       <div class="avatar" id="user-avatar">
         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="User Avatar">
       </div>
     </div>
   </nav>
+}

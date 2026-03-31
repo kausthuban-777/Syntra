@@ -1,9 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { NavigationService } from '../../services/navigation.service';
 
 @Component({
   selector: 'app-crm',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, RouterOutlet],
   templateUrl: './crm.html',
   styleUrl: './crm.css',
 })
-export class Crm {}
+export class Crm implements OnInit {
+  private navigationService = inject(NavigationService);
+
+  ngOnInit() {
+    this.navigationService.setCurrentPage('crm');
+  }
+}

@@ -1,1 +1,94 @@
-<p>login works!</p>
+<div class="login-page">
+  <!-- Left Section: Brand & Slogan -->
+  <div class="login-left">
+    <div class="brand-section">
+      <div class="logo-container">
+        <img src="/images/logo_white.svg" alt="Syntra Logo" class="brand-logo">
+      </div>
+      <h1 class="brand-title">Syntra</h1>
+      <p class="brand-description">Streamline your business operations with our intelligent HR and CRM system</p>
+    </div>
+  </div>
+
+  <!-- Right Section: Form -->
+  <div class="login-right">
+    <div class="login-form-container">
+      <div class="form-header">
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Sign in to your account</p>
+      </div>
+
+      @if (errorMessage)
+      {
+        <div class="error-message">
+          <i class="bi bi-exclamation-circle"></i>
+          {{ errorMessage }}
+        </div>
+      }
+
+      <form (ngSubmit)="onLogin()" class="login-form">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <div class="input-wrapper">
+            <i class="bi bi-envelope"></i>
+            <input
+              type="email"
+              id="email"
+              [(ngModel)]="email"
+              name="email"
+              placeholder="Enter your email"
+              required
+              [disabled]="isLoading"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <i class="bi bi-lock"></i>
+            <input
+              type="password"
+              id="password"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="Enter your password"
+              required
+              [disabled]="isLoading"
+            />
+          </div>
+        </div>
+
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" name="remember" />
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="forgot-password">Forgot password?</a>
+        </div>
+
+        <button
+          type="submit"
+          class="login-button"
+          [disabled]="isLoading"
+        >
+          @if (isLoading)
+          {
+            <span class="button-loading">
+              <i class="bi bi-arrow-repeat spinner-spin"></i>
+              Signing in...
+            </span>
+          }
+          @else
+          {
+            <span>Sign In</span>
+          }
+        </button>
+      </form>
+
+      <div class="signup-section">
+        <p>Don't have an account? <a href="#" class="signup-link">Sign up here</a></p>
+      </div>
+    </div>
+  </div>
+</div>

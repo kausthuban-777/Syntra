@@ -11,8 +11,9 @@
     --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.08);
 
     /* Accent Colors */
-    --accent-primary: #8B1A4A;
-    --accent-primary-light: #A0325E;
+    --accent-primary: #764ba2;
+    --accent-primary-light: #764ba2;
+    --accent-secondary: #e91e63;
     --accent-green: #00B894;
     --accent-green-bg: #E8FFF5;
     --accent-green-border: #00B894;
@@ -26,8 +27,14 @@
     --accent-red-bg: #FFECEC;
     --accent-red-border: #E74C3C;
 
+    /* Gradient Colors - Login Page Theme */
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-pink: linear-gradient(135deg, #d946ef 0%, #e91e63 100%);
+    --gradient-orange: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
+    --gradient-purple-pink: linear-gradient(135deg, #764ba2 0%, #d946ef 100%);
+
     /* Nav */
-    --nav-active-bg: #8B1A4A;
+    --nav-active-bg: #764ba2;
     --nav-active-text: #FFFFFF;
     --nav-link-text: #4B5563;
     --nav-hover-bg: rgba(139, 26, 74, 0.08);
@@ -61,7 +68,7 @@
     --accent-orange-bg: rgba(230,126,34,0.15);
     --accent-red-bg: rgba(231,76,60,0.15);
 
-    --nav-active-bg: #8B1A4A;
+    --nav-active-bg: #764ba2;
     --nav-active-text: #FFFFFF;
     --nav-link-text: #A0A0B8;
     --nav-hover-bg: rgba(139, 26, 74, 0.2);
@@ -88,4 +95,18 @@ body {
     background: var(--bg-primary);
     color: var(--text-primary);
     transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ============ ANIMATIONS ============ */
+@keyframes spinner-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner-spin {
+    animation: spinner-spin 1s linear infinite;
 }
