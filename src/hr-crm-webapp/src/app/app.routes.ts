@@ -44,6 +44,7 @@ import { GoogleWorkspace } from './components/integrations/google-workspace/goog
 import { PaymentGateway } from './components/integrations/payment-gateway/payment-gateway';
 import { Accounting } from './components/integrations/accounting/accounting';
 import { WhatsappApi } from './components/integrations/whatsapp-api/whatsapp-api';
+import { Reports } from './components/home/reports/reports';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -55,8 +56,7 @@ export const routes: Routes = [
     component: Home,
     canActivate: [AuthGuard],
     children: [
-      { path: 'overview', component: Home },
-      { path: 'reports', component: Home }
+      { path: 'reports', component: Reports }
     ]
   },
   { path: 'dashboard', redirectTo: 'home', pathMatch: 'full' },

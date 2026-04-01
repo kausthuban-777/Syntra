@@ -24,7 +24,6 @@ export class NavigationService {
   private sidebarStructure: Record<string, SidebarItem[]> = {
     home: [
       { id: 'dashboard', label: 'Dashboard', icon: 'graph-up', route: '/home' },
-      { id: 'overview', label: 'Overview', icon: 'eye', route: '/home/overview' },
       { id: 'reports', label: 'Reports', icon: 'file-earmark-bar-graph', route: '/home/reports' }
     ],
     hr: [
