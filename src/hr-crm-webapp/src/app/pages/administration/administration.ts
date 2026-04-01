@@ -1,12 +1,11 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NavigationService } from '../../services/navigation.service';
 
 @Component({
   selector: 'app-administration',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule],
   templateUrl: './administration.html',
   styleUrl: './administration.css',
 })

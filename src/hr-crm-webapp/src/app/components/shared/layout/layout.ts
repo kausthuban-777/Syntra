@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
 import { Navbar } from '../navbar/navbar';
 import { Sidebar } from '../sidebar/sidebar';
 import { Footer } from '../footer/footer';
@@ -10,7 +9,7 @@ import { NavigationService } from '../../../services/navigation.service';
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, Navbar, Sidebar, Footer, ContentArea],
+  imports: [CommonModule, Navbar, Sidebar, Footer, ContentArea],
   templateUrl: './layout.html',
   styleUrl: './layout.css'
 })
