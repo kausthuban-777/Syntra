@@ -1,1 +1,211 @@
-<p>reports works!</p>
+<div class="reports-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-top">
+      <div class="header-content">
+        <h1 class="page-title">HR & CRM Reports</h1>
+        <p class="page-subtitle">Comprehensive insights into your business performance</p>
+      </div>
+      <div class="header-actions">
+        <div class="period-selector">
+          <button
+            class="period-btn"
+            [class.active]="selectedPeriod === 'daily'"
+            (click)="setPeriod('daily')">
+            Daily
+          </button>
+          <button
+            class="period-btn"
+            [class.active]="selectedPeriod === 'monthly'"
+            (click)="setPeriod('monthly')">
+            Monthly
+          </button>
+          <button
+            class="period-btn"
+            [class.active]="selectedPeriod === 'yearly'"
+            (click)="setPeriod('yearly')">
+            Yearly
+          </button>
+        </div>
+        <div class="export-actions">
+          <button class="export-btn" (click)="exportReport('pdf')">
+            <i class="bi bi-file-pdf"></i> PDF
+          </button>
+          <button class="export-btn" (click)="exportReport('excel')">
+            <i class="bi bi-file-earmark-excel"></i> Excel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Stats Grid -->
+  <div class="stats-grid" #statsContainer>
+    @for (card of reportCards; track card.title) {
+      <div class="stat-card" [style.background]="card.gradient">
+        <div class="stat-header">
+          <span class="stat-icon">{{ card.icon }}</span>
+          <div class="stat-change" [class.positive]="card.change >= 0" [class.negative]="card.change < 0">
+            <i class="bi" [class.bi-arrow-up]="card.change >= 0" [class.bi-arrow-down]="card.change < 0"></i>
+            <span>{{ card.change }}%</span>
+          </div>
+        </div>
+        <div class="stat-body">
+          <h3 class="stat-title">{{ card.title }}</h3>
+          <div class="stat-value">{{ card.value }}</div>
+          <p class="stat-period">vs last period</p>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Charts Grid -->
+  <div class="charts-grid">
+    <!-- Employee Performance Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h2 class="chart-title">Employee Performance</h2>
+        <span class="chart-info">Top performers analysis</span>
+      </div>
+      <div class="chart-wrapper">
+        <div echarts [options]="employeePerformanceChartOptions" class="chart-container"></div>
+      </div>
+    </div>
+
+    <!-- Revenue Trend Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h2 class="chart-title">Revenue Trend</h2>
+        <span class="chart-info">YoY growth analysis</span>
+      </div>
+      <div class="chart-wrapper">
+        <div echarts [options]="revenueTrendChartOptions" class="chart-container"></div>
+      </div>
+    </div>
+
+    <!-- Department Distribution Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h2 class="chart-title">Department Distribution</h2>
+        <span class="chart-info">Employee allocation</span>
+      </div>
+      <div class="chart-wrapper">
+        <div echarts [options]="departmentDistributionChartOptions" class="chart-container"></div>
+      </div>
+    </div>
+
+    <!-- Deal Pipeline Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h2 class="chart-title">Sales Pipeline</h2>
+        <span class="chart-info">Deal stages breakdown</span>
+      </div>
+      <div class="chart-wrapper">
+        <div echarts [options]="dealPipelineChartOptions" class="chart-container"></div>
+      </div>
+    </div>
+
+    <!-- Attendance Trend Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h2 class="chart-title">Weekly Attendance</h2>
+        <span class="chart-info">Attendance rate</span>
+      </div>
+      <div class="chart-wrapper">
+        <div echarts [options]="attendanceTrendChartOptions" class="chart-container"></div>
+      </div>
+    </div>
+
+    <!-- Hiring vs Sales Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h2 class="chart-title">Hiring vs Sales</h2>
+        <span class="chart-info">Quarterly comparison</span>
+      </div>
+      <div class="chart-wrapper">
+        <div echarts [options]="hiringSalesChartOptions" class="chart-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Details Section -->
+  <div class="details-grid">
+    <!-- Employee Performance Table -->
+    <div class="details-card">
+      <div class="details-header">
+        <h2 class="details-title">Top Employees</h2>
+        <a href="#" class="view-all">View All →</a>
+      </div>
+      <div class="table-wrapper">
+        <table class="details-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Department</th>
+              <th>Performance</th>
+              <th>Attendance</th>
+              <th>Projects</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (employee of employeeReports; track employee.name) {
+              <tr>
+                <td>
+                  <div class="employee-cell">
+                    <div class="employee-avatar">{{ employee.name.charAt(0) }}</div>
+                    <span>{{ employee.name }}</span>
+                  </div>
+                </td>
+                <td>{{ employee.department }}</td>
+                <td>
+                  <div class="performance-badge" [style.backgroundColor]="'rgba(0, 184, 148, 0.15)'">
+                    <span class="badge-value" [style.color]="'#00B894'">{{ employee.performanceScore }}%</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="attendance-badge">
+                    <div class="progress-bar" [style.width.%]="employee.attendance"></div>
+                    <span class="badge-value">{{ employee.attendance }}%</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="project-count">{{ employee.projects }}</span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Deal Pipeline Details -->
+    <div class="details-card">
+      <div class="details-header">
+        <h2 class="details-title">Sales Pipeline Breakdown</h2>
+        <a href="#" class="view-all">View All →</a>
+      </div>
+      <div class="pipeline-list">
+        @for (deal of dealReports; track deal.stage) {
+          <div class="pipeline-item">
+            <div class="pipeline-info">
+              <h3 class="pipeline-stage">{{ deal.stage }}</h3>
+              <p class="pipeline-value">${{ (deal.value / 1000000).toFixed(1) }}M</p>
+            </div>
+            <div class="pipeline-stats">
+              <div class="stat-item">
+                <span class="stat-number">{{ deal.count }}</span>
+                <span class="stat-label">Deals</span>
+              </div>
+              <div class="progress-container">
+                <div class="progress-bar-full">
+                  <div class="progress-bar-fill" [style.width.%]="deal.percentage * 2.5"></div>
+                </div>
+              </div>
+              <div class="percentage">{{ deal.percentage }}%</div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
