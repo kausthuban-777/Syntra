@@ -10,6 +10,7 @@ import { CustomerSupport } from './pages/customer-support/customer-support';
 import { Administration } from './pages/administration/administration';
 import { Integrations } from './pages/integrations/integrations';
 import { AuthGuard } from './services/auth.guard';
+import { Dashboard } from './components/home/dashboard/dashboard';
 import { Employees } from './components/hr/employees/employees';
 import { Attendance } from './components/hr/attendance/attendance';
 import { Payroll } from './components/hr/payroll/payroll';
@@ -56,6 +57,8 @@ export const routes: Routes = [
     component: Home,
     canActivate: [AuthGuard],
     children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: Dashboard },
       { path: 'reports', component: Reports }
     ]
   },
@@ -67,6 +70,7 @@ export const routes: Routes = [
     component: HrManagement,
     canActivate: [AuthGuard],
     children: [
+      { path: '', redirectTo: 'employees', pathMatch: 'full' },
       { path: 'employees', component: Employees },
       { path: 'attendance', component: Attendance },
       { path: 'payroll', component: Payroll },
@@ -81,6 +85,7 @@ export const routes: Routes = [
     component: Recruitment,
     canActivate: [AuthGuard],
     children: [
+      { path: '', redirectTo: 'candidates', pathMatch: 'full' },
       { path: 'candidates', component: Candidates },
       { path: 'positions', component: HiringPipeline },
       { path: 'postings', component: JobOpenings },
@@ -94,6 +99,7 @@ export const routes: Routes = [
     component: Crm,
     canActivate: [AuthGuard],
     children: [
+      { path: '', redirectTo: 'leads', pathMatch: 'full' },
       { path: 'leads', component: Leads },
       { path: 'customers', component: Customers },
       { path: 'deals', component: Deals },
@@ -110,6 +116,7 @@ export const routes: Routes = [
     component: Analytics,
     canActivate: [AuthGuard],
     children: [
+      { path: '', redirectTo: 'sales', pathMatch: 'full' },
       { path: 'sales', component: SalesReports },
       { path: 'hr', component: HrReports },
       { path: 'recruitment', component: RecruitmentReports },
@@ -123,6 +130,7 @@ export const routes: Routes = [
     component: CustomerSupport,
     canActivate: [AuthGuard],
     children: [
+      { path: '', redirectTo: 'inbox', pathMatch: 'full' },
       { path: 'inbox', component: Inbox },
       { path: 'tickets', component: Tickets },
       { path: 'chat', component: ChatChannels },
@@ -136,6 +144,7 @@ export const routes: Routes = [
     component: Administration,
     canActivate: [AuthGuard],
     children: [
+      { path: '', redirectTo: 'users', pathMatch: 'full' },
       { path: 'users', component: Users },
       { path: 'roles', component: Roles },
       { path: 'settings', component: SystemSettings },
@@ -150,6 +159,7 @@ export const routes: Routes = [
     component: Integrations,
     canActivate: [AuthGuard],
     children: [
+      { path: '', redirectTo: 'slack', pathMatch: 'full' },
       { path: 'slack', component: Slack },
       { path: 'google', component: GoogleWorkspace },
       { path: 'payment', component: PaymentGateway },
