@@ -23,7 +23,7 @@ export class NavigationService {
 
   private sidebarStructure: Record<string, SidebarItem[]> = {
     home: [
-      { id: 'dashboard', label: 'Dashboard', icon: 'graph-up', route: '/home' },
+      { id: 'dashboard', label: 'Dashboard', icon: 'graph-up', route: '/home/dashboard' },
       { id: 'reports', label: 'Reports', icon: 'file-earmark-bar-graph', route: '/home/reports' }
     ],
     hr: [

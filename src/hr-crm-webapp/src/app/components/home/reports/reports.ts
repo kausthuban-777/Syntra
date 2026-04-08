@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { NgxEchartsModule } from 'ngx-echarts';
+import { NgxEchartsModule, NGX_ECHARTS_CONFIG } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import * as echarts from 'echarts';
 import gsap from 'gsap';
@@ -33,6 +33,12 @@ interface DealReport {
   selector: 'app-reports',
   standalone: true,
   imports: [CommonModule, NgxEchartsModule],
+  providers: [
+    {
+      provide: NGX_ECHARTS_CONFIG,
+      useValue: { echarts: echarts }
+    }
+  ],
   templateUrl: './reports.html',
   styleUrl: './reports.css'
 })
@@ -167,14 +173,6 @@ export class ReportsComponent implements OnInit {
               { offset: 1, color: '#764ba2' }
             ])
           }
-        } as any,
-        {
-          name: 'Attendance Rate',
-          data: this.employeeReports.map(emp => emp.attendance),
-          type: 'line',
-          smooth: true,
-          itemStyle: { color: '#00B894' },
-          lineStyle: { color: '#00B894', width: 3 }
         } as any
       ],
       legend: {
