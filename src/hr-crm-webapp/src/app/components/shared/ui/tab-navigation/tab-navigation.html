@@ -1,0 +1,21 @@
+<!-- Tab Navigation Container -->
+<div class="tab-navigation">
+  <div class="tab-list" role="tablist">
+    <button
+      *ngFor="let tab of tabs"
+      class="tab-item"
+      [class.active]="isTabActive(tab.id)"
+      (click)="selectTab(tab.id)"
+      [attr.aria-selected]="isTabActive(tab.id)"
+      role="tab"
+    >
+      <span class="tab-content">
+        <span class="tab-label">{{ tab.label }}</span>
+        <span *ngIf="tab.badge" class="tab-badge">
+          {{ tab.badge }}
+        </span>
+      </span>
+    </button>
+  </div>
+  <div class="tab-underline"></div>
+</div>

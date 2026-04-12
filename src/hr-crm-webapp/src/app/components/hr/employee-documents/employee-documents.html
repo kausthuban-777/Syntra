@@ -1,1 +1,381 @@
-<p>employee-documents works!</p>
+<!-- Employee Documents Container -->
+<div class="documents-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1 class="page-title">Document Management</h1>
+    <p class="page-subtitle">Manage templates, employee submissions, client documents, and inactive employee records</p>
+  </div>
+
+  <!-- Tab Navigation -->
+  <app-tab-navigation
+    [tabs]="tabs"
+    [activeTabId]="activeSection()"
+    (onTabChange)="onSectionChange($event)"
+  ></app-tab-navigation>
+
+  <!-- ============ TEMPLATE DOCUMENTS SECTION ============ -->
+  <div class="document-section" *ngIf="activeSection() === 'templates'">
+    <div class="section-header">
+      <h2 class="section-title">Document Templates</h2>
+      <p class="section-description">Standard templates available for HR to use and distribute to employees</p>
+    </div>
+
+    <!-- Filter Row -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search templates..."
+          [(ngModel)]="templateSearchText"
+          (input)="$event"
+        />
+      </div>
+      <div class="filter-group">
+        <select
+          class="filter-select"
+          [(ngModel)]="templateFilterCategory"
+          (change)="$event"
+        >
+          <option *ngFor="let cat of getDocumentCategories()" [value]="cat.value">
+            {{ cat.label }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Templates List -->
+    <div class="documents-grid" *ngIf="getFilteredTemplates().length > 0; else noTemplates">
+      <div *ngFor="let doc of getFilteredTemplates()" class="document-card">
+        <div class="card-header">
+            <div class="card-info">
+              <h3 class="card-title">{{ doc.name }}</h3>
+              <p class="card-meta">Version {{ doc.version }}</p>
+            </div>
+            <span class="document-badge">Template</span>
+          </div>
+          <div class="card-body">
+            <p class="card-description">{{ doc.description }}</p>
+            <div class="card-details">
+              <span class="detail-item">
+                <span class="detail-label">Category:</span>
+                <span class="detail-value">{{ doc.category }}</span>
+              </span>
+              <span class="detail-item">
+                <span class="detail-label">Size:</span>
+                <span class="detail-value">{{ formatFileSize(doc.fileSize) }}</span>
+              </span>
+              <span class="detail-item">
+                <span class="detail-label">Updated:</span>
+                <span class="detail-value">{{ formatDate(doc.uploadedDate) }}</span>
+              </span>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="action-btn btn-view" (click)="viewDocument(doc, 'template')" title="View document">
+              <svg viewBox="0 0 24 24" class="icon-eye">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11 10.07 7.5 12 7.5s3.5 1.57 3.5 3.5z"/>
+              </svg>
+            </button>
+            <button class="action-btn btn-download" (click)="viewDocument(doc, 'template')" title="Download template">
+              <svg viewBox="0 0 24 24" class="icon-download">
+                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template #noTemplates>
+      <div class="empty-state">
+        <p class="empty-message">No templates found matching your search</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- ============ EMPLOYEE DOCUMENTS SECTION ============ -->
+  <div class="document-section" *ngIf="activeSection() === 'employee-docs'">
+    <div class="section-header">
+      <h2 class="section-title">Employee Documents</h2>
+      <p class="section-description">Manage employee submissions, approvals, and document status tracking</p>
+    </div>
+
+    <!-- Upload Section -->
+    <div class="upload-section">
+      <h3 class="upload-title">Upload Employee Document</h3>
+      <div class="upload-box">
+        <label class="file-input-label">
+          <svg viewBox="0 0 24 24" class="upload-icon">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+          </svg>
+          <span class="upload-text">Click to upload or drag and drop</span>
+          <span class="upload-subtext">PDF, DOC, DOCX, Excel files up to 10MB</span>
+          <input
+            type="file"
+            class="file-input-hidden"
+            (change)="onEmployeeDocumentUpload($event)"
+            accept=".pdf,.doc,.docx,.xls,.xlsx"
+            multiple
+          />
+        </label>
+      </div>
+    </div>
+
+    <!-- Filter Row -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search by employee name or document..."
+          [(ngModel)]="employeeSearchText"
+          (input)="$event"
+        />
+      </div>
+      <div class="filter-group">
+        <select
+          class="filter-select"
+          [(ngModel)]="employeeFilterStatus"
+          (change)="$event"
+        >
+          <option *ngFor="let status of getDocumentStatuses()" [value]="status.value">
+            {{ status.label }}
+          </option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <select
+          class="filter-select"
+          [(ngModel)]="employeeFilterCategory"
+          (change)="$event"
+        >
+          <option *ngFor="let cat of getDocumentCategories()" [value]="cat.value">
+            {{ cat.label }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Documents List -->
+    <div class="documents-table-wrapper">
+      <div *ngIf="getFilteredEmployeeDocs().length > 0; else noEmployeeDocs" class="documents-table">
+        <div class="table-header">
+          <div class="col-document">Document</div>
+          <div class="col-employee">Employee</div>
+          <div class="col-category">Category</div>
+          <div class="col-status">Status</div>
+          <div class="col-date">Submitted</div>
+          <div class="col-actions">Actions</div>
+        </div>
+        <div *ngFor="let doc of getFilteredEmployeeDocs()" class="table-row">
+          <div class="col-document">{{ doc.documentName }}</div>
+          <div class="col-employee">{{ doc.employeeName }}</div>
+          <div class="col-category">{{ doc.category }}</div>
+          <div class="col-status">
+            <span [class]="'status-badge ' + getStatusBadgeClass(doc.status)">
+              {{ doc.status }}
+            </span>
+          </div>
+          <div class="col-date">{{ doc.submittedDate ? formatDate(doc.submittedDate) : '-' }}</div>
+          <div class="col-actions">
+            <button class="action-btn btn-view" (click)="viewDocument(doc, 'employee')" title="View">
+              <svg viewBox="0 0 24 24" class="icon-eye">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11 10.07 7.5 12 7.5s3.5 1.57 3.5 3.5z"/>
+              </svg>
+            </button>
+            <button class="action-btn btn-delete" (click)="deleteEmployeeDocument(doc)" title="Delete">
+              <svg viewBox="0 0 24 24" class="icon-trash">
+                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-9l-1 1H5v2h14V4z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <ng-template #noEmployeeDocs>
+        <div class="empty-state">
+          <p class="empty-message">No employee documents found</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- ============ CLIENT DOCUMENTS SECTION ============ -->
+  <div class="document-section" *ngIf="activeSection() === 'client-docs'">
+    <div class="section-header">
+      <h2 class="section-title">Client Documents</h2>
+      <p class="section-description">Legal documents, agreements, and NDAs for client relationships</p>
+    </div>
+
+    <!-- Upload Section -->
+    <div class="upload-section">
+      <h3 class="upload-title">Upload Client Document</h3>
+      <div class="upload-box">
+        <label class="file-input-label">
+          <svg viewBox="0 0 24 24" class="upload-icon">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+          </svg>
+          <span class="upload-text">Click to upload or drag and drop</span>
+          <span class="upload-subtext">PDF, DOC, DOCX files up to 10MB</span>
+          <input
+            type="file"
+            class="file-input-hidden"
+            (change)="onClientDocumentUpload($event)"
+            accept=".pdf,.doc,.docx"
+            multiple
+          />
+        </label>
+      </div>
+    </div>
+
+    <!-- Filter Row -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search by client name or document..."
+          [(ngModel)]="clientSearchText"
+          (input)="$event"
+        />
+      </div>
+      <div class="filter-group">
+        <select
+          class="filter-select"
+          [(ngModel)]="clientFilterDocType"
+          (change)="$event"
+        >
+          <option *ngFor="let type of getClientDocumentTypes()" [value]="type.value">
+            {{ type.label }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Documents List -->
+    <div class="documents-table-wrapper">
+      <div *ngIf="getFilteredClientDocs().length > 0; else noClientDocs" class="documents-table">
+        <div class="table-header">
+          <div class="col-document">Document</div>
+          <div class="col-client">Client</div>
+          <div class="col-doctype">Type</div>
+          <div class="col-responsible">Responsible Employees</div>
+          <div class="col-date">Created</div>
+          <div class="col-actions">Actions</div>
+        </div>
+        <div *ngFor="let doc of getFilteredClientDocs()" class="table-row">
+          <div class="col-document">{{ doc.documentName }}</div>
+          <div class="col-client">{{ doc.clientName }}</div>
+          <div class="col-doctype">{{ doc.documentType }}</div>
+          <div class="col-responsible">
+            <span class="employee-list">{{ doc.relatedEmployees?.length || 0 }} employee(s)</span>
+          </div>
+          <div class="col-date">{{ formatDate(doc.uploadedDate) }}</div>
+          <div class="col-actions">
+            <button class="action-btn btn-view" (click)="viewDocument(doc, 'client')" title="View">
+              <svg viewBox="0 0 24 24" class="icon-eye">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11 10.07 7.5 12 7.5s3.5 1.57 3.5 3.5z"/>
+              </svg>
+            </button>
+            <button class="action-btn btn-delete" (click)="deleteClientDocument(doc)" title="Delete">
+              <svg viewBox="0 0 24 24" class="icon-trash">
+                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-9l-1 1H5v2h14V4z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <ng-template #noClientDocs>
+        <div class="empty-state">
+          <p class="empty-message">No client documents found</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- ============ INACTIVE EMPLOYEE DOCUMENTS SECTION ============ -->
+  <div class="document-section" *ngIf="activeSection() === 'inactive-docs'">
+    <div class="section-header">
+      <h2 class="section-title">Inactive Employee Documents</h2>
+      <p class="section-description">Archive and manage documents for separated employees</p>
+    </div>
+
+    <!-- Upload Section -->
+    <div class="upload-section">
+      <h3 class="upload-title">Upload Inactive Employee Document</h3>
+      <div class="upload-box">
+        <label class="file-input-label">
+          <svg viewBox="0 0 24 24" class="upload-icon">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+          </svg>
+          <span class="upload-text">Click to upload or drag and drop</span>
+          <span class="upload-subtext">PDF, DOC, DOCX files up to 10MB</span>
+          <input
+            type="file"
+            class="file-input-hidden"
+            (change)="onInactiveDocumentUpload($event)"
+            accept=".pdf,.doc,.docx"
+            multiple
+          />
+        </label>
+      </div>
+    </div>
+
+    <!-- Filter Row -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search by employee name or document..."
+          [(ngModel)]="inactiveSearchText"
+          (input)="$event"
+        />
+      </div>
+    </div>
+
+    <!-- Documents List -->
+    <div class="documents-table-wrapper">
+      <div *ngIf="getFilteredInactiveDocs().length > 0; else noInactiveDocs" class="documents-table">
+        <div class="table-header">
+          <div class="col-document">Document</div>
+          <div class="col-employee">Employee</div>
+          <div class="col-category">Category</div>
+          <div class="col-date">Separation Date</div>
+          <div class="col-actions">Actions</div>
+        </div>
+        <div *ngFor="let doc of getFilteredInactiveDocs()" class="table-row">
+          <div class="col-document">{{ doc.documentName }}</div>
+          <div class="col-employee">{{ doc.employeeName }}</div>
+          <div class="col-category">{{ doc.category }}</div>
+          <div class="col-date">{{ formatDate(doc.separationDate) }}</div>
+          <div class="col-actions">
+            <button class="action-btn btn-view" (click)="viewDocument(doc, 'inactive')" title="View">
+              <svg viewBox="0 0 24 24" class="icon-eye">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11 10.07 7.5 12 7.5s3.5 1.57 3.5 3.5z"/>
+              </svg>
+            </button>
+            <button class="action-btn btn-delete" (click)="deleteInactiveDocument(doc)" title="Delete">
+              <svg viewBox="0 0 24 24" class="icon-trash">
+                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-9l-1 1H5v2h14V4z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <ng-template #noInactiveDocs>
+        <div class="empty-state">
+          <p class="empty-message">No inactive employee documents found</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+<!-- Confirmation Modal -->
+<app-confirmation-modal
+  *ngIf="showConfirmationModal()"
+  [title]="confirmationData()?.title || ''"
+  [message]="confirmationData()?.message || ''"
+  [confirmText]="confirmationData()?.confirmText || 'Confirm'"
+  (onCancel)="onConfirmationCancel()"
+  (onConfirm)="onConfirmationConfirm()"
+></app-confirmation-modal>
