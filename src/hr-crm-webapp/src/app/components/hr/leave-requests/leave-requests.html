@@ -1,1 +1,212 @@
-<p>leave-requests works!</p>
+<section class="leave-requests-page">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">HR leave requests</p>
+      <h1>Leave request management</h1>
+      <p class="description">Review leave requests, view details, and approve or reject submissions from employees.</p>
+    </div>
+
+    <div class="toolbar-group">
+      <label class="search-field">
+        <svg viewBox="0 0 24 24" class="icon" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="16.65" y1="16.65" x2="21" y2="21"></line>
+        </svg>
+        <input
+          type="search"
+          placeholder="Search employee, leave type, or reason"
+          [ngModel]="searchText()"
+          (ngModelChange)="searchText.set($event); onFilterUpdated()"
+          aria-label="Search leave requests"
+        />
+      </label>
+
+      <div class="filter-controls">
+        <select
+          [ngModel]="statusFilter()"
+          (ngModelChange)="statusFilter.set($event); onFilterUpdated()"
+          aria-label="Filter by status"
+        >
+          <option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+
+        <select
+          [ngModel]="typeFilter()"
+          (ngModelChange)="typeFilter.set($event); onFilterUpdated()"
+          aria-label="Filter by leave type"
+        >
+          <option *ngFor="let option of leaveTypeOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <div class="summary-grid">
+    <article class="summary-card">
+      <p class="summary-label">Total requests</p>
+      <strong class="summary-value">{{ leaveSummary().totalCount }}</strong>
+    </article>
+    <article class="summary-card">
+      <p class="summary-label">Pending</p>
+      <strong class="summary-value">{{ leaveSummary().pendingCount }}</strong>
+    </article>
+    <article class="summary-card">
+      <p class="summary-label">Approved</p>
+      <strong class="summary-value">{{ leaveSummary().approvedCount }}</strong>
+    </article>
+    <article class="summary-card">
+      <p class="summary-label">Rejected</p>
+      <strong class="summary-value">{{ leaveSummary().rejectedCount }}</strong>
+    </article>
+  </div>
+
+  <div class="requests-grid">
+    <section class="requests-table-card">
+      <div class="section-header">
+        <div>
+          <h2>Leave requests</h2>
+          <p class="section-meta">{{ requestCountText() }} matching current filters.</p>
+        </div>
+      </div>
+
+      <div class="requests-table">
+        <div class="table-row table-head">
+          <span>Employee</span>
+          <span>Leave type</span>
+          <span>Duration</span>
+          <span>Submitted</span>
+          <span>Status</span>
+          <span class="actions-column">Actions</span>
+        </div>
+
+        <div
+          *ngFor="let request of leaveRequests()"
+          class="table-row table-body"
+          [class.selected]="selectedRequest()?.id === request.id"
+          (click)="selectRequest(request)"
+        >
+          <span>
+            <strong>{{ request.employeeName }}</strong>
+            <small>{{ request.employeeId }}</small>
+          </span>
+          <span>{{ request.leaveType }}</span>
+          <span>{{ getRequestDuration(request) }}</span>
+          <span>{{ formatDate(request.submittedDate) }}</span>
+          <span>
+            <span class="status-pill" [ngClass]="getStatusClass(request.status)">{{ request.status }}</span>
+          </span>
+          <span class="d-flex actions-column">
+            <button type="button" class="icon-button" title="View request" (click)="selectRequest(request); $event.stopPropagation()">
+              <svg viewBox="0 0 24 24" class="icon" aria-hidden="true">
+                <path d="M12 5c-7 0-11 6.5-11 7s4 7 11 7 11-6.5 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"></path>
+                <circle cx="12" cy="12" r="2.5"></circle>
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="icon-button approve"
+              [disabled]="request.status !== LeaveRequestStatus.Pending"
+              title="Approve request"
+              (click)="openActionConfirmation(request, 'approve'); $event.stopPropagation()"
+            >
+              <svg viewBox="0 0 24 24" class="icon" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5"></path>
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="icon-button reject"
+              [disabled]="request.status !== LeaveRequestStatus.Pending"
+              title="Reject request"
+              (click)="openActionConfirmation(request, 'reject'); $event.stopPropagation()"
+            >
+              <svg viewBox="0 0 24 24" class="icon" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </span>
+        </div>
+
+        <div *ngIf="!leaveRequests().length" class="empty-state">
+          No leave requests match the selected filters.
+        </div>
+      </div>
+    </section>
+
+    <aside class="request-details-card">
+      <div class="section-header">
+        <div>
+          <h2>Request details</h2>
+          <p class="section-meta">Inspect the selected request before taking action.</p>
+        </div>
+      </div>
+
+      <div *ngIf="selectedRequest(); else emptyDetails" class="details-panel">
+        <div class="details-row">
+          <div>
+            <p class="detail-label">Employee</p>
+            <strong>{{ selectedRequest()?.employeeName }}</strong>
+            <span>{{ selectedRequest()?.employeeId }}</span>
+          </div>
+          <div>
+            <p class="detail-label">Status</p>
+            <span class="status-pill" [ngClass]="getStatusClass(selectedRequest()?.status)">{{ selectedRequest()?.status }}</span>
+          </div>
+        </div>
+
+        <div class="details-row">
+          <div>
+            <p class="detail-label">Leave type</p>
+            <strong>{{ selectedRequest()?.leaveType }}</strong>
+          </div>
+          <div>
+            <p class="detail-label">Duration</p>
+            <strong>{{ formatDate(selectedRequest()?.startDate) }} - {{ formatDate(selectedRequest()?.endDate) }}</strong>
+            <span>{{ getSelectedRequestDuration() }}</span>
+          </div>
+        </div>
+
+        <div class="details-row">
+          <div>
+            <p class="detail-label">Submitted</p>
+            <strong>{{ formatDate(selectedRequest()?.submittedDate) }}</strong>
+          </div>
+          <div>
+            <p class="detail-label">Reviewed by</p>
+            <strong>{{ selectedRequest()?.approver || 'Not yet reviewed' }}</strong>
+            <span>{{ selectedRequest()?.reviewedDate ? formatDate(selectedRequest()?.reviewedDate) : '' }}</span>
+          </div>
+        </div>
+
+        <div class="details-block">
+          <p class="detail-label">Reason</p>
+          <p class="detail-content">{{ selectedRequest()?.reason }}</p>
+        </div>
+
+        <div class="details-block details-comments" *ngIf="selectedRequest()?.comments">
+          <p class="detail-label">Comments</p>
+          <p class="detail-content">{{ selectedRequest()?.comments }}</p>
+        </div>
+      </div>
+
+      <ng-template #emptyDetails>
+        <div class="empty-state details-empty">
+          Select a leave request to view details and take action.
+        </div>
+      </ng-template>
+    </aside>
+  </div>
+
+  <app-confirmation-modal
+    [isOpen]="showConfirmationModal()"
+    [title]="confirmationTitle()"
+    [message]="confirmationMessage()"
+    [confirmText]="confirmationButton()"
+    [cancelText]="'Cancel'"
+    [isDanger]="confirmationAction() === 'reject'"
+    (onConfirm)="handleConfirmationConfirm()"
+    (onCancel)="handleConfirmationCancel()"
+  ></app-confirmation-modal>
+</section>
+

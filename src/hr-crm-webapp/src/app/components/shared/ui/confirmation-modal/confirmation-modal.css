@@ -1,0 +1,191 @@
+/* ============ MODAL OVERLAY ============ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============ MODAL CONTAINER ============ */
+.modal-container {
+  background: var(--bg-card);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+  width: 100%;
+  animation: modalSlideIn 0.3s ease;
+  overflow: hidden;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ============ MODAL HEADER ============ */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-primary);
+}
+
+.modal-title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.close-btn:hover {
+  background: var(--border-color);
+  color: var(--text-primary);
+}
+
+.close-btn .icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+
+/* ============ MODAL BODY ============ */
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-message {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* ============ MODAL FOOTER ============ */
+.modal-footer {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  justify-content: flex-end;
+}
+
+/* ============ BUTTONS ============ */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.btn-secondary {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--border-color);
+  border-color: var(--text-secondary);
+}
+
+.btn-confirm {
+  background: var(--accent-green);
+  color: white;
+}
+
+.btn-confirm:hover {
+  background: #17a34f;
+  box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-danger {
+  background: var(--accent-red) !important;
+}
+
+.btn-danger:hover {
+  background: #D63C2D !important;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+/* ============ RESPONSIVE DESIGN ============ */
+@media (max-width: 480px) {
+  .modal-container {
+    max-width: 90vw;
+  }
+
+  .modal-header {
+    padding: 1rem;
+  }
+
+  .modal-body {
+    padding: 1rem;
+  }
+
+  .modal-footer {
+    padding: 1rem;
+    flex-direction: column;
+  }
+
+  .btn {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .modal-title {
+    font-size: 1.1rem;
+  }
+
+  .modal-message {
+    font-size: 0.95rem;
+  }
+}
