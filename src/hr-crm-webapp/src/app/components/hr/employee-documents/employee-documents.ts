@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, input } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -8,22 +8,6 @@ import { DocumentTemplate, EmployeeDocument, ClientDocument, InactiveEmployeeDoc
 import { TabNavigation, TabItem } from '../../shared/ui/tab-navigation/tab-navigation';
 import { ConfirmationModal } from '../../shared/ui/confirmation-modal/confirmation-modal';
 
-/**
- * Employee Documents Component
- *
- * Manages document handling across multiple sections:
- * - Template Documents: HR access to standard templates (insurance, offer letters, etc.)
- * - Employee Documents: Manage active employee submissions with status tracking
- * - Client Documents: Handle legal documents with employee associations
- * - Inactive Employee Documents: Manage separated employee records
- *
- * Features:
- * - Tab-based navigation between document sections
- * - Search and filtering capabilities
- * - Document status management
- * - Confirmation modals for destructive actions
- * - Professional UI with responsive design
- */
 @Component({
   selector: 'app-employee-documents',
   imports: [CommonModule, FormsModule, TabNavigation, ConfirmationModal],
@@ -31,12 +15,17 @@ import { ConfirmationModal } from '../../shared/ui/confirmation-modal/confirmati
   styleUrl: './employee-documents.css'
 })
 export class EmployeeDocuments implements OnInit, OnDestroy {
-  private documentService = new DocumentService();
+  constructor(private documentService: DocumentService) {}
   private destroy$ = new Subject<void>();
 
   // ============ SIGNAL STATE ============
   // Active section/tab
   activeSection = signal<string>('templates');
+  activeSectionValue = computed(() => this.activeSection());
+
+  get activeSectionVal(): string {
+  return this.activeSection();
+  }
 
   // Template documents
   templateDocuments = signal<DocumentTemplate[]>([]);
@@ -100,55 +89,44 @@ export class EmployeeDocuments implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // ============ TAB MANAGEMENT ============
-  /**
-   * Handle tab change event
-   */
   onSectionChange(sectionId: string): void {
     this.activeSection.set(sectionId);
   }
 
-  // ============ DOCUMENT LOADING ============
-  /**
-   * Load all documents from service
-   */
   private loadAllDocuments(): void {
-    // Load template documents
     this.documentService.getTemplateDocuments()
       .pipe(takeUntil(this.destroy$))
       .subscribe(response => {
+        console.log('Templates loaded:', response.data);
         this.templateDocuments.set(response.data as DocumentTemplate[]);
         this.updateTabBadges();
       });
 
-    // Load employee documents
     this.documentService.getEmployeeDocuments()
       .pipe(takeUntil(this.destroy$))
       .subscribe(response => {
+        console.log('Employee docs loaded:', response.data);
         this.employeeDocuments.set(response.data as EmployeeDocument[]);
         this.updateTabBadges();
       });
 
-    // Load client documents
     this.documentService.getClientDocuments()
       .pipe(takeUntil(this.destroy$))
       .subscribe(response => {
+        console.log('Client docs loaded:', response.data);
         this.clientDocuments.set(response.data as ClientDocument[]);
         this.updateTabBadges();
       });
 
-    // Load inactive employee documents
     this.documentService.getInactiveEmployeeDocuments()
       .pipe(takeUntil(this.destroy$))
       .subscribe(response => {
+        console.log('Inactive docs loaded:', response.data);
         this.inactiveDocuments.set(response.data as InactiveEmployeeDocument[]);
         this.updateTabBadges();
       });
   }
 
-  /**
-   * Update tab badges with document counts
-   */
   private updateTabBadges(): void {
     this.tabs = this.tabs.map(tab => ({
       ...tab,
@@ -156,9 +134,6 @@ export class EmployeeDocuments implements OnInit, OnDestroy {
     }));
   }
 
-  /**
-   * Get document count for tab badge
-   */
   private getTabDocumentCount(tabId: string): number {
     switch (tabId) {
       case 'templates':
@@ -227,12 +202,44 @@ export class EmployeeDocuments implements OnInit, OnDestroy {
 
   // ============ EMPLOYEE DOCUMENT ACTIONS ============
   /**
-   * View/Download document
+   * View document in a new tab
    */
   viewDocument(doc: any, docType: 'template' | 'employee' | 'client' | 'inactive'): void {
-    // TODO: Implement file download via HTTP service
-    const docName = docType === 'template' ? doc.name : doc.documentName;
-    console.log(`View document: ${docName}`, doc);
+    const documentUrl = this.resolveDocumentUrl(doc);
+    if (!documentUrl) {
+      console.warn('Document URL is not available:', doc);
+      return;
+    }
+    window.open(documentUrl, '_blank');
+  }
+
+  /**
+   * Download document using browser download behavior
+   */
+  downloadDocument(doc: any, docType: 'template' | 'employee' | 'client' | 'inactive'): void {
+    const documentUrl = this.resolveDocumentUrl(doc);
+    if (!documentUrl) {
+      console.warn('Document URL is not available:', doc);
+      return;
+    }
+    const anchor = document.createElement('a');
+    anchor.href = documentUrl;
+    anchor.download = doc.fileName || 'document.pdf';
+    anchor.target = '_blank';
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+  }
+
+  /**
+   * Resolve document URL or fallback to sample record template
+   */
+  private resolveDocumentUrl(doc: any): string {
+    // Check multiple possible URL properties for different document types
+    const url = doc?.fileUrl?.trim() || doc?.url?.trim() || '';
+
+    // If document has a valid URL, use it; otherwise fallback to sample
+    return url && url !== '' ? url : '/documents/Professional Employee Record Template.pdf';
   }
 
   /**
