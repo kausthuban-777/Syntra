@@ -17,10 +17,32 @@
   font-size: 14px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 1024px) and (min-width: 769px) {
   .footer {
-    height: 30px;
+    height: 38px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) and (min-width: 641px) {
+  .footer {
+    height: 36px;
     font-size: 12px;
   }
 }
+
+@media (max-width: 640px) and (min-width: 481px) {
+  .footer {
+    height: 32px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    height: 30px;
+    font-size: 10px;
+  }
+}
+
 

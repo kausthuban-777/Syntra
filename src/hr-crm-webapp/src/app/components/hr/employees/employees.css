@@ -683,37 +683,134 @@
 
 /* ============ RESPONSIVE DESIGN ============ */
 @media (max-width: 1200px) {
+  .employees-container {
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+
   .content-wrapper {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+    min-height: auto;
   }
 
   .filter-inputs {
     grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
   }
 
   .employees-header {
     flex-direction: column;
     align-items: stretch;
+    gap: 1rem;
   }
 
   .employees-header .btn {
     width: 100%;
     justify-content: center;
   }
+
+  .col-email {
+    min-width: 150px;
+  }
+
+  .col-department {
+    min-width: 110px;
+  }
+
+  .employees-table th,
+  .employees-table td {
+    padding: 0.9rem 0.75rem;
+    font-size: 0.9rem;
+  }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) and (min-width: 769px) {
   .employees-container {
-    padding: 1rem;
-    gap: 1.5rem;
+    padding: 1.25rem;
+    gap: 1.25rem;
+  }
+
+  .content-wrapper {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
 
   .employees-header {
-    padding: 1rem;
+    padding: 1.25rem;
+  }
+
+  .filters-section {
+    padding: 1.25rem;
+  }
+
+  .filter-inputs {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
   }
 
   .page-title {
     font-size: 1.5rem;
+  }
+
+  .col-email {
+    min-width: 140px;
+  }
+
+  .col-department {
+    min-width: 100px;
+  }
+
+  .employees-table th,
+  .employees-table td {
+    padding: 0.75rem 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .employee-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 0.8rem;
+  }
+
+  .action-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  .action-btn .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .detail-panel {
+    max-height: calc(100vh - 180px);
+  }
+}
+
+@media (max-width: 768px) and (min-width: 641px) {
+  .employees-container {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .content-wrapper {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .employees-header {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .page-title {
+    font-size: 1.375rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.9rem;
   }
 
   .filters-section {
@@ -721,62 +818,442 @@
   }
 
   .filter-inputs {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
   }
 
-  .col-position,
+  .search-wrapper,
+  .filter-select,
+  .search-input {
+    font-size: 0.9rem;
+  }
+
+  .result-count {
+    font-size: 0.85rem;
+  }
+
+  .col-position {
+    display: none;
+  }
+
   .col-department {
     display: none;
   }
 
+  .col-email {
+    min-width: 130px;
+  }
+
   .employees-table th,
   .employees-table td {
-    padding: 0.75rem 0.5rem;
-    font-size: 0.85rem;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .employee-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 0.75rem;
   }
 
   .action-btn {
     width: 28px;
     height: 28px;
+    font-size: 0.9rem;
   }
 
   .action-btn .icon {
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
+  }
+
+  .badge {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .pagination {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .detail-panel {
+    max-height: calc(100vh - 160px);
+  }
+
+  .detail-header {
+    padding: 1rem;
+  }
+
+  .detail-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .detail-content {
+    padding: 1rem;
+    gap: 1.5rem;
   }
 }
 
-@media (max-width: 480px) {
-  .col-email,
-  .col-status {
-    display: none;
+@media (max-width: 640px) and (min-width: 481px) {
+  .employees-container {
+    padding: 0.75rem;
+    gap: 0.75rem;
   }
 
-  .col-name {
-    min-width: 120px;
+  .content-wrapper {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
 
-  .col-actions {
-    min-width: 100px;
-  }
-
-  .employee-avatar {
-    width: 32px;
-    height: 32px;
-    font-size: 0.8rem;
+  .employees-header {
+    padding: 0.75rem;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .page-title {
     font-size: 1.25rem;
   }
 
+  .page-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .filters-section {
+    padding: 0.75rem;
+  }
+
+  .filter-inputs {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .search-wrapper,
+  .filter-select,
+  .search-input {
+    font-size: 0.8rem;
+  }
+
+  .result-count {
+    font-size: 0.8rem;
+  }
+
+  .col-position,
+  .col-department,
+  .col-email {
+    display: none;
+  }
+
+  .col-name {
+    min-width: 100px;
+  }
+
+  .col-status {
+    min-width: 80px;
+  }
+
+  .col-actions {
+    min-width: 80px;
+  }
+
+  .employees-table th,
+  .employees-table td {
+    padding: 0.5rem 0.35rem;
+    font-size: 0.75rem;
+  }
+
+  .employee-avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 0.7rem;
+  }
+
+  .employee-full-name {
+    font-size: 0.75rem;
+  }
+
+  .action-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+  }
+
+  .action-btn .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+  }
+
   .pagination {
-    flex-wrap: wrap;
+    padding: 0.75rem;
     gap: 0.5rem;
   }
 
   .pagination-info {
+    font-size: 0.8rem;
+  }
+
+  .detail-panel {
+    max-height: calc(100vh - 140px);
+  }
+
+  .detail-header {
+    padding: 0.75rem;
+  }
+
+  .detail-header h2 {
+    font-size: 1rem;
+  }
+
+  .detail-content {
+    padding: 0.75rem;
+    gap: 1.25rem;
+  }
+
+  .large-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  .detail-avatar-section h3 {
+    font-size: 1.1rem;
+  }
+
+  .detail-item label {
+    font-size: 0.75rem;
+  }
+
+  .detail-item p {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .employees-container {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .content-wrapper {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .employees-header {
+    padding: 0.6rem;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .page-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.8rem;
+    margin: 0;
+  }
+
+  .filters-section {
+    padding: 0.6rem;
+  }
+
+  .filter-inputs {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+
+  .search-wrapper,
+  .filter-select,
+  .search-input {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .result-count {
+    font-size: 0.75rem;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .col-email,
+  .col-status,
+  .col-department,
+  .col-position {
+    display: none;
+  }
+
+  .col-name {
+    min-width: 80px;
+  }
+
+  .col-actions {
+    min-width: 70px;
+  }
+
+  .employees-table th,
+  .employees-table td {
+    padding: 0.4rem 0.3rem;
+    font-size: 0.7rem;
+  }
+
+  .employees-table th {
+    font-size: 0.65rem;
+  }
+
+  .employee-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.65rem;
+  }
+
+  .employee-full-name {
+    font-size: 0.7rem;
+  }
+
+  .cell-text {
+    font-size: 0.65rem;
+  }
+
+  .action-btn {
+    width: 22px;
+    height: 22px;
+    font-size: 0.7rem;
+    padding: 0.2rem;
+  }
+
+  .action-btn .icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .badge {
+    font-size: 0.6rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    gap: 0.3rem;
+  }
+
+  .btn-sm {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+  }
+
+  .btn-icon {
+    font-size: 1rem;
+  }
+
+  .pagination {
+    padding: 0.6rem;
+    gap: 0.4rem;
+  }
+
+  .pagination-info {
+    font-size: 0.7rem;
     width: 100%;
     order: 3;
+  }
+
+  .loading-state,
+  .empty-state {
+    padding: 2rem 1rem;
+    gap: 1rem;
+  }
+
+  .spinner {
+    width: 30px;
+    height: 30px;
+    border-width: 2px;
+  }
+
+  .empty-icon {
+    font-size: 2.5rem;
+  }
+
+  .empty-state h3 {
+    font-size: 1rem;
+  }
+
+  .empty-state p {
+    font-size: 0.85rem;
+  }
+
+  .detail-panel {
+    max-height: calc(100vh - 120px);
+  }
+
+  .detail-header {
+    padding: 0.6rem;
+  }
+
+  .detail-header h2 {
+    font-size: 0.95rem;
+  }
+
+  .close-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 1.2rem;
+  }
+
+  .detail-content {
+    padding: 0.6rem;
+    gap: 1rem;
+  }
+
+  .large-avatar {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+
+  .detail-avatar-section {
+    gap: 0.75rem;
+    padding-bottom: 1rem;
+  }
+
+  .detail-avatar-section h3 {
+    font-size: 1rem;
+  }
+
+  .detail-grid {
+    gap: 1rem;
+  }
+
+  .detail-item label {
+    font-size: 0.65rem;
+  }
+
+  .detail-item p {
+    font-size: 0.8rem;
+  }
+
+  .detail-actions {
+    gap: 0.75rem;
+    padding-top: 1rem;
   }
 }

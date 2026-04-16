@@ -2,7 +2,7 @@
   <div class="sidebar-header">
     <h3 class="sidebar-title">Menu</h3>
     <button class="sidebar-toggle" (click)="toggleSidebar()" title="Toggle Sidebar">
-      <i class="bi cursor-pointer" [class]="isSidebarOpen ? 'bi-chevron-left' : 'bi-chevron-right'"></i>
+      <span [ngClass]="isSidebarOpen ? 'bi bi-chevron-left' : 'bi bi-chevron-right'"></span>
     </button>
   </div>
 
