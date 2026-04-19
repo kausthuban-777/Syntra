@@ -37,12 +37,12 @@ export class NavigationService {
       { id: 'candidates', label: 'Candidates', icon: 'person-workspace', route: '/recruitment/candidates' },
       { id: 'open-positions', label: 'Open Positions', icon: 'briefcase', route: '/recruitment/positions' },
       { id: 'job-postings', label: 'Job Postings', icon: 'newspaper', route: '/recruitment/postings' },
-      { id: 'interviews', label: 'Interviews', icon: 'handshake', route: '/recruitment/interviews', iconType: 'fa' }
+      { id: 'interviews', label: 'Interviews', icon: 'comments', route: '/recruitment/interviews', iconType: 'fa' }
     ],
     crm: [
       { id: 'leads', label: 'Leads', icon: 'gem', route: '/crm/leads' },
-      { id: 'customers', label: 'Customers', icon: 'address-book', route: '/crm/customers', iconType: 'fa' },
-      { id: 'deals', label: 'Deals', icon: 'handshake', route: '/crm/deals', iconType: 'fa' },
+      { id: 'customers', label: 'Customers', icon: 'users', route: '/crm/customers', iconType: 'fa' },
+      { id: 'deals', label: 'Deals', icon: 'briefcase', route: '/crm/deals', iconType: 'fa' },
       { id: 'sales-pipeline', label: 'Sales Pipeline', icon: 'graph-up-arrow', route: '/crm/sales-pipeline' },
       { id: 'quotations', label: 'Quotations', icon: 'quote', route: '/crm/quotations' },
       { id: 'invoices', label: 'Invoices', icon: 'receipt', route: '/crm/invoices' },

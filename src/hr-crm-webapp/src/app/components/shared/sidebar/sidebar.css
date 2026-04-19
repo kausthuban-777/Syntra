@@ -137,6 +137,8 @@
   text-align: center;
   flex-shrink: 0;
   transition: all 0.3s ease;
+  font-weight: 900;
+  font-style: normal;
 }
 
 .sidebar-item.active i {
@@ -241,6 +243,11 @@
 
   .sidebar-item i {
     font-size: 16px;
+    min-width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+    font-weight: 900;
+    font-style: normal;
   }
 
   .sidebar-label {
@@ -306,6 +313,11 @@
 
   .sidebar-item i {
     font-size: 14px;
+    min-width: 18px;
+    font-weight: 900;
+    font-style: normal;
+    text-align: center;
+    flex-shrink: 0;
   }
 
   .sidebar-label {
@@ -375,6 +387,11 @@
   .sidebar-item i {
     font-size: 14px;
     margin-bottom: 2px;
+    min-width: 18px;
+    font-weight: 900;
+    font-style: normal;
+    text-align: center;
+    flex-shrink: 0;
   }
 
   .sidebar-label {

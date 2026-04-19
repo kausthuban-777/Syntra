@@ -101,9 +101,13 @@
                   <a
                     [routerLink]="subroute.route"
                     class="mobile-submenu-item"
-                    (click)="closeMobileMenu()"
+                    (click)="closeMobileMenu(); logIconDebug(subroute)"
                   >
-                    <i class="bi" [class]="'bi-' + subroute.icon"></i>
+                    @if (subroute.iconType === 'fa') {
+                      <i class="fas" [class]="'fa-' + subroute.icon"></i>
+                    } @else {
+                      <i class="bi" [class]="'bi-' + subroute.icon"></i>
+                    }
                     <span>{{ subroute.label }}</span>
                   </a>
                 }
