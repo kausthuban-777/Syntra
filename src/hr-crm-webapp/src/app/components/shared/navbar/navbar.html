@@ -2,6 +2,11 @@
 {
   <nav class="top-nav">
     <div class="nav-left">
+      <button class="hamburger-btn" (click)="toggleMobileMenu()" title="Menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
       <div class="logo">
         <div class="logo-icon">
           @if (!themeService.isDarkMode())
@@ -15,14 +20,23 @@
         </div>
       </div>
       <div class="nav-links">
-        <a routerLink="/home" [class.active]="activeLink() === 'home'" class="nav-link" id="nav-dashboard">Dashboard</a>
-        <a routerLink="/hr" [class.active]="activeLink() === 'hr'" class="nav-link" id="nav-hr">HR</a>
-        <a routerLink="/recruitment" [class.active]="activeLink() === 'recruitment'" class="nav-link" id="nav-recruitment">Recruitment</a>
-        <a routerLink="/crm" [class.active]="activeLink() === 'crm'" class="nav-link" id="nav-crm">CRM</a>
-        <a routerLink="/analytics" [class.active]="activeLink() === 'analytics'" class="nav-link" id="nav-analytics">Analytics</a>
-        <a routerLink="/support" [class.active]="activeLink() === 'support'" class="nav-link" id="nav-support">Support</a>
-        <a routerLink="/administration" [class.active]="activeLink() === 'administration'" class="nav-link" id="nav-administration">Administration</a>
-        <a routerLink="/integrations" [class.active]="activeLink() === 'integrations'" class="nav-link" id="nav-integrations">Integrations</a>
+        @for (menu of navMenus; track menu.id) {
+          <div class="nav-link-wrapper">
+            <a
+              [routerLink]="menu.route"
+              [class.active]="activeLink() === menu.id"
+              class="nav-link"
+              [id]="'nav-' + menu.id"
+            >
+              {{ menu.label }}
+            </a>
+            @if (menu.subroutes.length > 0) {
+              <div class="dropdown-indicator">
+                <i class="bi bi-chevron-down"></i>
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
     <div class="nav-right">
@@ -50,4 +64,89 @@
       </div>
     </div>
   </nav>
+
+  <!-- Mobile Menu Overlay -->
+  @if (mobileMenuOpen()) {
+    <div class="mobile-menu-overlay" (click)="closeMobileMenu()"></div>
+  }
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" [class.open]="mobileMenuOpen()">
+    <div class="mobile-menu-header">
+      <h2 class="mobile-menu-title">Menu</h2>
+      <button class="mobile-menu-close" (click)="closeMobileMenu()" title="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="mobile-menu-content">
+      <div class="mobile-nav-section">
+        @for (menu of navMenus; track menu.id) {
+          <div class="mobile-nav-item">
+            <button
+              class="mobile-nav-main"
+              [class.active]="activeLink() === menu.id"
+              (click)="toggleDropdown(menu.id)"
+              type="button"
+            >
+              <span class="mobile-nav-label">{{ menu.label }}</span>
+              @if (menu.subroutes.length > 0) {
+                <i class="bi bi-chevron-down" [class.rotate]="activeDropdown() === menu.id"></i>
+              }
+            </button>
+
+            @if (menu.subroutes.length > 0 && activeDropdown() === menu.id) {
+              <div class="mobile-submenu">
+                @for (subroute of menu.subroutes; track subroute.id) {
+                  <a
+                    [routerLink]="subroute.route"
+                    class="mobile-submenu-item"
+                    (click)="closeMobileMenu(); logIconDebug(subroute)"
+                  >
+                    @if (subroute.iconType === 'fa') {
+                      <i class="fas" [class]="'fa-' + subroute.icon"></i>
+                    } @else {
+                      <i class="bi" [class]="'bi-' + subroute.icon"></i>
+                    }
+                    <span>{{ subroute.label }}</span>
+                  </a>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="mobile-menu-divider"></div>
+
+      <div class="mobile-settings-section">
+        <button class="mobile-settings-item theme-toggle" id="mobileThemeToggle" (click)="themeService.toggleTheme()">
+          @if (!themeService.isDarkMode()) {
+            <i class="bi bi-moon"></i>
+            <span>Dark Mode</span>
+          } @else {
+            <i class="bi bi-sun"></i>
+            <span>Light Mode</span>
+          }
+        </button>
+        <button class="mobile-settings-item" id="mobileSearch">
+          <i class="bi bi-search"></i>
+          <span>Search</span>
+        </button>
+        <button class="mobile-settings-item" id="mobileMail">
+          <i class="bi bi-envelope"></i>
+          <span>Mail</span>
+        </button>
+        <button class="mobile-settings-item" id="mobileBell">
+          <i class="bi bi-bell"></i>
+          <span>Notifications</span>
+        </button>
+        <button class="mobile-settings-item logout-btn" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </div>
 }
+

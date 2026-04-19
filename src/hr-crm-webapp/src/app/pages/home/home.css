@@ -537,6 +537,7 @@
 @media (max-width: 1200px) {
   .home-container {
     padding: 24px;
+    max-width: 100%;
   }
 
   .main-grid {
@@ -549,31 +550,33 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) and (min-width: 769px) {
   .home-container {
-    padding: 16px;
+    padding: 20px;
+    max-width: 100%;
   }
 
   .welcome-title {
-    font-size: 24px;
+    font-size: 26px;
   }
 
   .kpi-grid {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
   }
 
   .kpi-card {
-    padding: 16px;
+    padding: 20px;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
 
   .kpi-count {
-    font-size: 32px;
+    font-size: 36px;
   }
 
   .main-grid {
+    grid-template-columns: 1fr;
     gap: 16px;
   }
 
@@ -591,7 +594,249 @@
   }
 
   .employee-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .chart-legend {
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 768px) and (min-width: 641px) {
+  .home-container {
+    padding: 16px;
+    max-width: 100%;
+  }
+
+  .welcome-title {
+    font-size: 24px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .kpi-card {
+    padding: 16px;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .kpi-count {
+    font-size: 32px;
+  }
+
+  .kpi-title {
+    font-size: 14px;
+  }
+
+  .kpi-subtitle {
+    font-size: 12px;
+  }
+
+  .main-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .card-title {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  .sales-chart-container {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .chart-placeholder {
+    min-height: 150px;
+  }
+
+  .employee-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .stat-box {
+    padding: 12px;
+  }
+
+  .stat-box .stat-value {
+    font-size: 24px;
+  }
+
+  .stat-box .stat-label {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 640px) and (min-width: 481px) {
+  .home-container {
+    padding: 14px;
+    max-width: 100%;
+  }
+
+  .welcome-title {
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .current-date {
+    font-size: 12px;
+  }
+
+  .header-section {
+    margin-bottom: 16px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .kpi-card {
+    padding: 14px;
+    flex-direction: column;
+    gap: 8px;
+    border-radius: 8px;
+  }
+
+  .kpi-content {
+    gap: 12px;
+  }
+
+  .kpi-count {
+    font-size: 28px;
+  }
+
+  .kpi-title {
+    font-size: 13px;
+  }
+
+  .kpi-subtitle {
+    font-size: 11px;
+  }
+
+  .kpi-percentage {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .main-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .card {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 0;
+  }
+
+  .card-title {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .card-header {
+    margin-bottom: 12px;
+  }
+
+  .sales-chart-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .chart-placeholder {
+    min-height: 140px;
+  }
+
+  .chart-legend {
+    min-width: auto;
+    gap: 12px;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .employee-stats {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .stat-box {
+    padding: 10px;
+  }
+
+  .stat-box .stat-value {
+    font-size: 22px;
+  }
+
+  .stat-box .stat-label {
+    font-size: 10px;
+  }
+
+  .task-item {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .task-text {
+    font-size: 12px;
+  }
+
+  .add-task-btn {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+
+  .interview-item {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .interview-icon {
+    font-size: 16px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .interview-title {
+    font-size: 12px;
+  }
+
+  .interview-time {
+    font-size: 11px;
+  }
+
+  .daily-item {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .daily-label {
+    font-size: 12px;
+  }
+
+  .daily-value {
+    font-size: 14px;
   }
 }
 
@@ -611,40 +856,45 @@
   }
 
   .header-section {
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
   .kpi-grid {
     grid-template-columns: 1fr;
-    gap: 12px;
-    margin-bottom: 16px;
+    gap: 10px;
+    margin-bottom: 14px;
   }
 
   .kpi-card {
-    padding: 16px;
+    padding: 12px;
     gap: 8px;
     border-radius: 8px;
   }
 
+  .kpi-content {
+    gap: 10px;
+  }
+
   .kpi-count {
-    font-size: 28px;
+    font-size: 24px;
   }
 
   .kpi-title {
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .kpi-subtitle {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .kpi-percentage {
-    font-size: 12px;
+    font-size: 10px;
+    padding: 4px 8px;
   }
 
   .main-grid {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 10px;
   }
 
   .card {
@@ -658,12 +908,21 @@
     margin-bottom: 12px;
   }
 
+  .card-header {
+    margin-bottom: 12px;
+  }
+
   .stat-box .stat-value {
-    font-size: 24px;
+    font-size: 20px;
   }
 
   .stat-box .stat-label {
-    font-size: 11px;
+    font-size: 10px;
+  }
+
+  .stat-box {
+    padding: 10px;
+    gap: 6px;
   }
 
   .task-item {
@@ -675,28 +934,99 @@
     font-size: 13px;
   }
 
+  .task-checkbox-wrapper {
+    width: 20px;
+    height: 20px;
+  }
+
+  .checkbox-custom {
+    width: 20px;
+    height: 20px;
+  }
+
+  .checkbox-custom i {
+    font-size: 10px;
+  }
+
   .add-task-btn {
-    padding: 10px 16px;
+    padding: 10px 14px;
     font-size: 13px;
   }
 
   .interview-item {
-    padding: 12px;
-    gap: 10px;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .interview-icon {
+    font-size: 14px;
+    width: 32px;
+    height: 32px;
   }
 
   .interview-title {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .interview-time {
-    font-size: 12px;
+    font-size: 11px;
+  }
+
+  .interview-details {
+    flex: 1;
   }
 
   .daily-item {
     padding: 10px;
     font-size: 12px;
   }
+
+  .daily-label {
+    font-size: 11px;
+  }
+
+  .daily-value {
+    font-size: 14px;
+  }
+
+  .sales-chart-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .chart-placeholder {
+    min-height: 120px;
+  }
+
+  .chart-legend {
+    min-width: auto;
+    gap: 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .legend-item {
+    flex: 0 1 48%;
+  }
+
+  .legend-label {
+    font-size: 10px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+  }
+
+  .percentage-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+}
 
   .chart-placeholder {
     min-height: 200px;
@@ -706,5 +1036,3 @@
     max-width: 100%;
     height: auto;
   }
-}
-

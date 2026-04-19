@@ -355,74 +355,422 @@
     font-size: 40px;
   }
 
+  .brand-logo {
+    width: 90px;
+    height: 90px;
+  }
+
+  .brand-description {
+    font-size: 15px;
+  }
+
   .login-right {
     flex: 1.2;
     padding: 30px;
   }
+
+  .form-header h2 {
+    font-size: 26px;
+  }
+
+  .login-form-container {
+    max-width: 400px;
+  }
+
+  .input-wrapper input {
+    font-size: 14px;
+    padding: 10px 0;
+  }
+
+  .input-wrapper i {
+    font-size: 14px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  .login-button {
+    padding: 10px 18px;
+    font-size: 14px;
+  }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px) and (min-width: 641px) {
   .login-page {
     flex-direction: column;
   }
 
   .login-left {
-    flex: 0;
-    min-height: 200px;
-    padding: 30px 20px;
+    flex: none;
+    min-height: 180px;
+    padding: 24px 20px;
   }
 
   .login-right {
     flex: 1;
-    padding: 30px 20px;
+    padding: 24px 20px;
+  }
+
+  .brand-section {
+    max-width: 100%;
   }
 
   .brand-title {
     font-size: 32px;
+    margin: 16px 0 8px;
   }
 
   .brand-description {
-    font-size: 14px;
+    font-size: 13px;
+    margin-top: 12px;
   }
 
   .brand-logo {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
+    margin-bottom: 20px;
   }
 
   .form-header h2 {
-    font-size: 24px;
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .form-header .subtitle {
+    font-size: 13px;
   }
 
   .login-form-container {
     max-width: 100%;
+    width: 100%;
+  }
+
+  .logo-container {
+    margin-bottom: 20px;
+  }
+
+  .login-form {
+    gap: 16px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .input-wrapper {
+    padding: 0 10px;
+  }
+
+  .input-wrapper i {
+    font-size: 14px;
+    margin-right: 8px;
+  }
+
+  .input-wrapper input {
+    font-size: 14px;
+    padding: 10px 0;
+  }
+
+  .form-options {
+    font-size: 13px;
+  }
+
+  .remember-me input {
+    width: 14px;
+    height: 14px;
+  }
+
+  .login-button {
+    padding: 10px 16px;
+    font-size: 13px;
+    margin-top: 8px;
+  }
+
+  .error-message {
+    padding: 10px 12px;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .error-message i {
+    font-size: 14px;
+  }
+
+  .signup-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 640px) and (min-width: 481px) {
+  .login-page {
+    flex-direction: column;
+  }
+
+  .login-left {
+    flex: none;
+    min-height: 160px;
+    padding: 20px 16px;
+  }
+
+  .login-right {
+    flex: 1;
+    padding: 20px 16px;
+  }
+
+  .brand-section {
+    max-width: 100%;
+  }
+
+  .logo-container {
+    margin-bottom: 16px;
+  }
+
+  .brand-logo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .brand-title {
+    font-size: 28px;
+    margin: 12px 0 6px;
+  }
+
+  .brand-description {
+    font-size: 12px;
+    margin-top: 10px;
+  }
+
+  .form-header h2 {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  .form-header .subtitle {
+    font-size: 12px;
+  }
+
+  .login-form-container {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .login-form {
+    gap: 14px;
+  }
+
+  .form-group label {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .input-wrapper {
+    padding: 0 10px;
+  }
+
+  .input-wrapper i {
+    font-size: 13px;
+    margin-right: 8px;
+  }
+
+  .input-wrapper input {
+    font-size: 13px;
+    padding: 9px 0;
+  }
+
+  .form-options {
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  .remember-me input {
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+  }
+
+  .forgot-password {
+    font-size: 12px;
+  }
+
+  .login-button {
+    padding: 9px 14px;
+    font-size: 12px;
+    margin-top: 6px;
+    letter-spacing: 0.3px;
+  }
+
+  .error-message {
+    padding: 8px 10px;
+    font-size: 12px;
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+
+  .error-message i {
+    font-size: 12px;
+  }
+
+  .signup-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    font-size: 12px;
+  }
+
+  .signup-link {
+    font-size: 12px;
   }
 }
 
 @media (max-width: 480px) {
   .login-page {
     padding: 0;
+    flex-direction: column;
   }
 
   .login-left {
-    min-height: 150px;
-    padding: 20px;
+    min-height: 140px;
+    padding: 16px 12px;
+    flex: none;
   }
 
   .login-right {
-    padding: 20px;
+    flex: 1;
+    padding: 16px 12px;
+    background: white;
+  }
+
+  .brand-section {
+    max-width: 100%;
+  }
+
+  .logo-container {
+    margin-bottom: 12px;
+  }
+
+  .brand-logo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .brand-title {
+    font-size: 24px;
+    margin: 10px 0 4px;
+  }
+
+  .brand-description {
+    font-size: 11px;
+    margin-top: 8px;
   }
 
   .form-header h2 {
-    font-size: 20px;
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+
+  .form-header .subtitle {
+    font-size: 11px;
+  }
+
+  .login-form-container {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .login-form {
+    gap: 12px;
+  }
+
+  .form-group label {
+    font-size: 11px;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .input-wrapper {
+    padding: 0 8px;
+    border-radius: 4px;
+  }
+
+  .input-wrapper i {
+    font-size: 12px;
+    margin-right: 6px;
+  }
+
+  .input-wrapper input {
+    font-size: 12px;
+    padding: 8px 0;
+  }
+
+  .input-wrapper input::placeholder {
+    font-size: 11px;
   }
 
   .form-options {
     flex-direction: column;
     align-items: flex-start;
+    font-size: 11px;
+    gap: 6px;
   }
 
-  .brand-title {
-    font-size: 28px;
+  .remember-me {
+    font-size: 11px;
+  }
+
+  .remember-me input {
+    width: 13px;
+    height: 13px;
+    margin-right: 4px;
+  }
+
+  .forgot-password {
+    font-size: 11px;
+    align-self: flex-start;
+  }
+
+  .login-button {
+    padding: 8px 12px;
+    font-size: 11px;
+    margin-top: 4px;
+    letter-spacing: 0.2px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  }
+
+  .login-button:hover:not(:disabled) {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .button-loading {
+    gap: 6px;
+  }
+
+  .button-loading i {
+    font-size: 11px;
+  }
+
+  .error-message {
+    padding: 8px 10px;
+    font-size: 11px;
+    margin-bottom: 12px;
+    gap: 6px;
+    border-radius: 4px;
+  }
+
+  .error-message i {
+    font-size: 11px;
+  }
+
+  .signup-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    font-size: 11px;
+    border-top-width: 1px;
+  }
+
+  .signup-link {
+    font-size: 11px;
   }
 }
