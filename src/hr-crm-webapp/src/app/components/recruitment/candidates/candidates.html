@@ -1,1 +1,340 @@
-<p>candidates works!</p>
+<div class="candidates-container">
+  <div class="candidates-header">
+    <div class="header-content">
+      <h1 class="page-title">Candidates</h1>
+      <p class="page-subtitle">Manage and track job applicants throughout the recruitment process</p>
+    </div>
+    <button class="btn btn-primary" (click)="openAddForm()">
+      <span class="btn-icon">+</span>
+      Add Candidate
+    </button>
+  </div>
+
+  <div class="filters-section">
+    <div class="filter-inputs">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search by name, email, or position..."
+          [value]="searchTerm"
+          (input)="onSearchChange($any($event.target).value ?? '')"
+        />
+        <span class="search-icon">🔍</span>
+      </div>
+
+      <select
+        class="filter-select"
+        [value]="selectedStatus"
+        (change)="onStatusChange($any($event.target).value ?? '')"
+      >
+        <option value="">All Status</option>
+        <option *ngFor="let status of statuses()" [value]="status">
+          {{ status }}
+        </option>
+      </select>
+
+      <select
+        class="filter-select"
+        [value]="selectedExperienceLevel"
+        (change)="onExperienceLevelChange($any($event.target).value ?? '')"
+      >
+        <option value="">All Experience Levels</option>
+        <option *ngFor="let level of experienceLevels()" [value]="level">
+          {{ level }}
+        </option>
+      </select>
+
+      <select
+        class="filter-select"
+        [value]="selectedPosition"
+        (change)="onPositionChange($any($event.target).value ?? '')"
+      >
+        <option value="">All Positions</option>
+        <option *ngFor="let position of positions()" [value]="position">
+          {{ position }}
+        </option>
+      </select>
+
+      <select
+        class="filter-select"
+        [value]="selectedSource"
+        (change)="onSourceChange($any($event.target).value ?? '')"
+      >
+        <option value="">All Sources</option>
+        <option *ngFor="let source of sources()" [value]="source">
+          {{ source }}
+        </option>
+      </select>
+
+      <select
+        class="filter-select"
+        [value]="minRating"
+        (change)="onRatingChange($any($event.target).value ?? '')"
+      >
+        <option value="">All Ratings</option>
+        <option value="1">1★ & Up</option>
+        <option value="2">2★ & Up</option>
+        <option value="3">3★ & Up</option>
+        <option value="4">4★ & Up</option>
+        <option value="5">5★ Only</option>
+      </select>
+
+      <button
+        class="btn btn-secondary"
+        (click)="clearFilters()"
+        [disabled]="!searchTerm && !selectedStatus && !selectedExperienceLevel && !selectedPosition && !selectedSource && !minRating"
+      >
+        Clear Filters
+      </button>
+    </div>
+
+    <div class="results-info">
+      <span class="result-count">{{ totalCount }} candidate{{ totalCount !== 1 ? 's' : '' }}</span>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="candidates-list-section">
+      <div *ngIf="isLoading()" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading candidates...</p>
+      </div>
+
+      <div *ngIf="!isLoading() && candidates().length === 0" class="empty-state">
+        <span class="empty-icon">👤</span>
+        <h3>No Candidates Found</h3>
+        <p>Try adjusting your search filters or add a new candidate.</p>
+        <button class="btn btn-primary" (click)="openAddForm()">Add Your First Candidate</button>
+      </div>
+
+      <div *ngIf="!isLoading() && candidates().length > 0" class="table-wrapper">
+        <table class="candidates-table">
+          <thead>
+            <tr>
+              <th class="col-name">Name</th>
+              <th class="col-position">Applied Position</th>
+              <th class="col-experience">Experience</th>
+              <th class="col-source">Source</th>
+              <th class="col-status">Status</th>
+              <th class="col-rating">Rating</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let candidate of candidates()"
+              class="candidate-row"
+              [class.selected]="selectedCandidate()?.id === candidate.id"
+              (click)="selectCandidate(candidate)"
+            >
+              <td class="col-name">
+                <div class="candidate-name-cell">
+                  <div class="candidate-avatar">
+                    {{ candidate.firstName.charAt(0) }}{{ candidate.lastName.charAt(0) }}
+                  </div>
+                  <div class="candidate-info">
+                    <span class="candidate-full-name">{{ candidate.firstName }} {{ candidate.lastName }}</span>
+                    <span class="candidate-email">{{ candidate.email }}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="col-position">
+                <span class="cell-text">{{ candidate.appliedPosition }}</span>
+              </td>
+              <td class="col-experience">
+                <span class="cell-text">{{ candidate.experience }} years</span>
+              </td>
+              <td class="col-source">
+                <span class="badge badge-outline">{{ candidate.source }}</span>
+              </td>
+              <td class="col-status">
+                <span class="badge" [class]="getStatusColor(candidate.status)">
+                  {{ candidate.status }}
+                </span>
+              </td>
+              <td class="col-rating">
+                <span class="rating-stars" title="Rating: {{ candidate.rating }}/5">
+                  {{ getRatingStars(candidate.rating) }}
+                </span>
+              </td>
+              <td class="d-flex col-actions">
+                <button class="action-btn view-btn" title="View Details">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+                <button class="action-btn edit-btn" (click)="openEditForm(); $event.stopPropagation()" title="Edit">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+                <button class="action-btn delete-btn" (click)="deleteCandidate(candidate.id); $event.stopPropagation()" title="Delete">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="!isLoading() && candidates().length > 0" class="pagination">
+        <button
+          class="btn btn-secondary btn-sm"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1"
+        >
+          ← Previous
+        </button>
+        <span class="pagination-info">
+          Page {{ currentPage }} of {{ totalPages() }}
+        </span>
+        <button
+          class="btn btn-secondary btn-sm"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages()"
+        >
+          Next →
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="selectedCandidate()" class="detail-panel" [class.active]="selectedCandidate() !== null">
+      <div class="detail-header">
+        <h2>Candidate Details</h2>
+        <button class="close-btn" (click)="closeDetail()">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="detail-content">
+        <div class="detail-avatar-section">
+          <div class="large-avatar">
+            {{ selectedCandidate()!.firstName.charAt(0) }}{{ selectedCandidate()!.lastName.charAt(0) }}
+          </div>
+          <h3>{{ selectedCandidate()!.firstName }} {{ selectedCandidate()!.lastName }}</h3>
+          <span class="badge" [class]="getStatusColor(selectedCandidate()!.status)">
+            {{ selectedCandidate()!.status }}
+          </span>
+          <div class="rating-display">
+            {{ getRatingStars(selectedCandidate()!.rating) }}
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Email</label>
+            <p>{{ selectedCandidate()!.email }}</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Phone</label>
+            <p>{{ selectedCandidate()!.phone }}</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Location</label>
+            <p>{{ selectedCandidate()!.location }}</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Applied Position</label>
+            <p>{{ selectedCandidate()!.appliedPosition }}</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Experience</label>
+            <p>{{ selectedCandidate()!.experience }} years</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Experience Level</label>
+            <p>{{ selectedCandidate()!.experienceLevel }}</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Current Company</label>
+            <p>{{ selectedCandidate()!.currentCompany || 'N/A' }}</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Current Position</label>
+            <p>{{ selectedCandidate()!.currentPosition || 'N/A' }}</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Applied Date</label>
+            <p>{{ selectedCandidate()!.appliedDate | date: 'MMM dd, yyyy' }}</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Application Source</label>
+            <p>{{ selectedCandidate()!.source }}</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Notice Period</label>
+            <p>{{ selectedCandidate()!.noticePeriod || 'N/A' }}</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Salary Expectation</label>
+            <p>${{ (selectedCandidate()!.salaryExpectation || 0) | number: '1.0-0' }}</p>
+          </div>
+
+          <div class="detail-item full-width">
+            <label>Skills</label>
+            <div class="skills-container">
+              <span *ngFor="let skill of selectedCandidate()!.skills" class="skill-tag">{{ skill }}</span>
+            </div>
+          </div>
+
+          <div class="detail-item full-width">
+            <label>Notes</label>
+            <p>{{ selectedCandidate()!.notes || 'No notes added' }}</p>
+          </div>
+        </div>
+
+        <div class="detail-actions">
+          <select class="filter-select" (change)="updateCandidateStatus(selectedCandidate()!.id, $any($event.target).value)">
+            <option value="">Update Status...</option>
+            <option *ngFor="let status of statuses()" [value]="status">
+              Move to {{ status }}
+            </option>
+          </select>
+
+          <button *ngIf="selectedCandidate()!.resumeUrl" class="btn btn-secondary" (click)="openResume(selectedCandidate()!)">
+            <span class="btn-icon">📄</span>
+            View Resume
+          </button>
+
+          <button class="btn btn-secondary" (click)="openEditForm()">
+            <span class="btn-icon">✏️</span>
+            Edit Candidate
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-confirmation-modal
+  [isOpen]="showConfirmModal()"
+  [title]="confirmModalTitle"
+  [message]="confirmModalMessage"
+  [confirmText]="'Delete'"
+  [cancelText]="'Cancel'"
+  [isDanger]="true"
+  (onConfirm)="handleConfirm()"
+  (onCancel)="handleCancel()"
+></app-confirmation-modal>

@@ -111,6 +111,122 @@ body {
     animation: spinner-spin 1s linear infinite;
 }
 
+/* Card Hover Animations */
+@keyframes cardHoverScale {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.02);
+    }
+}
+
+@keyframes cardHoverGlow {
+    from {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+    to {
+        box-shadow: 0 12px 32px rgba(118, 75, 162, 0.15), 0 6px 16px rgba(118, 75, 162, 0.1);
+    }
+}
+
+/* Elegant Fade and Slide */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Pulse Animation for Status Indicators */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Smooth Bounce for Buttons */
+@keyframes buttonBounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-2px);
+    }
+}
+
+/* Border Animation */
+@keyframes borderFlow {
+    0% {
+        border-color: var(--border-color);
+    }
+    50% {
+        border-color: var(--accent-primary);
+    }
+    100% {
+        border-color: var(--border-color);
+    }
+}
+
+/* Shimmer Loading Animation */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+/* Utility Classes */
+.card-hover {
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+.card-hover:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 32px rgba(118, 75, 162, 0.15), 0 6px 16px rgba(118, 75, 162, 0.1);
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.4s ease-out;
+}
+
 /* ============ RESPONSIVE TYPOGRAPHY ============ */
 @media (max-width: 1024px) and (min-width: 769px) {
     html {

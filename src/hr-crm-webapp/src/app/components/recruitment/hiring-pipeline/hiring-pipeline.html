@@ -1,1 +1,235 @@
-<p>hiring-pipeline works!</p>
+<div class="pipeline-container">
+  <div class="pipeline-header">
+    <div class="header-content">
+      <h1 class="page-title">Hiring Pipeline</h1>
+      <p class="page-subtitle">Track candidates through each stage of the recruitment funnel</p>
+    </div>
+  </div>
+
+  <div class="metrics-section" *ngIf="metrics()">
+    <div class="metric-card">
+      <span class="metric-icon">👥</span>
+      <div class="metric-content">
+        <p class="metric-label">Total Candidates</p>
+        <p class="metric-value">{{ metrics()!.totalCandidates }}</p>
+      </div>
+    </div>
+    <div class="metric-card">
+      <span class="metric-icon">📋</span>
+      <div class="metric-content">
+        <p class="metric-label">Active Positions</p>
+        <p class="metric-value">{{ metrics()!.activePositions }}</p>
+      </div>
+    </div>
+    <div class="metric-card">
+      <span class="metric-icon">📈</span>
+      <div class="metric-content">
+        <p class="metric-label">This Month</p>
+        <p class="metric-value">{{ metrics()!.applicationsThisMonth }}</p>
+      </div>
+    </div>
+    <div class="metric-card">
+      <span class="metric-icon">✅</span>
+      <div class="metric-content">
+        <p class="metric-label">Hired This Month</p>
+        <p class="metric-value">{{ metrics()!.hiredThisMonth }}</p>
+      </div>
+    </div>
+    <div class="metric-card">
+      <span class="metric-icon">⏱️</span>
+      <div class="metric-content">
+        <p class="metric-label">Avg Time to Hire</p>
+        <p class="metric-value">{{ metrics()!.averageTimeToHire }} days</p>
+      </div>
+    </div>
+    <div class="metric-card">
+      <span class="metric-icon">📊</span>
+      <div class="metric-content">
+        <p class="metric-label">Conversion Rate</p>
+        <p class="metric-value">{{ metrics()!.conversionRate }}%</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pipeline-content">
+    <div *ngIf="isLoading()" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading pipeline data...</p>
+    </div>
+
+    <div *ngIf="!isLoading() && pipelineData()" class="kanban-board">
+      <div *ngFor="let stage of stages" class="pipeline-stage">
+        <div class="stage-header">
+          <span class="stage-icon">{{ getStageIcon(stage.id) }}</span>
+          <div class="stage-info">
+            <h3 class="stage-title">{{ stage.label }}</h3>
+            <p class="stage-count">{{ getCandidatesForStage(stage.id).length }} candidate{{ getCandidatesForStage(stage.id).length !== 1 ? 's' : '' }}</p>
+          </div>
+        </div>
+
+        <div class="candidates-column">
+          <div
+            *ngFor="let candidate of getCandidatesForStage(stage.id)"
+            class="candidate-card"
+            (click)="selectCandidate(candidate)"
+            [style.border-left-color]="getStageColor(stage.id)"
+          >
+            <div class="candidate-card-header">
+              <div class="candidate-avatar">
+                {{ candidate.firstName.charAt(0) }}{{ candidate.lastName.charAt(0) }}
+              </div>
+              <div class="candidate-card-info">
+                <p class="candidate-card-name">{{ candidate.firstName }} {{ candidate.lastName }}</p>
+                <p class="candidate-card-position">{{ candidate.appliedPosition }}</p>
+              </div>
+            </div>
+
+            <div class="candidate-card-details">
+              <span class="detail-badge">{{ candidate.experience }} yrs</span>
+              <span class="detail-badge">{{ candidate.experienceLevel }}</span>
+            </div>
+
+            <div class="candidate-card-rating">
+              {{ getRatingStars(candidate.rating) }}
+            </div>
+
+            <div class="candidate-card-footer">
+              <span class="source-badge">{{ candidate.source }}</span>
+            </div>
+          </div>
+
+          <div *ngIf="getCandidatesForStage(stage.id).length === 0" class="empty-stage">
+            <span class="empty-icon">✨</span>
+            <p>No candidates</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-stage rejected-stage">
+        <div class="stage-header">
+          <span class="stage-icon">❌</span>
+          <div class="stage-info">
+            <h3 class="stage-title">Rejected</h3>
+            <p class="stage-count">{{ getCandidatesForStage('Rejected').length }} candidate{{ getCandidatesForStage('Rejected').length !== 1 ? 's' : '' }}</p>
+          </div>
+        </div>
+
+        <div class="candidates-column">
+          <div
+            *ngFor="let candidate of getCandidatesForStage('Rejected')"
+            class="candidate-card rejected"
+            (click)="selectCandidate(candidate)"
+          >
+            <div class="candidate-card-header">
+              <div class="candidate-avatar">
+                {{ candidate.firstName.charAt(0) }}{{ candidate.lastName.charAt(0) }}
+              </div>
+              <div class="candidate-card-info">
+                <p class="candidate-card-name">{{ candidate.firstName }} {{ candidate.lastName }}</p>
+                <p class="candidate-card-position">{{ candidate.appliedPosition }}</p>
+              </div>
+            </div>
+
+            <div class="candidate-card-details">
+              <span class="detail-badge">{{ candidate.experience }} yrs</span>
+            </div>
+
+            <div class="candidate-card-footer">
+              <span class="source-badge">{{ candidate.source }}</span>
+            </div>
+          </div>
+
+          <div *ngIf="getCandidatesForStage('Rejected').length === 0" class="empty-stage">
+            <span class="empty-icon">✨</span>
+            <p>No candidates</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="selectedCandidate()" class="detail-modal-overlay" (click)="closeDetail()">
+    <div class="detail-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Candidate Details</h2>
+        <button class="close-btn" (click)="closeDetail()">✕</button>
+      </div>
+
+      <div class="modal-content">
+        <div class="modal-avatar-section">
+          <div class="modal-avatar">
+            {{ selectedCandidate()!.firstName.charAt(0) }}{{ selectedCandidate()!.lastName.charAt(0) }}
+          </div>
+          <h3>{{ selectedCandidate()!.firstName }} {{ selectedCandidate()!.lastName }}</h3>
+          <p class="modal-position">{{ selectedCandidate()!.appliedPosition }}</p>
+          <p class="modal-company">{{ selectedCandidate()!.currentCompany }}</p>
+          <div class="modal-rating">
+            {{ getRatingStars(selectedCandidate()!.rating) }}
+          </div>
+        </div>
+
+        <div class="modal-grid">
+          <div class="modal-item">
+            <label>Email</label>
+            <p>{{ selectedCandidate()!.email }}</p>
+          </div>
+
+          <div class="modal-item">
+            <label>Phone</label>
+            <p>{{ selectedCandidate()!.phone }}</p>
+          </div>
+
+          <div class="modal-item">
+            <label>Location</label>
+            <p>{{ selectedCandidate()!.location }}</p>
+          </div>
+
+          <div class="modal-item">
+            <label>Experience</label>
+            <p>{{ selectedCandidate()!.experience }} years</p>
+          </div>
+
+          <div class="modal-item">
+            <label>Level</label>
+            <p>{{ selectedCandidate()!.experienceLevel }}</p>
+          </div>
+
+          <div class="modal-item">
+            <label>Applied</label>
+            <p>{{ selectedCandidate()!.appliedDate | date: 'MMM dd, yyyy' }}</p>
+          </div>
+
+          <div class="modal-item full-width">
+            <label>Skills</label>
+            <div class="skills-list">
+              <span *ngFor="let skill of selectedCandidate()!.skills" class="skill">{{ skill }}</span>
+            </div>
+          </div>
+
+          <div class="modal-item full-width">
+            <label>Notes</label>
+            <p>{{ selectedCandidate()!.notes || 'No notes added' }}</p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button
+            *ngIf="canPromote(selectedCandidate()!.status)"
+            class="btn btn-primary"
+            (click)="moveCandidate(selectedCandidate()!, getNextStatus(selectedCandidate()!.status)!)"
+          >
+            Move Forward
+          </button>
+          <button
+            *ngIf="canDemote(selectedCandidate()!.status)"
+            class="btn btn-secondary"
+            (click)="moveCandidate(selectedCandidate()!, getPreviousStatus(selectedCandidate()!.status)!)"
+          >
+            Move Back
+          </button>
+          <button class="btn btn-secondary" (click)="closeDetail()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

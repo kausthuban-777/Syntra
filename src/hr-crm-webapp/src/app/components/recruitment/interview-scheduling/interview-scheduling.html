@@ -1,1 +1,280 @@
-<p>interview-scheduling works!</p>
+<div class="interviews-container">
+  <div class="interviews-header">
+    <div class="header-content">
+      <h1 class="page-title">Interview Scheduling</h1>
+      <p class="page-subtitle">Manage and track all recruitment interviews</p>
+    </div>
+    <button class="btn btn-primary" (click)="openAddForm()">
+      <span class="btn-icon">+</span>
+      Schedule Interview
+    </button>
+  </div>
+
+  <div class="interview-stats">
+    <div class="stat-card">
+      <span class="stat-icon">⏰</span>
+      <div class="stat-info">
+        <p class="stat-label">Upcoming</p>
+        <p class="stat-value">{{ upcomingInterviews().length }}</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">✅</span>
+      <div class="stat-info">
+        <p class="stat-label">Completed</p>
+        <p class="stat-value">{{ completedInterviews().length }}</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">📋</span>
+      <div class="stat-info">
+        <p class="stat-label">Total</p>
+        <p class="stat-value">{{ interviews().length }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="interviews-filters">
+    <div class="filter-inputs">
+      <div class="search-wrapper">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search by candidate name..."
+          [value]="searchTerm"
+          (input)="onSearchChange($any($event.target).value ?? '')"
+        />
+        <span class="search-icon">🔍</span>
+      </div>
+
+      <select
+        class="filter-select"
+        [value]="selectedStatus"
+        (change)="onStatusChange($any($event.target).value ?? '')"
+      >
+        <option value="">All Statuses</option>
+        <option *ngFor="let status of statuses()" [value]="status">
+          {{ status }}
+        </option>
+      </select>
+
+      <select
+        class="filter-select"
+        [value]="selectedType"
+        (change)="onTypeChange($any($event.target).value ?? '')"
+      >
+        <option value="">All Types</option>
+        <option *ngFor="let type of interviewTypes()" [value]="type">
+          {{ type }}
+        </option>
+      </select>
+
+      <select
+        class="filter-select"
+        [value]="sortBy"
+        (change)="onSortChange($any($event.target).value ?? '')"
+      >
+        <option value="date">Sort by Date</option>
+        <option value="rating">Sort by Rating</option>
+      </select>
+
+      <button
+        class="btn btn-secondary"
+        (click)="clearFilters()"
+        [disabled]="!searchTerm && !selectedStatus && !selectedType && sortBy === 'date'"
+      >
+        Clear Filters
+      </button>
+    </div>
+
+    <div class="results-info">
+      <span class="result-count">{{ totalCount }} interview{{ totalCount !== 1 ? 's' : '' }}</span>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="interviews-list-section">
+      <div *ngIf="isLoading()" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading interviews...</p>
+      </div>
+
+      <div *ngIf="!isLoading() && interviews().length === 0" class="empty-state">
+        <span class="empty-icon">📅</span>
+        <h3>No Interviews Scheduled</h3>
+        <p>Start by scheduling your first interview</p>
+        <button class="btn btn-primary" (click)="openAddForm()">Schedule Your First Interview</button>
+      </div>
+
+      <div *ngIf="!isLoading() && interviews().length > 0" class="interviews-grid">
+        <div class="interviews-table-header">
+          <div class="header-col header-candidate">Candidate / Position</div>
+          <div class="header-col header-datetime">Date / Time</div>
+          <div class="header-col header-type">Interview Type</div>
+          <div class="header-col header-interviewer">Interviewer</div>
+          <div class="header-col header-link">Meeting Link</div>
+          <div class="header-col header-status">Status</div>
+        </div>
+
+        <div
+          *ngFor="let interview of interviews(); trackBy: trackByInterviewId"
+          class="interview-card"
+          [class.selected]="isInterviewSelected(interview)"
+          (click)="selectInterview(interview)"
+        >
+          <div class="interview-col interview-candidate-info">
+            <div class="candidate-content">
+              <h3 class="interview-candidate">{{ interview.candidateName }}</h3>
+              <p class="interview-position">{{ interview.position }}</p>
+            </div>
+          </div>
+
+          <div class="interview-col interview-datetime">
+            <div class="datetime-content">
+              <span class="date-value">{{ interview.scheduledDate | date: 'MMM dd, yyyy' }}</span>
+              <span class="time-value">{{ formatTime(interview.scheduledDate) }}</span>
+              <span class="duration-badge">{{ interview.duration }} min</span>
+            </div>
+          </div>
+
+          <div class="interview-col interview-type">
+            <span class="type-badge" [class]="getTypeColor(interview.interviewType)">
+              {{ interview.interviewType }}
+            </span>
+          </div>
+
+          <div class="interview-col interview-interviewer">
+            <span class="interviewer-name">{{ interview.interviewerName || 'TBD' }}</span>
+            <span class="interviewer-rating" *ngIf="interview.rating">{{ getRatingStars(interview.rating) }}</span>
+          </div>
+
+          <div class="interview-col interview-link">
+            <a *ngIf="interview.meetingLink" [href]="interview.meetingLink" target="_blank" class="meeting-link-btn">
+              📞 Join Meeting
+            </a>
+            <span *ngIf="!interview.meetingLink" class="meeting-link-empty">—</span>
+          </div>
+
+          <div class="interview-col interview-status">
+            <span class="badge" [class]="getStatusColor(interview.status)">
+              {{ interview.status }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoading() && interviews().length > 0" class="pagination-controls">
+        <button
+          class="pagination-btn"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1"
+          aria-label="Previous page"
+        >
+          ← Previous
+        </button>
+        <span class="page-indicator">Page {{ currentPage }} of {{ totalPages() }}</span>
+        <button
+          class="pagination-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage >= totalPages()"
+          aria-label="Next page"
+        >
+          Next →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interview Detail Modal -->
+  <div *ngIf="selectedInterview()" class="modal-overlay" (click)="closeDetail()"></div>
+  <div *ngIf="selectedInterview()" class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Interview Details</h2>
+        <button class="close-btn" (click)="closeDetail()" aria-label="Close panel">
+          <span class="close-icon">✕</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="detail-header-section">
+          <h3 class="detail-title">{{ selectedInterview()!.candidateName }}</h3>
+          <p class="detail-subtitle">{{ selectedInterview()!.position }}</p>
+          <div class="detail-meta">
+            <span class="meta-badge" [class]="'badge-' + getStatusColor(selectedInterview()!.status)">
+              {{ selectedInterview()!.status }}
+            </span>
+            <span class="meta-badge" [class]="getTypeColor(selectedInterview()!.interviewType)">
+              {{ selectedInterview()!.interviewType }}
+            </span>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item">
+            <label>Date & Time</label>
+            <p>{{ selectedInterview()!.scheduledDate | date: 'MMMM dd, yyyy • hh:mm a' }}</p>
+          </div>
+          <div class="detail-item">
+            <label>Duration</label>
+            <p>{{ selectedInterview()!.duration }} minutes</p>
+          </div>
+          <div class="detail-item">
+            <label>Interviewer</label>
+            <p>{{ selectedInterview()!.interviewerName || 'Not assigned' }}</p>
+          </div>
+          <div class="detail-item">
+            <label>Rating</label>
+            <p>{{ getRatingStars(selectedInterview()!.rating) }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="selectedInterview()!.feedback" class="detail-section">
+          <h4 class="section-title">Feedback</h4>
+          <p class="section-content">{{ selectedInterview()!.feedback }}</p>
+        </div>
+
+        <div *ngIf="selectedInterview()!.notes" class="detail-section">
+          <h4 class="section-title">Notes</h4>
+          <p class="section-content">{{ selectedInterview()!.notes }}</p>
+        </div>
+
+        <div *ngIf="selectedInterview()!.meetingLink" class="detail-section">
+          <h4 class="section-title">Meeting</h4>
+          <a [href]="selectedInterview()!.meetingLink" target="_blank" class="meeting-link-btn">
+            Join Video Call →
+          </a>
+        </div>
+
+        <div class="detail-actions">
+          <button class="btn btn-primary" (click)="openEditForm()">
+            Edit Interview
+          </button>
+          <select
+            class="status-select"
+            [value]="selectedInterview()!.status"
+            (change)="updateInterviewStatus(selectedInterview()!.id, $any($event.target).value)"
+            aria-label="Update interview status"
+          >
+            <option value="Scheduled">Scheduled</option>
+            <option value="Completed">Completed</option>
+            <option value="Rescheduled">Rescheduled</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Feedback Pending">Feedback Pending</option>
+          </select>
+          <button class="btn btn-danger" (click)="deleteInterview(selectedInterview()!.id)">
+            Cancel Interview
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-confirmation-modal
+    *ngIf="showConfirmModal()"
+    [title]="confirmModalTitle"
+    [message]="confirmModalMessage"
+    (confirm)="handleConfirm()"
+    (cancel)="handleCancel()"
+  ></app-confirmation-modal>
+</div>
