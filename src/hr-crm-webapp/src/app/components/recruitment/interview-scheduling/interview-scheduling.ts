@@ -141,7 +141,7 @@ export class InterviewScheduling implements OnInit, OnDestroy {
   isInterviewSelected(interview: Interview): boolean {
     const selected = this.selectedInterview();
     if (!selected) return false;
-    return String(selected.id) === String(interview.id);
+    return selected.id === interview.id;
   }
 
   trackByInterviewId(index: number, interview: Interview): string {

@@ -144,7 +144,7 @@ export class JobOpenings implements OnInit, OnDestroy {
   isPostingSelected(posting: JobPosting): boolean {
     const selected = this.selectedPosting();
     if (!selected) return false;
-    return String(selected.id) === String(posting.id);
+    return selected.id === posting.id;
   }
 
   trackByPostingId(index: number, posting: JobPosting): string {

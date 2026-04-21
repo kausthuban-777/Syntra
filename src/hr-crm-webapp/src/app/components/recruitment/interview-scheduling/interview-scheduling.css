@@ -812,25 +812,29 @@
   color: var(--text-primary);
 }
 
-.modal-close {
-  background: none;
+.close-btn {
+  background: transparent;
   border: none;
-  font-size: 1.5rem;
   cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
   color: var(--text-secondary);
-  padding: 0;
-  width: 36px;
-  height: 36px;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  width: 36px;
+  height: 36px;
 }
 
-.modal-close:hover {
-  background: var(--bg-hover);
+.close-btn:hover {
+  background-color: rgba(118, 75, 162, 0.1);
   color: var(--text-primary);
+}
+
+.close-btn .icon {
+  width: 20px;
+  height: 20px;
 }
 
 /* Modal body */
@@ -1067,6 +1071,54 @@
 
 .btn-secondary:hover {
   background: var(--border-color);
+}
+
+.btn {
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--accent-primary-hover, #6a4a9d);
+  box-shadow: 0 4px 12px rgba(118, 75, 162, 0.3);
+}
+
+.btn-danger {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #c0392b;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.btn-secondary {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--border-color);
+}
+
+.btn-icon {
+  font-size: 1rem;
 }
 
 /* ============ RESPONSIVE DESIGN ============ */

@@ -212,7 +212,10 @@
       <div class="modal-header">
         <h2>Position Details</h2>
         <button class="close-btn" (click)="closeDetail()" aria-label="Close">
-          <span class="close-icon">✕</span>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
       </div>
 
@@ -223,7 +226,7 @@
             <span class="meta-badge">{{ selectedPosting()!.department }}</span>
             <span class="meta-badge">{{ selectedPosting()!.jobType }}</span>
             <span class="badge" [class]="getStatusColor(selectedPosting()!.status)">
-              {{ selectedPosting()!.status }}
+              <p class="m-0 p-0">{{ selectedPosting()!.status }}</p>
             </span>
           </div>
         </div>
