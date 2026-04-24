@@ -59,23 +59,32 @@
     </div>
   </div>
 
-  <div class="toolbar-group">
-    <div class="filter-controls">
-      <select [(ngModel)]="selectedStatus" (change)="onStatusFilterChange()">
-        <option value="">All Statuses</option>
-        <option value="pending">Pending</option>
-        <option value="processing">Processing</option>
-        <option value="completed">Completed</option>
-        <option value="failed">Failed</option>
-      </select>
-
-      <input
-        type="month"
-        [(ngModel)]="selectedPeriod"
-        (change)="onPeriodFilterChange()"
-        placeholder="Select period"
-      >
+  <div class="filters-toolbar">
+    <div class="filter-chips">
+      <button class="filter-chip" [class.active]="selectedStatus() === ''" (click)="selectedStatus.set('')">
+        All Status
+      </button>
+      <button class="filter-chip" [class.active]="selectedStatus() === PayrollStatus.Pending" (click)="selectedStatus.set(PayrollStatus.Pending)">
+        <span class="chip-dot pending"></span> Pending
+      </button>
+      <button class="filter-chip" [class.active]="selectedStatus() === PayrollStatus.Processing" (click)="selectedStatus.set(PayrollStatus.Processing)">
+        <span class="chip-dot processing"></span> Processing
+      </button>
+      <button class="filter-chip" [class.active]="selectedStatus() === PayrollStatus.Completed" (click)="selectedStatus.set(PayrollStatus.Completed)">
+        <span class="chip-dot completed"></span> Completed
+      </button>
+      <button class="filter-chip" [class.active]="selectedStatus() === PayrollStatus.Failed" (click)="selectedStatus.set(PayrollStatus.Failed)">
+        <span class="chip-dot failed"></span> Failed
+      </button>
     </div>
+
+    <input
+      type="month"
+      class="period-select-modern"
+      [(ngModel)]="selectedPeriod"
+      (change)="onPeriodFilterChange()"
+      placeholder="Select period"
+    >
   </div>
 
   <div class="payroll-table-card">
@@ -93,7 +102,7 @@
         <span>Deductions</span>
         <span>Net Pay</span>
         <span>Status</span>
-        <span class="actions-column">Actions</span>
+        <span class="actions-column-header">Actions</span>
       </div>
 
       <div
@@ -123,25 +132,36 @@
             </svg>
           </button>
           <button
-            *ngIf="record.status === 'pending'"
             type="button"
             class="action-btn process-btn"
-            title="Process payroll"
-            (click)="processPayroll(record)"
+            [disabled]="record.status !== 'pending'"
+            [title]="record.status === 'pending' ? 'Process payroll' : 'Cannot process'"
+            (click)="record.status === 'pending' && processPayroll(record)"
           >
             <svg viewBox="0 0 24 24" class="icon">
               <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
             </svg>
           </button>
           <button
-            *ngIf="record.status === 'processing'"
             type="button"
             class="action-btn complete-btn"
-            title="Mark as completed"
-            (click)="completePayroll(record)"
+            [disabled]="record.status !== 'processing'"
+            [title]="record.status === 'processing' ? 'Mark as completed' : 'Cannot complete'"
+            (click)="record.status === 'processing' && completePayroll(record)"
           >
             <svg viewBox="0 0 24 24" class="icon">
               <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="action-btn download-btn"
+            [disabled]="record.status !== 'completed'"
+            [title]="record.status === 'completed' ? 'Download payroll receipt' : 'Not available'"
+            (click)="record.status === 'completed' && downloadPayrollReceipt(record)"
+          >
+            <svg viewBox="0 0 24 24" class="icon">
+              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
             </svg>
           </button>
         </span>

@@ -105,15 +105,23 @@ body {
                 color var(--animation-duration-normal) var(--animation-easing);
 }
 
-h1, h2, h3, h4, h5, h6,
-.heading,
-.page-title,
-.card-title,
-.section-title {
+h1,
+.page-title {
     font-family: var(--font-heading);
     font-weight: 400;
     letter-spacing: -0.02em;
     line-height: 1.2;
+    color: var(--text-primary);
+}
+
+h2, h3, h4, h5, h6,
+.heading,
+.card-title,
+.section-title {
+    font-family: var(--font-body);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
     color: var(--text-primary);
 }
 
@@ -498,32 +506,32 @@ h1 {
 h2 {
     font-size: 2rem;
     line-height: 1.3;
-    font-weight: 400;
+    font-weight: 700;
     letter-spacing: -0.01em;
 }
 
 h3 {
     font-size: 1.5rem;
     line-height: 1.4;
-    font-weight: 400;
+    font-weight: 700;
 }
 
 h4 {
     font-size: 1.25rem;
     line-height: 1.5;
-    font-weight: 400;
+    font-weight: 700;
 }
 
 h5 {
     font-size: 1.1rem;
     line-height: 1.5;
-    font-weight: 400;
+    font-weight: 600;
 }
 
 h6 {
     font-size: 1rem;
     line-height: 1.6;
-    font-weight: 400;
+    font-weight: 600;
 }
 
 @media (max-width: 1024px) {

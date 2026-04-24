@@ -32,7 +32,7 @@ import { HrReports } from './components/analytics/hr-reports/hr-reports';
 import { RecruitmentReports } from './components/analytics/recruitment-reports/recruitment-reports';
 import { CustomReports } from './components/analytics/custom-reports/custom-reports';
 import { Inbox } from './components/customer-support/inbox/inbox';
-import { Tickets } from './components/customer-support/tickets/tickets';
+import { TicketList } from './components/customer-support/tickets/ticket-list';
 import { ChatChannels } from './components/customer-support/chat-channels/chat-channels';
 import { Automation } from './components/customer-support/automation/automation';
 import { Users } from './components/administration/users/users';
@@ -132,7 +132,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'inbox', pathMatch: 'full' },
       { path: 'inbox', component: Inbox },
-      { path: 'tickets', component: Tickets },
+      { path: 'tickets', component: TicketList },
       { path: 'chat', component: ChatChannels },
       { path: 'automation', component: Automation}
     ]

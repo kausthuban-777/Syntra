@@ -10,67 +10,52 @@
     </button>
   </div>
 
-  <div class="filters-section animate-fade-in-up stagger-1">
-    <div class="filter-inputs">
-      <div class="search-wrapper">
-        <input
-          type="text"
-          class="search-input transition-all"
-          placeholder="Search by name, email, or phone..."
-          [value]="searchTerm"
-          (input)="onSearchChange($any($event.target).value ?? '')"
-        />
-        <span class="search-icon">🔍</span>
-      </div>
+  <div class="filters-toolbar animate-fade-in-up stagger-1">
+    <div class="search-box-modern">
+      <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      <input
+        type="text"
+        placeholder="Search by name, email, or phone..."
+        [value]="searchTerm"
+        (input)="onSearchChange($any($event.target).value ?? '')"
+      />
+    </div>
 
-      <select
-        class="filter-select transition-all"
-        [value]="selectedDepartment"
-        (change)="onDepartmentChange($any($event.target).value ?? '')"
-      >
-        <option value="">All Departments</option>
-        <option *ngFor="let dept of departments()" [value]="dept">
-          {{ dept }}
-        </option>
-      </select>
-
-      <select
-        class="filter-select transition-all"
-        [value]="selectedStatus"
-        (change)="onStatusChange($any($event.target).value ?? '')"
-      >
-        <option value="">All Status</option>
-        <option *ngFor="let status of statuses" [value]="status">
-          {{ status }}
-        </option>
-      </select>
-
-      <!-- Employment Type Filter -->
-      <select
-        class="filter-select"
-        [value]="selectedEmploymentType"
-        (change)="onEmploymentTypeChange($any($event.target).value ?? '')"
-      >
-        <option value="">All Types</option>
-        <option *ngFor="let type of employmentTypes()" [value]="type">
-          {{ type }}
-        </option>
-      </select>
-
-      <!-- Clear Filters Button -->
-      <button
-        class="btn btn-secondary"
-        (click)="clearFilters()"
-        [disabled]="!searchTerm && !selectedDepartment && !selectedStatus && !selectedEmploymentType"
-      >
-        Clear Filters
+    <div class="filter-chips">
+      <button class="filter-chip" [class.active]="selectedDepartment === ''" (click)="onDepartmentChange('')">
+        All Departments
       </button>
+      @for (dept of departments().slice(0, 3); track dept) {
+        <button class="filter-chip" [class.active]="selectedDepartment === dept" (click)="onDepartmentChange(dept)">
+          {{ dept }}
+        </button>
+      }
     </div>
 
-    <!-- Results Count -->
-    <div class="results-info">
-      <span class="result-count">{{ totalCount }} employee{{ totalCount !== 1 ? 's' : '' }}</span>
-    </div>
+    <select
+      class="sort-select-modern"
+      [value]="selectedStatus"
+      (change)="onStatusChange($any($event.target).value ?? '')"
+    >
+      <option value="">All Status</option>
+      <option *ngFor="let status of statuses" [value]="status">
+        {{ status }}
+      </option>
+    </select>
+
+    <select
+      class="sort-select-modern"
+      [value]="selectedEmploymentType"
+      (change)="onEmploymentTypeChange($any($event.target).value ?? '')"
+    >
+      <option value="">All Types</option>
+      <option *ngFor="let type of employmentTypes()" [value]="type">
+        {{ type }}
+      </option>
+    </select>
   </div>
 
   <!-- Main Content Area -->

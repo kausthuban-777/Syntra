@@ -89,6 +89,7 @@
 }
 
 .hero-title {
+  font-family: var(--font-heading);
   font-size: 3.5rem;
   font-weight: 800;
   background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-purple) 100%);
@@ -199,6 +200,7 @@
   align-items: flex-start;
   gap: 1rem;
   margin-bottom: 1rem;
+  min-width: 0;
 }
 
 .metric-icon-wrapper {
@@ -237,13 +239,14 @@
 
 .metric-data {
   flex: 1;
+  min-width: 0;
 }
 
 .metric-value {
-  font-size: 2.5rem;
+  font-size: 2.25rem;
   font-weight: 800;
   color: var(--text-primary);
-  line-height: 1;
+  line-height: 1.1;
   margin-bottom: 0.5rem;
 }
 
@@ -632,13 +635,15 @@
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
+  width: 100%;
+  padding: 0 1rem;
 }
 
 .circle-value {
-  font-size: 2rem;
+  font-size: 1.875rem;
   font-weight: 800;
   color: var(--text-primary);
-  line-height: 1;
+  line-height: 1.1;
 }
 
 .circle-label {

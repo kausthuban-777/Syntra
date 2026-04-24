@@ -1,1 +1,288 @@
-<p>inbox works!</p>
+<div class="inbox-container">
+  <div class="inbox-sidebar">
+    <div class="sidebar-header">
+      <h2 class="sidebar-title">Inbox</h2>
+      <button class="btn-compose" (click)="toggleCompose()">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M9 3.75v10.5M3.75 9h10.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Compose
+      </button>
+    </div>
+
+    <div class="sidebar-search">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M7.333 12.667A5.333 5.333 0 1 0 7.333 2a5.333 5.333 0 0 0 0 10.667zM14 14l-2.9-2.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input type="text" placeholder="Search messages..." (input)="onSearch($event)" />
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item" [class.active]="selectedCategory === 'all'" (click)="selectCategory('all')">
+        <div class="nav-item-left">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M16.667 5.833L10 10.833l-6.667-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2.5 5.833h15v10a1.667 1.667 0 0 1-1.667 1.667H4.167A1.667 1.667 0 0 1 2.5 15.833v-10z" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <span>All Mail</span>
+        </div>
+        <span class="nav-count">{{ categoryCounts.all }}</span>
+      </button>
+
+      <button class="nav-item" [class.active]="selectedCategory === 'primary'" (click)="selectCategory('primary')">
+        <div class="nav-item-left">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 17.5a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 6.667V10l2.5 1.667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Primary</span>
+        </div>
+        <span class="nav-count">{{ categoryCounts.primary }}</span>
+      </button>
+
+      <button class="nav-item" [class.active]="selectedCategory === 'support'" (click)="selectCategory('support')">
+        <div class="nav-item-left">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 17.5a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M7.5 7.5a2.5 2.5 0 0 1 5 0c0 1.667-2.5 2.5-2.5 2.5M10 15h.008" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Support</span>
+        </div>
+        <span class="nav-count">{{ categoryCounts.support }}</span>
+      </button>
+
+      <button class="nav-item" [class.active]="selectedCategory === 'billing'" (click)="selectCategory('billing')">
+        <div class="nav-item-left">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="2.5" y="5" width="15" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M2.5 8.333h15M5.833 12.5h2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Billing</span>
+        </div>
+        <span class="nav-count">{{ categoryCounts.billing }}</span>
+      </button>
+
+      <button class="nav-item" [class.active]="selectedCategory === 'updates'" (click)="selectCategory('updates')">
+        <div class="nav-item-left">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 17.5a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 5.833V10h4.167" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>Updates</span>
+        </div>
+        <span class="nav-count">{{ categoryCounts.updates }}</span>
+      </button>
+
+      <div class="nav-divider"></div>
+
+      <button class="nav-item" [class.active]="selectedCategory === 'starred'" (click)="selectCategory('starred')">
+        <div class="nav-item-left">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2.5l2.472 5.008 5.528.803-4 3.9.944 5.506L10 15.208l-4.944 2.509.944-5.506-4-3.9 5.528-.803L10 2.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Starred</span>
+        </div>
+        <span class="nav-count">{{ categoryCounts.starred }}</span>
+      </button>
+
+      <button class="nav-item" [class.active]="selectedCategory === 'unread'" (click)="selectCategory('unread')">
+        <div class="nav-item-left">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M16.667 5.833L10 10.833l-6.667-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2.5 5.833h15v10a1.667 1.667 0 0 1-1.667 1.667H4.167A1.667 1.667 0 0 1 2.5 15.833v-10z" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="15" cy="5" r="3" fill="var(--accent-red)"/>
+          </svg>
+          <span>Unread</span>
+        </div>
+        <span class="nav-count nav-count-alert">{{ categoryCounts.unread }}</span>
+      </button>
+    </nav>
+  </div>
+
+  <div class="inbox-main">
+    <div class="message-list">
+      <div class="message-list-header">
+        <h3 class="list-title">
+          {{ selectedCategory === 'all' ? 'All Messages' : selectedCategory | titlecase }}
+        </h3>
+        <div class="list-actions">
+          <button class="action-btn">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M15.75 6l-6.75 5.25L2.25 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button class="action-btn">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M2.25 9h13.5M9 2.25v13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="message-items">
+        @if (filteredMessages.length === 0) {
+          <div class="empty-messages">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+              <path d="M53.333 16.667L32 34.667 10.667 16.667" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 16.667h48v32a5.333 5.333 0 0 1-5.333 5.333H13.333A5.333 5.333 0 0 1 8 48.667v-32z" stroke="currentColor" stroke-width="3"/>
+            </svg>
+            <h4>No messages found</h4>
+            <p>Try adjusting your filters or search query</p>
+          </div>
+        } @else {
+          @for (message of filteredMessages; track message.id) {
+            <div class="message-item"
+                 [class.unread]="!message.isRead"
+                 [class.selected]="selectedMessage?.id === message.id"
+                 (click)="selectMessage(message)">
+              <div class="message-item-left">
+                <div class="message-avatar">
+                  <span>{{ message.sender.charAt(0) }}</span>
+                </div>
+                <div class="message-content">
+                  <div class="message-header-row">
+                    <span class="message-sender">{{ message.sender }}</span>
+                    <span class="message-time">{{ getTimeAgo(message.timestamp) }}</span>
+                  </div>
+                  <div class="message-subject">
+                    {{ message.subject }}
+                    @if (message.hasAttachment) {
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M12.25 6.417v4.666a1.75 1.75 0 0 1-1.75 1.75H3.5a1.75 1.75 0 0 1-1.75-1.75V3.5A1.75 1.75 0 0 1 3.5 1.75h4.667" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M10.5 1.75h1.75v1.75M6.417 7.583l6.333-6.333" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    }
+                  </div>
+                  <p class="message-preview">{{ message.preview }}</p>
+                </div>
+              </div>
+              <div class="message-item-right">
+                <button class="message-action-btn"
+                        [class.starred]="message.isStarred"
+                        (click)="toggleStar(message, $event)">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M8 2l1.978 4.008L14 6.642l-3 2.925.708 4.133L8 11.633 4.292 13.7l.708-4.133-3-2.925 4.022-.634L8 2z"
+                          [attr.fill]="message.isStarred ? 'currentColor' : 'none'"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <span class="message-category-icon">{{ getCategoryIcon(message.category) }}</span>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+
+    @if (selectedMessage) {
+      <div class="message-view">
+        <div class="message-view-header">
+          <button class="back-btn" (click)="closeMessageView()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M12.5 15l-5-5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="message-view-actions">
+            <button class="view-action-btn" (click)="markAsUnread(selectedMessage, $event)">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M15 5.25L9 9.75 3 5.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2.25 5.25h13.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9z" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </button>
+            <button class="view-action-btn" (click)="toggleStar(selectedMessage, $event)">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M9 2.25l1.781 3.606 3.969.577-2.875 2.794.679 3.948L9 11.569l-3.554 1.606.679-3.948-2.875-2.794 3.969-.577L9 2.25z"
+                      [attr.fill]="selectedMessage.isStarred ? 'currentColor' : 'none'"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button class="view-action-btn view-action-danger" (click)="deleteMessage(selectedMessage, $event)">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M2.25 4.5h13.5M7.5 8.25v4.5M10.5 8.25v4.5M3 4.5h12v10.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 3 15V4.5zM6 4.5V3a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 12 3v1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="message-view-content">
+          <div class="message-view-subject">
+            <h2>{{ selectedMessage.subject }}</h2>
+            <span class="message-view-category">{{ selectedMessage.category }}</span>
+          </div>
+
+          <div class="message-view-sender">
+            <div class="sender-avatar">
+              <span>{{ selectedMessage.sender.charAt(0) }}</span>
+            </div>
+            <div class="sender-info">
+              <div class="sender-name">{{ selectedMessage.sender }}</div>
+              <div class="sender-email">{{ selectedMessage.sender.toLowerCase().replace(' ', '.') }}@example.com</div>
+            </div>
+            <div class="message-view-time">
+              {{ selectedMessage.timestamp | date:'MMM d, y, h:mm a' }}
+            </div>
+          </div>
+
+          <div class="message-view-body">
+            <p>{{ selectedMessage.preview }}</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+          </div>
+
+          @if (selectedMessage.hasAttachment) {
+            <div class="message-attachments">
+              <h4 class="attachments-title">Attachments</h4>
+              <div class="attachment-item">
+                <div class="attachment-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M14 2v6h6M12 18v-6M9 15l3 3 3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div class="attachment-info">
+                  <div class="attachment-name">invoice_4521.pdf</div>
+                  <div class="attachment-size">245 KB</div>
+                </div>
+                <button class="attachment-download">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M15.75 11.25v3.75a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-3.75M12.75 9L9 12.75 5.25 9M9 12.75V2.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          }
+
+          <div class="message-reply-section">
+            <textarea class="reply-textarea" placeholder="Type your reply..."></textarea>
+            <div class="reply-actions">
+              <div class="reply-tools">
+                <button class="tool-btn">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M12.75 6.75L8.25 11.25 5.25 8.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button class="tool-btn">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M15.75 5.25l-7.5 6-6-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+              <button class="btn-send">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                  <path d="M16.5 1.5L8.25 9.75M16.5 1.5l-5.25 15-3-6.75-6.75-3 15-5.25z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Send Reply
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -14,6 +14,9 @@ import { PayrollRecord, PayrollStatus, PayrollSummary, PayrollFilter } from '../
 export class Payroll implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
+  // Expose PayrollStatus enum to template
+  PayrollStatus = PayrollStatus;
+
   payrollRecords = signal<PayrollRecord[]>([]);
   selectedRecord = signal<PayrollRecord | null>(null);
   showDetailsModal = signal(false);
@@ -101,6 +104,63 @@ export class Payroll implements OnInit, OnDestroy {
   completePayroll(record: PayrollRecord): void {
     this.payrollService.updatePayrollStatus(record.id, PayrollStatus.Completed);
     this.loadPayrollData();
+  }
+
+  downloadPayrollReceipt(record: PayrollRecord): void {
+    // Generate and download payroll receipt
+    const receiptData = this.generatePayrollReceipt(record);
+    const blob = new Blob([receiptData], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `payroll-receipt-${record.employeeId}-${this.formatDate(record.payPeriodEnd)}.txt`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  private generatePayrollReceipt(record: PayrollRecord): string {
+    const totalDeductions = record.deductions.reduce((sum, d) => sum + d.amount, 0);
+
+    return `
+PAYROLL RECEIPT
+=====================================
+
+Employee Information:
+-------------------------------------
+Name: ${record.employeeName}
+Employee ID: ${record.employeeId}
+Pay Frequency: ${record.payFrequency}
+
+Pay Period:
+-------------------------------------
+Start Date: ${this.formatDate(record.payPeriodStart)}
+End Date: ${this.formatDate(record.payPeriodEnd)}
+Pay Date: ${this.formatDate(record.payDate)}
+
+Earnings:
+-------------------------------------
+Base Salary: ${this.formatCurrency(record.baseSalary)}
+Hours Worked: ${record.hoursWorked.toFixed(1)}
+${record.overtimeHours > 0 ? `Overtime Hours: ${record.overtimeHours.toFixed(1)}\nOvertime Rate: ${this.formatCurrency(record.overtimeRate)}/hr` : ''}
+
+Gross Pay: ${this.formatCurrency(record.grossPay)}
+
+Deductions:
+-------------------------------------
+${record.deductions.map(d => `${d.name}: ${this.formatCurrency(d.amount)}`).join('\n')}
+-------------------------------------
+Total Deductions: ${this.formatCurrency(totalDeductions)}
+
+Summary:
+=====================================
+Gross Pay: ${this.formatCurrency(record.grossPay)}
+Total Deductions: -${this.formatCurrency(totalDeductions)}
+NET PAY: ${this.formatCurrency(record.netPay)}
+=====================================
+
+Status: ${record.status}
+Generated: ${new Date().toLocaleString()}
+    `.trim();
   }
 
   onStatusFilterChange(): void {

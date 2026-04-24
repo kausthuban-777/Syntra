@@ -1,0 +1,145 @@
+<div class="ticket-list-container">
+  <div class="ticket-header">
+    <div class="header-top">
+      <div class="header-title-section">
+        <h1 class="page-title">Support Tickets</h1>
+        <div class="ticket-stats">
+          <div class="stat-badge stat-badge-primary">
+            <span class="stat-value">{{ statusCounts.all }}</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat-badge stat-badge-warning">
+            <span class="stat-value">{{ statusCounts.open }}</span>
+            <span class="stat-label">Open</span>
+          </div>
+          <div class="stat-badge stat-badge-info">
+            <span class="stat-value">{{ statusCounts['in-progress'] }}</span>
+            <span class="stat-label">In Progress</span>
+          </div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon" (click)="toggleViewMode()">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            @if (viewMode === 'list') {
+              <path d="M3 4h14M3 10h14M3 16h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            } @else {
+              <path d="M4 4h4v4H4V4zM12 4h4v4h-4V4zM4 12h4v4H4v-4zM12 12h4v4h-4v-4z" stroke="currentColor" stroke-width="1.5"/>
+            }
+          </svg>
+        </button>
+        <button class="btn-primary">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 3.75v10.5M3.75 9h10.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          New Ticket
+        </button>
+      </div>
+    </div>
+
+    <div class="header-filters">
+      <div class="search-box">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M8.25 14.25a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM15.75 15.75l-3.262-3.262" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input type="text" placeholder="Search tickets, customers, or IDs..." (input)="onSearch($event)" />
+      </div>
+
+      <div class="filter-group">
+        <button class="filter-btn" [class.active]="selectedStatus === 'all'" (click)="filterByStatus('all')">
+          All
+        </button>
+        <button class="filter-btn" [class.active]="selectedStatus === 'open'" (click)="filterByStatus('open')">
+          <span class="status-dot status-open"></span>
+          Open
+        </button>
+        <button class="filter-btn" [class.active]="selectedStatus === 'in-progress'" (click)="filterByStatus('in-progress')">
+          <span class="status-dot status-in-progress"></span>
+          In Progress
+        </button>
+        <button class="filter-btn" [class.active]="selectedStatus === 'resolved'" (click)="filterByStatus('resolved')">
+          <span class="status-dot status-resolved"></span>
+          Resolved
+        </button>
+      </div>
+
+      <div class="sort-dropdown">
+        <select (change)="changeSortBy($any($event.target).value)" [value]="sortBy">
+          <option value="date">Sort by Date</option>
+          <option value="priority">Sort by Priority</option>
+          <option value="status">Sort by Status</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="ticket-content" [class.grid-view]="viewMode === 'grid'">
+    @if (filteredTickets.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+            <path d="M32 56c13.255 0 24-10.745 24-24S45.255 8 32 8 8 18.745 8 32s10.745 24 24 24z" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            <path d="M32 20v16M32 44h.027" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="empty-title">No tickets found</h3>
+        <p class="empty-description">Try adjusting your filters or search query</p>
+      </div>
+    } @else {
+      @for (ticket of filteredTickets; track ticket.id) {
+        <div class="ticket-card" (click)="selectTicket(ticket)">
+          <div class="ticket-card-header">
+            <div class="ticket-id-section">
+              <span class="ticket-id">{{ ticket.id }}</span>
+              @if (ticket.unreadCount) {
+                <span class="unread-badge">{{ ticket.unreadCount }}</span>
+              }
+            </div>
+            <div class="ticket-meta">
+              <span class="ticket-time">{{ getTimeAgo(ticket.updatedAt) }}</span>
+            </div>
+          </div>
+
+          <div class="ticket-card-body">
+            <h3 class="ticket-subject">{{ ticket.subject }}</h3>
+            <div class="ticket-customer">
+              <div class="customer-avatar">
+                <span>{{ ticket.customer.charAt(0) }}</span>
+              </div>
+              <span class="customer-name">{{ ticket.customer }}</span>
+            </div>
+          </div>
+
+          <div class="ticket-card-footer">
+            <div class="ticket-tags">
+              <span class="tag-category">{{ ticket.category }}</span>
+              @for (tag of ticket.tags.slice(0, 2); track tag) {
+                <span class="tag">{{ tag }}</span>
+              }
+              @if (ticket.tags.length > 2) {
+                <span class="tag-more">+{{ ticket.tags.length - 2 }}</span>
+              }
+            </div>
+            <div class="ticket-status-row">
+              <span class="ticket-status" [ngClass]="getStatusClass(ticket.status)">
+                {{ ticket.status }}
+              </span>
+              <span class="ticket-priority" [ngClass]="getPriorityClass(ticket.priority)">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M6 1v10M2 5l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                {{ ticket.priority }}
+              </span>
+            </div>
+          </div>
+
+          <div class="ticket-assignee">
+            <div class="assignee-avatar">
+              <span>{{ ticket.assignee.charAt(0) }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

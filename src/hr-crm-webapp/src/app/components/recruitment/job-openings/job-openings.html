@@ -10,75 +10,63 @@
     </button>
   </div>
 
-  <div class="filters-section">
-    <div class="filter-inputs">
-      <div class="search-wrapper">
-        <input
-          type="text"
-          class="search-input"
-          placeholder="Search by title or department..."
-          [value]="searchTerm"
-          (input)="onSearchChange($any($event.target).value ?? '')"
-        />
-        <span class="search-icon">🔍</span>
-      </div>
+  <div class="filters-toolbar">
+    <div class="search-box-modern">
+      <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      <input
+        type="text"
+        placeholder="Search by title or department..."
+        [value]="searchTerm"
+        (input)="onSearchChange($any($event.target).value ?? '')"
+      />
+    </div>
 
-      <select
-        class="filter-select"
-        [value]="selectedStatus"
-        (change)="onStatusChange($any($event.target).value ?? '')"
-      >
-        <option value="">All Status</option>
-        <option *ngFor="let status of statuses()" [value]="status">
-          {{ status }}
-        </option>
-      </select>
-
-      <select
-        class="filter-select"
-        [value]="selectedDepartment"
-        (change)="onDepartmentChange($any($event.target).value ?? '')"
-      >
-        <option value="">All Departments</option>
-        <option *ngFor="let dept of departments()" [value]="dept">
-          {{ dept }}
-        </option>
-      </select>
-
-      <select
-        class="filter-select"
-        [value]="selectedLocation"
-        (change)="onLocationChange($any($event.target).value ?? '')"
-      >
-        <option value="">All Locations</option>
-        <option *ngFor="let loc of locations()" [value]="loc">
-          {{ loc }}
-        </option>
-      </select>
-
-      <select
-        class="filter-select"
-        [value]="selectedJobType"
-        (change)="onJobTypeChange($any($event.target).value ?? '')"
-      >
-        <option value="">All Types</option>
-        <option *ngFor="let type of jobTypes" [value]="type">
-          {{ type }}
-        </option>
-      </select>
-
-      <button
-        class="btn btn-secondary"
-        (click)="clearFilters()"
-        [disabled]="!searchTerm && !selectedStatus && !selectedDepartment && !selectedLocation && !selectedJobType"
-      >
-        Clear Filters
+    <div class="filter-chips">
+      <button class="filter-chip" [class.active]="selectedStatus === ''" (click)="onStatusChange('')">
+        All Status
       </button>
+      @for (status of statuses().slice(0, 3); track status) {
+        <button class="filter-chip" [class.active]="selectedStatus === status" (click)="onStatusChange(status)">
+          {{ status }}
+        </button>
+      }
     </div>
 
-    <div class="results-info">
-      <span class="result-count">{{ totalCount }} posting{{ totalCount !== 1 ? 's' : '' }}</span>
-    </div>
+    <select
+      class="sort-select-modern"
+      [value]="selectedDepartment"
+      (change)="onDepartmentChange($any($event.target).value ?? '')"
+    >
+      <option value="">All Departments</option>
+      <option *ngFor="let dept of departments()" [value]="dept">
+        {{ dept }}
+      </option>
+    </select>
+
+    <select
+      class="sort-select-modern"
+      [value]="selectedLocation"
+      (change)="onLocationChange($any($event.target).value ?? '')"
+    >
+      <option value="">All Locations</option>
+      <option *ngFor="let loc of locations()" [value]="loc">
+        {{ loc }}
+      </option>
+    </select>
+
+    <select
+      class="sort-select-modern"
+      [value]="selectedJobType"
+      (change)="onJobTypeChange($any($event.target).value ?? '')"
+    >
+      <option value="">All Types</option>
+      <option *ngFor="let type of jobTypes" [value]="type">
+        {{ type }}
+      </option>
+    </select>
   </div>
 
   <div class="content-wrapper">

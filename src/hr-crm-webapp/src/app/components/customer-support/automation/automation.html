@@ -1,1 +1,226 @@
-<p>automation works!</p>
+<div class="automation-container">
+  <div class="automation-header">
+    <div class="header-content">
+      <h1 class="page-title">Automation Rules</h1>
+      <p class="page-subtitle">Streamline your support workflow with intelligent automation</p>
+    </div>
+    <button class="btn-create-rule" (click)="openCreateModal()">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M9 3.75v10.5M3.75 9h10.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Create Rule
+    </button>
+  </div>
+
+  <div class="metrics-grid">
+    @for (metric of metrics; track metric.label) {
+      <div class="metric-card">
+        <div class="metric-icon">{{ metric.icon }}</div>
+        <div class="metric-content">
+          <div class="metric-value">
+            {{ metric.value }}@if (metric.label === 'Success Rate' || metric.label === 'Time Saved') {
+              @if (metric.label === 'Success Rate') {
+                <span class="metric-unit">%</span>
+              } @else {
+                <span class="metric-unit">hrs</span>
+              }
+            }
+          </div>
+          <div class="metric-label">{{ metric.label }}</div>
+          <div class="metric-change" [class.positive]="metric.trend === 'up'" [class.negative]="metric.trend === 'down'">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              @if (metric.trend === 'up') {
+                <path d="M6 9V3M3 6l3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              } @else {
+                <path d="M6 3v6M3 6l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              }
+            </svg>
+            <span>{{ metric.change }}%</span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="automation-content">
+    <div class="content-sidebar">
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Categories</h3>
+        <div class="sidebar-nav">
+          <button class="sidebar-nav-item" [class.active]="selectedCategory === 'all'" (click)="filterByCategory('all')">
+            <span class="nav-icon">📋</span>
+            <span>All Rules</span>
+          </button>
+          <button class="sidebar-nav-item" [class.active]="selectedCategory === 'ticket'" (click)="filterByCategory('ticket')">
+            <span class="nav-icon">🎫</span>
+            <span>Ticket</span>
+          </button>
+          <button class="sidebar-nav-item" [class.active]="selectedCategory === 'response'" (click)="filterByCategory('response')">
+            <span class="nav-icon">💬</span>
+            <span>Response</span>
+          </button>
+          <button class="sidebar-nav-item" [class.active]="selectedCategory === 'assignment'" (click)="filterByCategory('assignment')">
+            <span class="nav-icon">👥</span>
+            <span>Assignment</span>
+          </button>
+          <button class="sidebar-nav-item" [class.active]="selectedCategory === 'notification'" (click)="filterByCategory('notification')">
+            <span class="nav-icon">🔔</span>
+            <span>Notification</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Status</h3>
+        <div class="sidebar-nav">
+          <button class="sidebar-nav-item" [class.active]="selectedStatus === 'all'" (click)="filterByStatus('all')">
+            <span class="status-dot status-all"></span>
+            <span>All</span>
+          </button>
+          <button class="sidebar-nav-item" [class.active]="selectedStatus === 'active'" (click)="filterByStatus('active')">
+            <span class="status-dot status-active"></span>
+            <span>Active</span>
+          </button>
+          <button class="sidebar-nav-item" [class.active]="selectedStatus === 'inactive'" (click)="filterByStatus('inactive')">
+            <span class="status-dot status-inactive"></span>
+            <span>Inactive</span>
+          </button>
+          <button class="sidebar-nav-item" [class.active]="selectedStatus === 'draft'" (click)="filterByStatus('draft')">
+            <span class="status-dot status-draft"></span>
+            <span>Draft</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="sidebar-title">Templates</h3>
+        <div class="templates-list">
+          @for (template of templates; track template.id) {
+            <div class="template-card" (click)="useTemplate(template)">
+              <div class="template-icon" [style.background]="template.color">
+                {{ template.icon }}
+              </div>
+              <div class="template-info">
+                <div class="template-name">{{ template.name }}</div>
+                <div class="template-category">{{ template.category }}</div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="content-main">
+      <div class="rules-header">
+        <h2 class="rules-title">
+          @if (selectedCategory === 'all') {
+            All Automation Rules
+          } @else {
+            {{ selectedCategory | titlecase }} Rules
+          }
+        </h2>
+        <div class="rules-count">{{ filteredRules.length }} rules</div>
+      </div>
+
+      <div class="rules-list">
+        @if (filteredRules.length === 0) {
+          <div class="empty-rules">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+              <path d="M32 56c13.255 0 24-10.745 24-24S45.255 8 32 8 8 18.745 8 32s10.745 24 24 24z" stroke="currentColor" stroke-width="3"/>
+              <path d="M32 20v16M32 44h.027" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+            <h4>No automation rules found</h4>
+            <p>Create your first automation rule to get started</p>
+            <button class="btn-create-first" (click)="openCreateModal()">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M9 3.75v10.5M3.75 9h10.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              Create Rule
+            </button>
+          </div>
+        } @else {
+          @for (rule of filteredRules; track rule.id) {
+            <div class="rule-card" (click)="editRule(rule)">
+              <div class="rule-card-header">
+                <div class="rule-header-left">
+                  <div class="rule-category-icon">{{ getCategoryIcon(rule.category) }}</div>
+                  <div class="rule-title-section">
+                    <h3 class="rule-name">{{ rule.name }}</h3>
+                    <p class="rule-description">{{ rule.description }}</p>
+                  </div>
+                </div>
+                <div class="rule-status-toggle">
+                  <button class="toggle-btn"
+                          [class.active]="rule.status === 'active'"
+                          (click)="toggleRuleStatus(rule, $event)">
+                    <span class="toggle-slider"></span>
+                  </button>
+                  <span class="rule-status-label" [ngClass]="getStatusClass(rule.status)">
+                    {{ rule.status }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="rule-card-body">
+                <div class="rule-flow">
+                  <div class="flow-item flow-trigger">
+                    <div class="flow-label">Trigger</div>
+                    <div class="flow-content">{{ rule.trigger }}</div>
+                  </div>
+                  <div class="flow-arrow">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="flow-item flow-action">
+                    <div class="flow-label">Action</div>
+                    <div class="flow-content">{{ rule.action }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rule-card-footer">
+                <div class="rule-stats">
+                  <div class="rule-stat">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M8 14.667A6.667 6.667 0 1 0 8 1.333a6.667 6.667 0 0 0 0 13.334z" stroke="currentColor" stroke-width="1.5"/>
+                      <path d="M8 4v4.667l2.667 1.333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span>{{ getTimeAgo(rule.lastExecuted) }}</span>
+                  </div>
+                  <div class="rule-stat">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M14.667 8A6.667 6.667 0 1 1 8 1.333 6.667 6.667 0 0 1 14.667 8z" stroke="currentColor" stroke-width="1.5"/>
+                      <path d="M10.667 6L7.333 9.333 5.333 7.333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>{{ rule.executionCount }} executions</span>
+                  </div>
+                  <div class="rule-stat">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M8 14.667A6.667 6.667 0 1 0 8 1.333a6.667 6.667 0 0 0 0 13.334z" stroke="currentColor" stroke-width="1.5"/>
+                      <path d="M5.333 6h.007M10.667 6h.007M5.333 9.333a4 4 0 0 0 5.334 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span>{{ rule.successRate }}% success</span>
+                  </div>
+                </div>
+                <div class="rule-actions">
+                  <button class="rule-action-btn" (click)="duplicateRule(rule, $event)">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M13.333 6h-6C6.597 6 6 6.597 6 7.333v6c0 .737.597 1.334 1.333 1.334h6c.737 0 1.334-.597 1.334-1.334v-6c0-.736-.597-1.333-1.334-1.333z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M3.333 10h-.666a1.333 1.333 0 0 1-1.334-1.333v-6A1.333 1.333 0 0 1 2.667 1.333h6A1.333 1.333 0 0 1 10 2.667v.666" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                  <button class="rule-action-btn rule-action-danger" (click)="deleteRule(rule, $event)">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M2 4h12M6.667 7.333v4M9.333 7.333v4M2.667 4h10.666v9.333a1.333 1.333 0 0 1-1.333 1.334H4a1.333 1.333 0 0 1-1.333-1.334V4zM5.333 4V2.667a1.333 1.333 0 0 1 1.334-1.334h2.666a1.333 1.333 0 0 1 1.334 1.334V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+</div>

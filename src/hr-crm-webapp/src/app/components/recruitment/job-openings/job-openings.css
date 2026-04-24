@@ -26,6 +26,7 @@
 }
 
 .page-title {
+  font-family: var(--font-heading);
   font-size: 1.75rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -68,24 +69,25 @@
 .search-input,
 .filter-select {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  background: var(--bg-primary);
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-card);
   color: var(--text-primary);
   font-size: 0.95rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .search-wrapper .search-input {
-  padding-right: 2.5rem;
+  padding-left: 3rem;
 }
 
 .search-icon {
   position: absolute;
-  right: 0.75rem;
-  font-size: 1rem;
-  color: var(--text-secondary);
+  left: 1rem;
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
   pointer-events: none;
 }
 
@@ -93,7 +95,7 @@
 .filter-select:focus {
   outline: none;
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+  box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.1);
 }
 
 .filter-select {
