@@ -1,1 +1,248 @@
-<p>invoices works!</p>
+<div class="invoices-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Invoices</h1>
+      <p class="subtitle">Manage customer invoices and payments</p>
+    </div>
+    <button class="btn-primary">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      New Invoice
+    </button>
+  </div>
+
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="metric-icon" style="background: var(--accent-green-bg); color: var(--accent-green);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"></line>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+      </div>
+      <div class="metric-content">
+        <div class="metric-label">Total Paid</div>
+        <div class="metric-value">{{ formatCurrency(getTotalPaid()) }}</div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon" style="background: var(--accent-orange-bg); color: var(--accent-orange);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </div>
+      <div class="metric-content">
+        <div class="metric-label">Pending</div>
+        <div class="metric-value">{{ formatCurrency(getTotalPending()) }}</div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon" style="background: var(--accent-red-bg); color: var(--accent-red);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+      </div>
+      <div class="metric-content">
+        <div class="metric-label">Overdue</div>
+        <div class="metric-value">{{ formatCurrency(getTotalOverdue()) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-filter-bar">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      <input
+        type="text"
+        placeholder="Search invoices..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+    <div class="filter-chips">
+      <button class="filter-chip" [class.active]="filterStatus() === 'all'" (click)="filterStatus.set('all')">All</button>
+      <button class="filter-chip" [class.active]="filterStatus() === 'paid'" (click)="filterStatus.set('paid')">Paid</button>
+      <button class="filter-chip" [class.active]="filterStatus() === 'pending'" (click)="filterStatus.set('pending')">Pending</button>
+      <button class="filter-chip" [class.active]="filterStatus() === 'overdue'" (click)="filterStatus.set('overdue')">Overdue</button>
+      <button class="filter-chip" [class.active]="filterStatus() === 'cancelled'" (click)="filterStatus.set('cancelled')">Cancelled</button>
+    </div>
+  </div>
+
+  <div class="invoices-timeline">
+    @for (invoice of filteredInvoices; track invoice.id) {
+      <div class="invoice-timeline-item" [class.aging-warning]="getAgingDays(invoice) > 30" [class.aging-critical]="getAgingDays(invoice) > 60" (click)="selectInvoice(invoice)">
+        <div class="timeline-marker" [ngClass]="getStatusClass(invoice.status)">
+          <div class="marker-dot"></div>
+        </div>
+        <div class="invoice-card">
+          <div class="invoice-header">
+            <div class="invoice-main">
+              <div class="invoice-id">{{ invoice.id }}</div>
+              <h3 class="invoice-customer">{{ invoice.customer }}</h3>
+              <div class="invoice-amount">{{ formatCurrency(invoice.amount) }}</div>
+            </div>
+            <div class="invoice-status-section">
+              <span class="status-badge" [ngClass]="getStatusClass(invoice.status)">
+                {{ getStatusLabel(invoice.status) }}
+              </span>
+              @if (invoice.status === 'overdue' || invoice.status === 'pending') {
+                <div class="aging-indicator" [class.aging-warning]="getAgingDays(invoice) > 30" [class.aging-critical]="getAgingDays(invoice) > 60">
+                  <svg class="aging-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                  {{ getAgingDays(invoice) }} days
+                </div>
+              }
+            </div>
+          </div>
+          <div class="invoice-timeline-bar">
+            <div class="timeline-dates">
+              <div class="timeline-date">
+                <div class="date-label">Issued</div>
+                <div class="date-value">{{ formatDate(invoice.issueDate) }}</div>
+              </div>
+              <div class="timeline-date">
+                <div class="date-label">Due</div>
+                <div class="date-value">{{ formatDate(invoice.dueDate) }}</div>
+              </div>
+              @if (invoice.paidDate) {
+                <div class="timeline-date">
+                  <div class="date-label">Paid</div>
+                  <div class="date-value">{{ formatDate(invoice.paidDate) }}</div>
+                </div>
+              }
+            </div>
+            <div class="timeline-progress">
+              <div class="progress-bar" [style.width.%]="getPaymentProgress(invoice)" [ngClass]="getProgressClass(invoice)"></div>
+            </div>
+          </div>
+          <div class="invoice-actions">
+            <button class="invoice-action-btn" (click)="$event.stopPropagation()" title="Download">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+            </button>
+            <button class="invoice-action-btn" (click)="$event.stopPropagation()" title="Send">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+            @if (invoice.status === 'pending' || invoice.status === 'overdue') {
+              <button class="invoice-action-btn primary" (click)="$event.stopPropagation()" title="Mark as Paid">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <p>No invoices found</p>
+      </div>
+    }
+  </div>
+
+  @if (selectedInvoice()) {
+    <div class="modal-overlay" (click)="closeDetails()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Invoice Details</h2>
+          <button class="btn-close" (click)="closeDetails()">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-section">
+            <div class="detail-header">
+              <div class="invoice-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+              </div>
+              <div>
+                <h3>{{ selectedInvoice()!.id }}</h3>
+                <p class="customer-name">{{ selectedInvoice()!.customer }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Amount</label>
+              <div class="amount">{{ formatCurrency(selectedInvoice()!.amount) }}</div>
+            </div>
+            <div class="detail-item">
+              <label>Status</label>
+              <span class="status-badge" [ngClass]="getStatusClass(selectedInvoice()!.status)">
+                {{ getStatusLabel(selectedInvoice()!.status) }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <label>Issue Date</label>
+              <div>{{ formatDate(selectedInvoice()!.issueDate) }}</div>
+            </div>
+            <div class="detail-item">
+              <label>Due Date</label>
+              <div>{{ formatDate(selectedInvoice()!.dueDate) }}</div>
+            </div>
+            @if (selectedInvoice()!.paidDate) {
+              <div class="detail-item">
+                <label>Paid Date</label>
+                <div>{{ formatDate(selectedInvoice()!.paidDate!) }}</div>
+              </div>
+            }
+          </div>
+
+          <div class="detail-actions">
+            <button class="btn-secondary">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Download Invoice
+            </button>
+            <button class="btn-secondary">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+              Send Reminder
+            </button>
+            @if (selectedInvoice()!.status === 'pending' || selectedInvoice()!.status === 'overdue') {
+              <button class="btn-primary">
+                Mark as Paid
+              </button>
+            }
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="closeDetails()">Close</button>
+          <button class="btn-primary">Edit Invoice</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

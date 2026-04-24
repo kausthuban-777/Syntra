@@ -1,1 +1,289 @@
-<p>hr-reports works!</p>
+<div class="hr-reports-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>HR Analytics</h1>
+      <p class="subtitle">Workforce insights and performance metrics</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-secondary">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Export Report
+      </button>
+      <button class="btn-primary">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+        </svg>
+        Customize
+      </button>
+    </div>
+  </div>
+
+  <div class="radial-metrics-grid">
+    @for (metric of radialMetrics(); track metric.id) {
+      <div class="radial-metric-card">
+        <div class="radial-chart-container">
+          <svg class="radial-chart" viewBox="0 0 200 200">
+            <defs>
+              <linearGradient [id]="'gradient-' + metric.id" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" [attr.stop-color]="metric.gradientStart" />
+                <stop offset="100%" [attr.stop-color]="metric.gradientEnd" />
+              </linearGradient>
+            </defs>
+            <circle
+              cx="100"
+              cy="100"
+              r="85"
+              fill="none"
+              stroke="var(--bg-primary)"
+              stroke-width="12"
+            />
+            <circle
+              cx="100"
+              cy="100"
+              r="85"
+              fill="none"
+              [attr.stroke]="'url(#gradient-' + metric.id + ')'"
+              stroke-width="12"
+              stroke-linecap="round"
+              [attr.stroke-dasharray]="534"
+              [attr.stroke-dashoffset]="534 - (534 * metric.percentage / 100)"
+              transform="rotate(-90 100 100)"
+              class="radial-progress"
+            />
+            <text x="100" y="90" text-anchor="middle" class="radial-value">{{ metric.value }}</text>
+            <text x="100" y="110" text-anchor="middle" class="radial-percentage">{{ metric.percentage }}%</text>
+            <text x="100" y="130" text-anchor="middle" class="radial-label">{{ metric.label }}</text>
+          </svg>
+        </div>
+        <div class="radial-comparison">
+          <div class="comparison-item">
+            <span class="comparison-label">Target</span>
+            <span class="comparison-value">{{ metric.target }}</span>
+          </div>
+          <div class="comparison-item">
+            <span class="comparison-label">Change</span>
+            <span class="comparison-value" [class.positive]="metric.change > 0" [class.negative]="metric.change < 0">
+              {{ metric.change > 0 ? '+' : '' }}{{ metric.change }}%
+            </span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Department Distribution</h3>
+        <div class="chart-total">
+          <span class="total-label">Total Employees</span>
+          <span class="total-value">{{ getTotalEmployees() }}</span>
+        </div>
+      </div>
+      <div class="chart-body">
+        <div class="department-list">
+          @for (dept of departments(); track dept.id) {
+            <div class="department-item">
+              <div class="dept-header">
+                <div class="dept-icon" [style.background]="dept.color">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </div>
+                <div class="dept-info">
+                  <div class="dept-name">{{ dept.name }}</div>
+                  <div class="dept-count">{{ dept.count }} employees</div>
+                </div>
+                <div class="dept-percentage">{{ dept.percentage }}%</div>
+              </div>
+              <div class="dept-bar-container">
+                <div class="dept-bar" [style.width.%]="dept.percentage" [style.background]="dept.color"></div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Attendance Overview</h3>
+      </div>
+      <div class="chart-body">
+        <div class="attendance-grid">
+          @for (status of attendanceStatus(); track status.id) {
+            <div class="attendance-card" [style.border-left-color]="status.color">
+              <div class="attendance-icon" [style.background]="status.bgColor">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  @if (status.id === 'present') {
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  }
+                  @if (status.id === 'absent') {
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  }
+                  @if (status.id === 'late') {
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  }
+                  @if (status.id === 'leave') {
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  }
+                </svg>
+              </div>
+              <div class="attendance-info">
+                <div class="attendance-label">{{ status.label }}</div>
+                <div class="attendance-count">{{ status.count }}</div>
+                <div class="attendance-rate">{{ status.rate }}%</div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card full-width">
+    <div class="chart-header">
+      <h3>Performance Distribution</h3>
+      <div class="performance-legend">
+        <span class="legend-item">
+          <span class="legend-box" style="background: var(--accent-green);"></span>
+          Excellent
+        </span>
+        <span class="legend-item">
+          <span class="legend-box" style="background: var(--accent-purple);"></span>
+          Good
+        </span>
+        <span class="legend-item">
+          <span class="legend-box" style="background: var(--accent-orange);"></span>
+          Average
+        </span>
+        <span class="legend-item">
+          <span class="legend-box" style="background: var(--accent-red);"></span>
+          Needs Improvement
+        </span>
+      </div>
+    </div>
+    <div class="chart-body">
+      <div class="performance-chart">
+        @for (dept of performanceByDept(); track dept.name) {
+          <div class="performance-row">
+            <div class="performance-dept">{{ dept.name }}</div>
+            <div class="performance-bars">
+              <div class="performance-bar excellent" [style.width.%]="dept.excellent" title="Excellent: {{ dept.excellent }}%"></div>
+              <div class="performance-bar good" [style.width.%]="dept.good" title="Good: {{ dept.good }}%"></div>
+              <div class="performance-bar average" [style.width.%]="dept.average" title="Average: {{ dept.average }}%"></div>
+              <div class="performance-bar needs-improvement" [style.width.%]="dept.needsImprovement" title="Needs Improvement: {{ dept.needsImprovement }}%"></div>
+            </div>
+            <div class="performance-total">{{ dept.total }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Turnover Rate</h3>
+      </div>
+      <div class="chart-body">
+        <div class="turnover-chart">
+          @for (month of turnoverData(); track month.month) {
+            <div class="turnover-month">
+              <div class="turnover-bars">
+                <div class="turnover-bar joined" [style.height.%]="month.joinedPercentage" title="Joined: {{ month.joined }}">
+                  <div class="bar-value">{{ month.joined }}</div>
+                </div>
+                <div class="turnover-bar left" [style.height.%]="month.leftPercentage" title="Left: {{ month.left }}">
+                  <div class="bar-value">{{ month.left }}</div>
+                </div>
+              </div>
+              <div class="turnover-label">{{ month.month }}</div>
+            </div>
+          }
+        </div>
+        <div class="turnover-legend">
+          <span class="legend-item">
+            <span class="legend-box" style="background: var(--accent-green);"></span>
+            Joined
+          </span>
+          <span class="legend-item">
+            <span class="legend-box" style="background: var(--accent-red);"></span>
+            Left
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3>Training Completion</h3>
+      </div>
+      <div class="chart-body">
+        <div class="training-list">
+          @for (training of trainingPrograms(); track training.id) {
+            <div class="training-item">
+              <div class="training-header">
+                <div class="training-name">{{ training.name }}</div>
+                <div class="training-completion">{{ training.completed }}/{{ training.total }}</div>
+              </div>
+              <div class="training-progress-container">
+                <div class="training-progress" [style.width.%]="training.percentage" [style.background]="getTrainingColor(training.percentage)"></div>
+              </div>
+              <div class="training-footer">
+                <span class="training-percentage">{{ training.percentage }}%</span>
+                <span class="training-deadline">Due: {{ training.deadline }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card full-width">
+    <div class="chart-header">
+      <h3>Employee Satisfaction Trends</h3>
+    </div>
+    <div class="chart-body">
+      <div class="satisfaction-chart">
+        <div class="satisfaction-grid">
+          @for (category of satisfactionData(); track category.name) {
+            <div class="satisfaction-category">
+              <div class="category-header">
+                <div class="category-name">{{ category.name }}</div>
+                <div class="category-score" [class.high]="category.score >= 4" [class.medium]="category.score >= 3 && category.score < 4" [class.low]="category.score < 3">
+                  {{ category.score }}/5
+                </div>
+              </div>
+              <div class="rating-bars">
+                @for (star of [5, 4, 3, 2, 1]; track star) {
+                  <div class="rating-row">
+                    <span class="rating-label">{{ star }}★</span>
+                    <div class="rating-bar-container">
+                      <div class="rating-bar" [style.width.%]="getRatingPercentage(category, star)" [style.background]="getRatingColor(star)"></div>
+                    </div>
+                    <span class="rating-count">{{ getRatingCount(category, star) }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

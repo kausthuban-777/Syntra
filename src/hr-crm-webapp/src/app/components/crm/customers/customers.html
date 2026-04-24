@@ -1,1 +1,265 @@
-<p>customers works!</p>
+<div class="customers-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Customers</h1>
+      <p class="subtitle">Manage your customer relationships</p>
+    </div>
+    <button class="btn-primary">
+      <span class="icon">+</span>
+      Add Customer
+    </button>
+  </div>
+
+  <div class="metrics-dashboard">
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-icon">👥</span>
+        <span class="metric-badge">Total</span>
+      </div>
+      <div class="metric-value">{{ stats().total }}</div>
+      <div class="metric-label">Customers</div>
+      <div class="metric-bar">
+        <div class="metric-bar-fill" style="width: 100%;"></div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-icon">✓</span>
+        <span class="metric-badge active">Active</span>
+      </div>
+      <div class="metric-value">{{ stats().active }}</div>
+      <div class="metric-label">Active Accounts</div>
+      <div class="metric-bar">
+        <div class="metric-bar-fill active" [style.width]="(stats().active / stats().total * 100) + '%'"></div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-icon">⭐</span>
+        <span class="metric-badge vip">VIP</span>
+      </div>
+      <div class="metric-value">{{ stats().vip }}</div>
+      <div class="metric-label">VIP Customers</div>
+      <div class="metric-bar">
+        <div class="metric-bar-fill vip" [style.width]="(stats().vip / stats().total * 100) + '%'"></div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-icon">💰</span>
+        <span class="metric-badge revenue">Revenue</span>
+      </div>
+      <div class="metric-value">{{ formatCurrency(stats().totalRevenue) }}</div>
+      <div class="metric-label">Total Revenue</div>
+      <div class="metric-bar">
+        <div class="metric-bar-fill revenue" style="width: 85%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filters-section">
+    <div class="search-container">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      <input
+        type="text"
+        placeholder="Search customers by name, email, or industry..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+    <div class="filter-buttons">
+      <button class="filter-btn" [class.active]="filterStatus() === 'all'" (click)="filterStatus.set('all')">
+        All
+      </button>
+      <button class="filter-btn" [class.active]="filterStatus() === 'active'" (click)="filterStatus.set('active')">
+        Active
+      </button>
+      <button class="filter-btn" [class.active]="filterStatus() === 'vip'" (click)="filterStatus.set('vip')">
+        VIP
+      </button>
+      <button class="filter-btn" [class.active]="filterStatus() === 'inactive'" (click)="filterStatus.set('inactive')">
+        Inactive
+      </button>
+    </div>
+    <select class="sort-dropdown" [(ngModel)]="sortBy" (ngModelChange)="sortBy.set($event)">
+      <option value="joinedDate">Newest First</option>
+      <option value="revenue">Highest Revenue</option>
+    </select>
+  </div>
+
+  <div class="customers-timeline">
+    @for (customer of filteredCustomers; track customer.id) {
+      <div class="timeline-item" (click)="selectCustomer(customer)" [class.selected]="selectedCustomer()?.id === customer.id">
+        <div class="timeline-marker">
+          <div class="marker-dot" [ngClass]="getStatusClass(customer.status)"></div>
+          <div class="marker-line"></div>
+        </div>
+        <div class="timeline-content">
+          <div class="customer-card-timeline">
+            <div class="card-header-timeline">
+              <div class="customer-avatar-timeline">{{ customer.name.charAt(0) }}</div>
+              <div class="customer-info-timeline">
+                <h3>{{ customer.name }}</h3>
+                <p class="industry-tag">{{ customer.industry }}</p>
+              </div>
+              <div class="relationship-strength">
+                <div class="strength-label">Relationship</div>
+                <div class="strength-meter">
+                  <div class="strength-fill" [style.width]="getRelationshipStrength(customer) + '%'" [ngClass]="getStrengthClass(customer)"></div>
+                </div>
+                <div class="strength-value">{{ getRelationshipStrength(customer) }}%</div>
+              </div>
+            </div>
+
+            <div class="card-body-timeline">
+              <div class="info-grid-timeline">
+                <div class="info-item-timeline">
+                  <svg class="info-icon-timeline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                  <span>{{ customer.email }}</span>
+                </div>
+                <div class="info-item-timeline">
+                  <svg class="info-icon-timeline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  </svg>
+                  <span>{{ customer.phone }}</span>
+                </div>
+              </div>
+
+              <div class="metrics-row-timeline">
+                <div class="metric-timeline">
+                  <span class="metric-label-timeline">Revenue</span>
+                  <span class="metric-value-timeline revenue">{{ formatCurrency(customer.totalRevenue) }}</span>
+                </div>
+                <div class="metric-timeline">
+                  <span class="metric-label-timeline">Last Purchase</span>
+                  <span class="metric-value-timeline">{{ formatDate(customer.lastPurchase) }}</span>
+                </div>
+                <div class="metric-timeline">
+                  <span class="metric-label-timeline">Member Since</span>
+                  <span class="metric-value-timeline">{{ formatDate(customer.joinedDate) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-footer-timeline">
+              <span class="status-badge-timeline" [ngClass]="getStatusClass(customer.status)">
+                {{ getStatusLabel(customer.status) }}
+              </span>
+              <div class="action-buttons-timeline">
+                <button class="action-btn-timeline view" (click)="selectCustomer(customer); $event.stopPropagation()" title="View">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+                <button class="action-btn-timeline edit" (click)="$event.stopPropagation()" title="Edit">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state-timeline">
+        <div class="empty-icon-timeline">
+          <svg viewBox="0 0 200 200" fill="none">
+            <circle cx="100" cy="100" r="80" stroke="var(--border-color)" stroke-width="2" stroke-dasharray="8 8"/>
+            <path d="M70 90h60M70 110h40" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>No customers found</h3>
+        <p>Try adjusting your filters or add a new customer</p>
+      </div>
+    }
+  </div>
+
+  @if (selectedCustomer()) {
+    <div class="modal-overlay" (click)="closeDetails()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Customer Details</h2>
+          <button class="btn-close" (click)="closeDetails()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-section">
+            <div class="detail-header">
+              <div class="avatar-large">{{ selectedCustomer()!.name.charAt(0) }}</div>
+              <div>
+                <h3>{{ selectedCustomer()!.name }}</h3>
+                <p class="company-name">{{ selectedCustomer()!.industry }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Email</label>
+              <div>{{ selectedCustomer()!.email }}</div>
+            </div>
+            <div class="detail-item">
+              <label>Phone</label>
+              <div>{{ selectedCustomer()!.phone }}</div>
+            </div>
+            <div class="detail-item">
+              <label>Status</label>
+              <span class="status-badge" [ngClass]="getStatusClass(selectedCustomer()!.status)">
+                {{ getStatusLabel(selectedCustomer()!.status) }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <label>Total Revenue</label>
+              <div class="revenue">{{ formatCurrency(selectedCustomer()!.totalRevenue) }}</div>
+            </div>
+            <div class="detail-item">
+              <label>Industry</label>
+              <div>{{ selectedCustomer()!.industry }}</div>
+            </div>
+            <div class="detail-item">
+              <label>Contact Person</label>
+              <div>{{ selectedCustomer()!.contactPerson }}</div>
+            </div>
+            <div class="detail-item">
+              <label>Joined Date</label>
+              <div>{{ formatDate(selectedCustomer()!.joinedDate) }}</div>
+            </div>
+            <div class="detail-item">
+              <label>Last Purchase</label>
+              <div>{{ formatDate(selectedCustomer()!.lastPurchase) }}</div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <label>Address</label>
+            <p class="address">{{ selectedCustomer()!.address }}</p>
+          </div>
+
+          <div class="status-actions">
+            <button class="btn-status active" (click)="updateCustomerStatus(selectedCustomer()!, 'active')">
+              Mark as Active
+            </button>
+            <button class="btn-status vip" (click)="updateCustomerStatus(selectedCustomer()!, 'vip')">
+              Mark as VIP
+            </button>
+            <button class="btn-status inactive" (click)="updateCustomerStatus(selectedCustomer()!, 'inactive')">
+              Mark as Inactive
+            </button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="closeDetails()">Close</button>
+          <button class="btn-primary">Edit Customer</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

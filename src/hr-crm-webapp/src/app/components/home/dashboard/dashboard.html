@@ -1,180 +1,251 @@
 <div class="home-container">
-  <!-- Header Section -->
-  <div class="header-section">
-    <div class="header-content">
-      <h1 class="welcome-title">Welcome back, {{ userGreeting }}!</h1>
-      <p class="current-date">{{ currentDate }}</p>
+  <div class="hero-section" appAnimateOnView="animate-fade-in">
+    <div class="hero-background">
+      <div class="gradient-orb orb-1"></div>
+      <div class="gradient-orb orb-2"></div>
+      <div class="gradient-orb orb-3"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-text">
+        <span class="hero-greeting">Welcome back</span>
+        <h1 class="hero-title">{{ userGreeting }}!</h1>
+        <p class="hero-date">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M12.667 2.667H3.333C2.597 2.667 2 3.264 2 4v9.333c0 .737.597 1.334 1.333 1.334h9.334c.736 0 1.333-.597 1.333-1.334V4c0-.736-.597-1.333-1.333-1.333z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M10.667 1.333V4M5.333 1.333V4M2 6.667h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {{ currentDate }}
+        </p>
+      </div>
+      <div class="hero-actions">
+        <button class="hero-btn hero-btn-primary">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 4.167v11.666M4.167 10h11.666" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          New Task
+        </button>
+        <button class="hero-btn hero-btn-secondary">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M17.5 12.5v3.333c0 .442-.176.866-.488 1.179-.313.312-.737.488-1.179.488H4.167c-.442 0-.866-.176-1.179-.488A1.667 1.667 0 0 1 2.5 15.833V12.5M14.167 8.333 10 4.167m0 0L5.833 8.333M10 4.167v10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Export
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- KPI Cards Grid -->
-  <div class="kpi-grid">
+  <div class="metrics-showcase" appStaggerAnimation="animate-fade-in-up" [staggerDelay]="100">
     @for (card of kpiCards; track card.title) {
-      <div class="kpi-card" [style.background]="card.gradient">
-        <div class="kpi-content">
-          <div class="kpi-count">{{ card.count }}</div>
-          <div class="kpi-info">
-            <h3 class="kpi-title">{{ card.title }}</h3>
-            <p class="kpi-subtitle">{{ card.subtitle }}</p>
+      <div class="metric-card" [attr.data-index]="$index">
+        <div class="metric-card-inner">
+          <div class="metric-icon-wrapper">
+            <div class="metric-icon" [style.background]="card.gradient">
+              <span class="icon-emoji">{{ card.icon }}</span>
+            </div>
+            <div class="metric-trend">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M2 10l4-4 3 3 5-5M14 4v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>{{ card.percentage }}%</span>
+            </div>
+          </div>
+          <div class="metric-data">
+            <div class="metric-value" [appCountUp]="card.count" [duration]="1500"></div>
+            <div class="metric-label">{{ card.title }}</div>
+            <div class="metric-subtitle">{{ card.subtitle }}</div>
           </div>
         </div>
-        <div class="kpi-percentage">
-          <i class="bi bi-arrow-up"></i>
-          <span>{{ card.percentage }}%</span>
+        <div class="metric-sparkline">
+          <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+            <path d="M0,20 L20,15 L40,18 L60,10 L80,12 L100,5" fill="none" stroke="currentColor" stroke-width="2" opacity="0.3"/>
+          </svg>
         </div>
       </div>
     }
   </div>
 
-  <!-- Main Content Grid -->
-  <div class="main-grid">
-    <!-- Left Column -->
-    <div class="left-column">
-      <!-- Sales Pipeline Card -->
-      <div class="card sales-pipeline-card">
-        <div class="card-header">
-          <h2 class="card-title">Sales Pipeline</h2>
-          <span class="cool-col">Cool Col</span>
+  <div class="dashboard-grid">
+    <div class="grid-main">
+      <div class="pipeline-card glass-card" appAnimateOnView="animate-fade-in-up" [animationDelay]="200">
+        <div class="card-header-modern">
+          <div class="header-left">
+            <h2 class="card-title-modern">Sales Pipeline</h2>
+            <span class="card-badge">Live Data</span>
+          </div>
+          <button class="icon-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 5v10M5 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
         </div>
-        <div class="sales-chart-container">
-          <div class="chart-placeholder">
-            <svg viewBox="0 0 300 150" class="simple-chart">
+        <div class="pipeline-visual">
+          <div class="chart-area">
+            <svg viewBox="0 0 300 150" class="pipeline-chart">
               <defs>
-                <linearGradient id="gradient-bar-0" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" style="stop-color:#d946ef;stop-opacity:1" />
-                  <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.7" />
+                <linearGradient id="grad-purple" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#d946ef;stop-opacity:0.8" />
+                  <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.3" />
                 </linearGradient>
-                <linearGradient id="gradient-bar-1" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-                  <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0.7" />
+                <linearGradient id="grad-blue" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.8" />
+                  <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0.3" />
                 </linearGradient>
-                <linearGradient id="gradient-bar-2" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
-                  <stop offset="100%" style="stop-color:#0891b2;stop-opacity:0.7" />
-                </linearGradient>
-                <linearGradient id="gradient-line" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-                  <stop offset="50%" style="stop-color:#d946ef;stop-opacity:1" />
-                  <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                <linearGradient id="grad-cyan" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:0.8" />
+                  <stop offset="100%" style="stop-color:#0891b2;stop-opacity:0.3" />
                 </linearGradient>
               </defs>
-              <!-- Grid lines -->
-              <line x1="0" y1="0" x2="0" y2="150" class="grid-line" />
-              <line x1="50" y1="0" x2="50" y2="150" class="grid-line" />
-              <line x1="100" y1="0" x2="100" y2="150" class="grid-line" />
-              <line x1="150" y1="0" x2="150" y2="150" class="grid-line" />
-              <line x1="200" y1="0" x2="200" y2="150" class="grid-line" />
-              <line x1="250" y1="0" x2="250" y2="150" class="grid-line" />
-              <line x1="300" y1="0" x2="300" y2="150" class="grid-line" />
-              <!-- Bars with rounded corners -->
-              <rect x="0" y="94" width="25" height="56" class="chart-bar bar-0" />
-              <rect x="30" y="75" width="25" height="75" class="chart-bar bar-1" />
-              <rect x="60" y="88" width="25" height="62" class="chart-bar bar-2" />
-              <rect x="90" y="113" width="25" height="37" class="chart-bar bar-0" />
-              <rect x="120" y="94" width="25" height="56" class="chart-bar bar-1" />
-              <rect x="150" y="32" width="25" height="118" class="chart-bar bar-2" />
-              <rect x="180" y="94" width="25" height="56" class="chart-bar bar-0" />
-              <rect x="210" y="88" width="25" height="62" class="chart-bar bar-1" />
-              <rect x="240" y="13" width="25" height="137" class="chart-bar bar-2" />
-              <rect x="270" y="0" width="25" height="150" class="chart-bar bar-0" />
+              <rect x="10" y="94" width="22" height="56" rx="4" fill="url(#grad-purple)" class="bar-animated"/>
+              <rect x="38" y="75" width="22" height="75" rx="4" fill="url(#grad-blue)" class="bar-animated"/>
+              <rect x="66" y="88" width="22" height="62" rx="4" fill="url(#grad-cyan)" class="bar-animated"/>
+              <rect x="94" y="113" width="22" height="37" rx="4" fill="url(#grad-purple)" class="bar-animated"/>
+              <rect x="122" y="94" width="22" height="56" rx="4" fill="url(#grad-blue)" class="bar-animated"/>
+              <rect x="150" y="32" width="22" height="118" rx="4" fill="url(#grad-cyan)" class="bar-animated"/>
+              <rect x="178" y="94" width="22" height="56" rx="4" fill="url(#grad-purple)" class="bar-animated"/>
+              <rect x="206" y="88" width="22" height="62" rx="4" fill="url(#grad-blue)" class="bar-animated"/>
+              <rect x="234" y="13" width="22" height="137" rx="4" fill="url(#grad-cyan)" class="bar-animated"/>
+              <rect x="262" y="0" width="22" height="150" rx="4" fill="url(#grad-purple)" class="bar-animated"/>
             </svg>
           </div>
-          <div class="chart-legend">
-            <div class="legend-item">
-              <span class="legend-label">Lead</span>
+          <div class="pipeline-stats-row">
+            <div class="stat-pill">
+              <span class="stat-pill-label">Leads</span>
+              <span class="stat-pill-value" [appCountUp]="120" [duration]="1200"></span>
             </div>
-            <div class="legend-stat">
-              <span class="stat-value">120</span>
-              <span class="stat-label">Convert</span>
+            <div class="stat-pill">
+              <span class="stat-pill-label">Converted</span>
+              <span class="stat-pill-value" [appCountUp]="66" [duration]="1200"></span>
             </div>
-            <div class="legend-percentage">
-              <span class="percentage-badge">↓ 55%</span>
+            <div class="stat-pill stat-pill-danger">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M7 11.667V7M7 2.333h.007M13 7A6 6 0 1 1 1 7a6 6 0 0 1 12 0z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>55% Drop</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Upcoming Interviews Card -->
-      <div class="card upcoming-interviews-card">
-        <h2 class="card-title mb-3">Upcoming Interviews</h2>
-        <div class="interviews-list">
+      <div class="interviews-card glass-card" appAnimateOnView="animate-fade-in-up" [animationDelay]="300">
+        <div class="card-header-modern">
+          <h2 class="card-title-modern">Upcoming Interviews</h2>
+          <span class="count-badge">{{ upcomingInterviews.length }}</span>
+        </div>
+        <div class="interviews-timeline" appStaggerAnimation="animate-slide-in-left" [staggerDelay]="150">
           @for (interview of upcomingInterviews; track interview.title) {
-            <div class="interview-item">
-              <div class="interview-icon">{{ interview.icon }}</div>
-              <div class="interview-details">
-                <p class="interview-title">{{ interview.title }}</p>
+            <div class="timeline-item">
+              <div class="timeline-marker">
+                <div class="marker-dot"></div>
+                <div class="marker-line"></div>
               </div>
-              <div class="interview-time">{{ interview.time }}</div>
+              <div class="timeline-content">
+                <div class="timeline-icon">{{ interview.icon }}</div>
+                <div class="timeline-info">
+                  <h4 class="timeline-title">{{ interview.title }}</h4>
+                  <p class="timeline-time">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path d="M7 13A6 6 0 1 0 7 1a6 6 0 0 0 0 12z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M7 3.5V7l2.333 1.167" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    {{ interview.time }}
+                  </p>
+                </div>
+                <button class="timeline-action">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
             </div>
           }
         </div>
       </div>
 
-      <!-- Daily List Card -->
-      <div class="card daily-list-card">
-        <h2 class="card-title mb-3">Daily List</h2>
-        <div class="daily-items">
+      <div class="daily-card glass-card" appAnimateOnView="animate-fade-in-up" [animationDelay]="400">
+        <div class="card-header-modern">
+          <h2 class="card-title-modern">Today's Overview</h2>
+          <button class="icon-btn">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M9 4.5v9M4.5 9h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="daily-grid">
           @for (item of dailyList; track item.label) {
-            <div class="daily-item" [style.backgroundColor]="item.bgColor">
-              <span class="daily-label">{{ item.label }}</span>
-              <span class="daily-value" [style.color]="item.textColor">{{ item.value }}</span>
+            <div class="daily-tile" [style.background]="item.bgColor">
+              <div class="daily-tile-icon">{{ item.value }}</div>
+              <div class="daily-tile-label">{{ item.label }}</div>
             </div>
           }
         </div>
       </div>
     </div>
 
-    <!-- Right Column -->
-    <div class="right-column">
-      <!-- Employee Overview Card -->
-      <div class="card employee-overview-card">
-        <h2 class="card-title mb-3">Employee Overview</h2>
-        <div class="employee-stats">
-          <div class="stat-box">
-            <span class="stat-label">LEAD</span>
-            <span class="stat-value">{{ employeeStats.total }}</span>
+    <div class="grid-sidebar">
+      <div class="employee-card glass-card" appAnimateOnView="animate-fade-in-up" [animationDelay]="250">
+        <div class="card-header-modern">
+          <h2 class="card-title-modern">Team Stats</h2>
+          <button class="icon-btn">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M9 1.5v15M1.5 9h15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="employee-metrics">
+          <div class="metric-circle">
+            <svg viewBox="0 0 120 120" class="circle-chart">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#f0f0f0" stroke-width="8"/>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="url(#grad-purple)" stroke-width="8" stroke-dasharray="314" stroke-dashoffset="78.5" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+            </svg>
+            <div class="circle-content">
+              <div class="circle-value" [appCountUp]="employeeStats.total" [duration]="1500"></div>
+              <div class="circle-label">Total</div>
+            </div>
           </div>
-          <div class="stat-box">
-            <span class="stat-label">COMMIT</span>
-            <span class="stat-value">{{ employeeStats.commission }}</span>
-          </div>
-          <div class="stat-box">
-            <span class="stat-label">RED LOGO</span>
-            <span class="stat-value">{{ employeeStats.redLogo }}</span>
+          <div class="metrics-list">
+            <div class="metric-row">
+              <span class="metric-row-label">Commission</span>
+              <span class="metric-row-value" [appCountUp]="employeeStats.commission" [duration]="1200"></span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-row-label">Priority</span>
+              <span class="metric-row-value" [appCountUp]="employeeStats.redLogo" [duration]="1200"></span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Task List Card -->
-      <div class="card task-list-card">
-        <h2 class="card-title mb-3">Task List</h2>
-        <div class="tasks-container">
-          <div class="tasks-list">
-            @for (task of taskList; track task.id) {
-              <div class="task-item" [class.completed]="task.completed">
-                <div class="task-checkbox-wrapper">
-                  <input
-                    type="checkbox"
-                    [checked]="task.completed"
-                    (change)="toggleTask(task)"
-                    class="task-checkbox"
-                  />
-                  <div class="checkbox-custom" [class.checked]="task.completed">
-                    <i class="bi bi-check" *ngIf="task.completed"></i>
-                  </div>
-                </div>
-                <span class="task-text">{{ task.title }}</span>
-                <button class="task-action-btn">
-                  <i class="bi bi-arrow-right"></i>
-                </button>
-              </div>
-            }
-          </div>
-          <button class="add-task-btn" (click)="addNewTask()">
-            <i class="bi bi-plus"></i>
-            Add Task
-          </button>
+      <div class="tasks-card glass-card" appAnimateOnView="animate-fade-in-up" [animationDelay]="350">
+        <div class="card-header-modern">
+          <h2 class="card-title-modern">Tasks</h2>
+          <span class="count-badge">{{ taskList.length }}</span>
         </div>
+        <div class="tasks-modern" appStaggerAnimation="animate-fade-in" [staggerDelay]="100">
+          @for (task of taskList; track task.id) {
+            <div class="task-modern" [class.completed]="task.completed">
+              <label class="task-checkbox-modern">
+                <input type="checkbox" [checked]="task.completed" (change)="toggleTask(task)"/>
+                <span class="checkmark">
+                  <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+                    <path d="M1 5l3.5 3.5L11 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </label>
+              <span class="task-text-modern">{{ task.title }}</span>
+              <button class="task-menu-btn">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 8.667a.667.667 0 1 0 0-1.334.667.667 0 0 0 0 1.334zM8 3.333A.667.667 0 1 0 8 2a.667.667 0 0 0 0 1.333zM8 14a.667.667 0 1 0 0-1.333A.667.667 0 0 0 8 14z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          }
+        </div>
+        <button class="add-task-modern" (click)="addNewTask()">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 3.75v10.5M3.75 9h10.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Add New Task</span>
+        </button>
       </div>
     </div>
   </div>

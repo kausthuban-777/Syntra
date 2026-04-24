@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { NavigationService } from '../../../services/navigation.service';
+import { AnimateOnViewDirective, CountUpDirective, StaggerAnimationDirective } from '../../../directives';
 
 interface KPICard {
   count: number;
@@ -39,7 +40,7 @@ interface DailyItem {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AnimateOnViewDirective, CountUpDirective, StaggerAnimationDirective],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })

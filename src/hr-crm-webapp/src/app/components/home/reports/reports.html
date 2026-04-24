@@ -1,146 +1,199 @@
 <div class="reports-container">
-  <!-- Header Section -->
-  <div class="header-section">
-    <div class="header-top">
-      <div class="header-content">
-        <h1 class="page-title">HR Reports</h1>
-        <p class="page-subtitle">Comprehensive insights into your business performance</p>
+  <div class="reports-hero">
+    <div class="hero-bg-pattern">
+      <div class="pattern-dot"></div>
+      <div class="pattern-dot"></div>
+      <div class="pattern-dot"></div>
+      <div class="pattern-line"></div>
+      <div class="pattern-line"></div>
+    </div>
+    <div class="reports-hero-content">
+      <div class="hero-left">
+        <span class="hero-label">Analytics Dashboard</span>
+        <h1 class="reports-title">HR Reports</h1>
+        <p class="reports-subtitle">Comprehensive insights into your business performance</p>
       </div>
-      <div class="header-actions">
-        <div class="period-selector">
+      <div class="hero-right">
+        <div class="period-selector-modern">
           <button
-            class="period-btn"
+            class="period-btn-modern"
             [class.active]="selectedPeriod === 'daily'"
             (click)="setPeriod('daily')">
             Daily
           </button>
           <button
-            class="period-btn"
+            class="period-btn-modern"
             [class.active]="selectedPeriod === 'monthly'"
             (click)="setPeriod('monthly')">
             Monthly
           </button>
           <button
-            class="period-btn"
+            class="period-btn-modern"
             [class.active]="selectedPeriod === 'yearly'"
             (click)="setPeriod('yearly')">
             Yearly
           </button>
         </div>
-        <div class="export-actions">
-          <button class="export-btn" (click)="exportReport('pdf')">
-            <i class="bi bi-file-pdf"></i> PDF
+        <div class="export-actions-modern">
+          <button class="export-btn-modern" (click)="exportReport('pdf')">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M15.75 11.25v3c0 .398-.158.78-.44 1.06-.28.282-.662.44-1.06.44H3.75c-.398 0-.78-.158-1.06-.44A1.5 1.5 0 0 1 2.25 15v-3M12.75 7.5 9 3.75m0 0L5.25 7.5M9 3.75v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            PDF
           </button>
-          <button class="export-btn" (click)="exportReport('excel')">
-            <i class="bi bi-file-earmark-excel"></i> Excel
+          <button class="export-btn-modern" (click)="exportReport('excel')">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M10.5 2.25H4.5c-.398 0-.78.158-1.06.44-.282.28-.44.662-.44 1.06v10.5c0 .398.158.78.44 1.06.28.282.662.44 1.06.44h9c.398 0 .78-.158 1.06-.44.282-.28.44-.662.44-1.06V6.75l-4.5-4.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M10.5 2.25v4.5h4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Excel
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- KPI Stats Grid -->
-  <div class="stats-grid" #statsContainer>
+  <div class="kpi-showcase" #statsContainer>
     @for (card of reportCards; track card.title) {
-      <div class="stat-card" [style.background]="card.gradient">
-        <div class="stat-header">
-          <span class="stat-icon">{{ card.icon }}</span>
-          <div class="stat-change" [class.positive]="card.change >= 0" [class.negative]="card.change < 0">
-            <i class="bi" [class.bi-arrow-up]="card.change >= 0" [class.bi-arrow-down]="card.change < 0"></i>
-            <span>{{ card.change }}%</span>
+      <div class="kpi-card-modern" [attr.data-index]="$index">
+        <div class="kpi-gradient-bg" [style.background]="card.gradient"></div>
+        <div class="kpi-content-modern">
+          <div class="kpi-icon-modern">{{ card.icon }}</div>
+          <div class="kpi-data">
+            <div class="kpi-value-modern">{{ card.value }}{{ card.title === 'Sales Revenue' ? 'M' : '' }}</div>
+            <div class="kpi-title-modern">{{ card.title }}</div>
           </div>
-        </div>
-        <div class="stat-body">
-          <h3 class="stat-title">{{ card.title }}</h3>
-          <div class="stat-value">{{ card.value }}</div>
-          <p class="stat-period">vs last period</p>
+          <div class="kpi-change-modern" [class.positive]="card.change >= 0" [class.negative]="card.change < 0">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path [attr.d]="card.change >= 0 ? 'M1.75 8.75l4.375-4.375L9.625 7.875l2.625-2.625M12.25 5.25v3.5h-3.5' : 'M1.75 5.25l4.375 4.375L9.625 6.125l2.625 2.625M12.25 8.75v-3.5h-3.5'" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ card.change > 0 ? '+' : '' }}{{ card.change }}%</span>
+          </div>
         </div>
       </div>
     }
   </div>
 
-  <!-- Charts Grid -->
-  <div class="charts-grid">
-    <!-- Employee Performance Chart -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <h2 class="chart-title">Employee Performance</h2>
-        <span class="chart-info">Top performers analysis</span>
+  <div class="charts-masonry">
+    <div class="chart-card-modern">
+      <div class="chart-header-modern">
+        <div class="chart-title-group">
+          <h2 class="chart-title-new">Employee Performance</h2>
+          <span class="chart-subtitle-new">Top performers analysis</span>
+        </div>
+        <button class="chart-action-btn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M2.25 9h13.5M9 2.25v13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
       </div>
-      <div class="chart-wrapper">
-        <div echarts [options]="employeePerformanceChartOptions" class="chart-container"></div>
-      </div>
-    </div>
-
-    <!-- Revenue Trend Chart -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <h2 class="chart-title">Revenue Trend</h2>
-        <span class="chart-info">YoY growth analysis</span>
-      </div>
-      <div class="chart-wrapper">
-        <div echarts [options]="revenueTrendChartOptions" class="chart-container"></div>
+      <div class="chart-body-modern">
+        <div echarts [options]="employeePerformanceChartOptions" class="echarts-container"></div>
       </div>
     </div>
 
-    <!-- Department Distribution Chart -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <h2 class="chart-title">Department Distribution</h2>
-        <span class="chart-info">Employee allocation</span>
+    <div class="chart-card-modern">
+      <div class="chart-header-modern">
+        <div class="chart-title-group">
+          <h2 class="chart-title-new">Revenue Trend</h2>
+          <span class="chart-subtitle-new">YoY growth analysis</span>
+        </div>
+        <button class="chart-action-btn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M15 6.75L9 12.75l-3-3-3.75 3.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </div>
-      <div class="chart-wrapper">
-        <div echarts [options]="departmentDistributionChartOptions" class="chart-container"></div>
-      </div>
-    </div>
-
-    <!-- Deal Pipeline Chart -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <h2 class="chart-title">Sales Pipeline</h2>
-        <span class="chart-info">Deal stages breakdown</span>
-      </div>
-      <div class="chart-wrapper">
-        <div echarts [options]="dealPipelineChartOptions" class="chart-container"></div>
+      <div class="chart-body-modern">
+        <div echarts [options]="revenueTrendChartOptions" class="echarts-container"></div>
       </div>
     </div>
 
-    <!-- Attendance Trend Chart -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <h2 class="chart-title">Weekly Attendance</h2>
-        <span class="chart-info">Attendance rate</span>
+    <div class="chart-card-modern">
+      <div class="chart-header-modern">
+        <div class="chart-title-group">
+          <h2 class="chart-title-new">Department Distribution</h2>
+          <span class="chart-subtitle-new">Employee allocation</span>
+        </div>
+        <button class="chart-action-btn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 16.5A7.5 7.5 0 1 0 9 1.5a7.5 7.5 0 0 0 0 15z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </div>
-      <div class="chart-wrapper">
-        <div echarts [options]="attendanceTrendChartOptions" class="chart-container"></div>
+      <div class="chart-body-modern">
+        <div echarts [options]="departmentDistributionChartOptions" class="echarts-container"></div>
       </div>
     </div>
 
-    <!-- Hiring vs Sales Chart -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <h2 class="chart-title">Hiring vs Sales</h2>
-        <span class="chart-info">Quarterly comparison</span>
+    <div class="chart-card-modern">
+      <div class="chart-header-modern">
+        <div class="chart-title-group">
+          <h2 class="chart-title-new">Sales Pipeline</h2>
+          <span class="chart-subtitle-new">Deal stages breakdown</span>
+        </div>
+        <button class="chart-action-btn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M2.25 13.5h13.5M2.25 9h13.5M2.25 4.5h13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </div>
-      <div class="chart-wrapper">
-        <div echarts [options]="hiringSalesChartOptions" class="chart-container"></div>
+      <div class="chart-body-modern">
+        <div echarts [options]="dealPipelineChartOptions" class="echarts-container"></div>
+      </div>
+    </div>
+
+    <div class="chart-card-modern">
+      <div class="chart-header-modern">
+        <div class="chart-title-group">
+          <h2 class="chart-title-new">Weekly Attendance</h2>
+          <span class="chart-subtitle-new">Attendance rate</span>
+        </div>
+        <button class="chart-action-btn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 1.5v15M1.5 9h15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="chart-body-modern">
+        <div echarts [options]="attendanceTrendChartOptions" class="echarts-container"></div>
+      </div>
+    </div>
+
+    <div class="chart-card-modern">
+      <div class="chart-header-modern">
+        <div class="chart-title-group">
+          <h2 class="chart-title-new">Hiring vs Sales</h2>
+          <span class="chart-subtitle-new">Quarterly comparison</span>
+        </div>
+        <button class="chart-action-btn">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M2.25 13.5h13.5M6 9.75V13.5M9.75 6v7.5M13.5 2.25V13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="chart-body-modern">
+        <div echarts [options]="hiringSalesChartOptions" class="echarts-container"></div>
       </div>
     </div>
   </div>
 
-  <!-- Details Section -->
-  <div class="details-grid">
-    <!-- Employee Performance Table -->
-    <div class="details-card">
-      <div class="details-header">
-        <h2 class="details-title">Top Employees</h2>
-        <a href="#" class="view-all">View All →</a>
+  <div class="details-modern">
+    <div class="details-card-modern">
+      <div class="details-header-modern">
+        <h2 class="details-title-modern">Top Employees</h2>
+        <a href="#" class="view-all-modern">
+          View All
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
       </div>
-      <div class="table-wrapper">
-        <table class="details-table">
+      <div class="table-modern-wrapper">
+        <table class="table-modern">
           <thead>
             <tr>
-              <th>Name</th>
+              <th>Employee</th>
               <th>Department</th>
               <th>Performance</th>
               <th>Attendance</th>
@@ -151,25 +204,26 @@
             @for (employee of employeeReports; track employee.name) {
               <tr>
                 <td>
-                  <div class="employee-cell">
-                    <div class="employee-avatar">{{ employee.name.charAt(0) }}</div>
-                    <span>{{ employee.name }}</span>
+                  <div class="employee-cell-modern">
+                    <div class="employee-avatar-modern">{{ employee.name.charAt(0) }}</div>
+                    <span class="employee-name-modern">{{ employee.name }}</span>
                   </div>
                 </td>
-                <td>{{ employee.department }}</td>
+                <td><span class="dept-tag">{{ employee.department }}</span></td>
                 <td>
-                  <div class="performance-badge" [style.backgroundColor]="'rgba(0, 184, 148, 0.15)'">
-                    <span class="badge-value" [style.color]="'#00B894'">{{ employee.performanceScore }}%</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="attendance-badge">
-                    <div class="progress-bar" [style.width.%]="employee.attendance"></div>
-                    <span class="badge-value">{{ employee.attendance }}%</span>
+                  <div class="performance-pill">
+                    <div class="pill-bar" [style.width.%]="employee.performanceScore"></div>
+                    <span class="pill-text">{{ employee.performanceScore }}%</span>
                   </div>
                 </td>
                 <td>
-                  <span class="project-count">{{ employee.projects }}</span>
+                  <div class="attendance-pill">
+                    <div class="pill-bar" [style.width.%]="employee.attendance"></div>
+                    <span class="pill-text">{{ employee.attendance }}%</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="project-badge">{{ employee.projects }}</span>
                 </td>
               </tr>
             }
@@ -178,30 +232,34 @@
       </div>
     </div>
 
-    <!-- Deal Pipeline Details -->
-    <div class="details-card">
-      <div class="details-header">
-        <h2 class="details-title">Sales Pipeline Breakdown</h2>
-        <a href="#" class="view-all">View All →</a>
+    <div class="details-card-modern">
+      <div class="details-header-modern">
+        <h2 class="details-title-modern">Sales Pipeline Breakdown</h2>
+        <a href="#" class="view-all-modern">
+          View All
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M6 12l4-4-4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
       </div>
-      <div class="pipeline-list">
+      <div class="pipeline-modern-list">
         @for (deal of dealReports; track deal.stage) {
-          <div class="pipeline-item">
-            <div class="pipeline-info">
-              <h3 class="pipeline-stage">{{ deal.stage }}</h3>
-              <p class="pipeline-value">${{ (deal.value / 1000000).toFixed(1) }}M</p>
+          <div class="pipeline-modern-item">
+            <div class="pipeline-item-header">
+              <h3 class="pipeline-stage-name">{{ deal.stage }}</h3>
+              <p class="pipeline-value-text">${{ (deal.value / 1000000).toFixed(1) }}M</p>
             </div>
-            <div class="pipeline-stats">
-              <div class="stat-item">
-                <span class="stat-number">{{ deal.count }}</span>
-                <span class="stat-label">Deals</span>
+            <div class="pipeline-item-body">
+              <div class="pipeline-stat-group">
+                <span class="pipeline-stat-number">{{ deal.count }}</span>
+                <span class="pipeline-stat-label">Deals</span>
               </div>
-              <div class="progress-container">
-                <div class="progress-bar-full">
-                  <div class="progress-bar-fill" [style.width.%]="deal.percentage * 2.5"></div>
+              <div class="pipeline-progress-wrapper">
+                <div class="pipeline-progress-bar">
+                  <div class="pipeline-progress-fill" [style.width.%]="deal.percentage * 2.5"></div>
                 </div>
               </div>
-              <div class="percentage">{{ deal.percentage }}%</div>
+              <div class="pipeline-percentage-badge">{{ deal.percentage }}%</div>
             </div>
           </div>
         }

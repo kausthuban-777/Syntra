@@ -1,24 +1,21 @@
 <div class="employees-container">
-  <!-- Header Section -->
-  <div class="employees-header">
+  <div class="employees-header animate-fade-in">
     <div class="header-content">
       <h1 class="page-title">Employees</h1>
       <p class="page-subtitle">Manage and view all company employees</p>
     </div>
-    <button class="btn btn-primary" (click)="openAddForm()">
+    <button class="btn btn-primary hover-lift" (click)="openAddForm()">
       <span class="btn-icon">+</span>
       Add Employee
     </button>
   </div>
 
-  <!-- Filters Section -->
-  <div class="filters-section">
+  <div class="filters-section animate-fade-in-up stagger-1">
     <div class="filter-inputs">
-      <!-- Search Input -->
       <div class="search-wrapper">
         <input
           type="text"
-          class="search-input"
+          class="search-input transition-all"
           placeholder="Search by name, email, or phone..."
           [value]="searchTerm"
           (input)="onSearchChange($any($event.target).value ?? '')"
@@ -26,9 +23,8 @@
         <span class="search-icon">🔍</span>
       </div>
 
-      <!-- Department Filter -->
       <select
-        class="filter-select"
+        class="filter-select transition-all"
         [value]="selectedDepartment"
         (change)="onDepartmentChange($any($event.target).value ?? '')"
       >
@@ -38,9 +34,8 @@
         </option>
       </select>
 
-      <!-- Status Filter -->
       <select
-        class="filter-select"
+        class="filter-select transition-all"
         [value]="selectedStatus"
         (change)="onStatusChange($any($event.target).value ?? '')"
       >

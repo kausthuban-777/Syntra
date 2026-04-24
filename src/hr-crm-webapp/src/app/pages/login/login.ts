@@ -19,7 +19,6 @@ export class Login {
     private authService: AuthService,
     private router: Router
   ) {
-    // If user is already authenticated, redirect to home
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/home']);
     }
@@ -29,15 +28,12 @@ export class Login {
     this.errorMessage = '';
     this.isLoading = true;
 
-    // Basic validation
     if (!this.email || !this.password) {
       this.errorMessage = 'Please enter both email and password';
       this.isLoading = false;
       return;
     }
 
-    // TODO: Implement actual backend authentication
-    // For now, we'll accept any non-empty credentials
     try {
       this.authService.login({ email: this.email });
       this.router.navigate(['/home']);

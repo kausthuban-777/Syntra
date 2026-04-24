@@ -1,1 +1,146 @@
-<p>sales-pipeline works!</p>
+<div class="pipeline-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Sales Pipeline</h1>
+      <p class="subtitle">Visualize your sales funnel</p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon" style="background: var(--accent-purple-bg); color: var(--accent-purple);">💰</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ formatCurrency(totalPipelineValue()) }}</div>
+        <div class="stat-label">Pipeline Value</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background: var(--accent-green-bg); color: var(--accent-green);">🤝</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ totalDeals() }}</div>
+        <div class="stat-label">Total Deals</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background: var(--accent-orange-bg); color: var(--accent-orange);">📊</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ formatCurrency(avgDealSize()) }}</div>
+        <div class="stat-label">Avg Deal Size</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background: var(--accent-purple-bg); color: var(--accent-purple);">✓</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ winRate() }}%</div>
+        <div class="stat-label">Win Rate</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pipeline-board">
+    @for (stage of pipeline(); track stage.name) {
+      <div class="pipeline-column">
+        <div class="column-header">
+          <h3>{{ stage.name }}</h3>
+          <div class="column-stats">
+            <span class="deal-count">{{ stage.count }} deals</span>
+            <span class="stage-value">{{ formatCurrency(stage.totalValue) }}</span>
+          </div>
+          @if (stage.conversionRate !== undefined) {
+            <div class="conversion-rate" [ngClass]="getConversionClass(stage.conversionRate)">
+              <svg class="conversion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+              <span>{{ stage.conversionRate }}% conversion</span>
+            </div>
+          }
+          @if (stage.avgDaysInStage !== undefined && stage.avgDaysInStage > 0) {
+            <div class="velocity-indicator" [ngClass]="getVelocityClass(stage.avgDaysInStage)">
+              <svg class="velocity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>{{ stage.avgDaysInStage }} days avg</span>
+            </div>
+          }
+        </div>
+        <div class="column-content">
+          @for (deal of stage.deals; track deal.id) {
+            <div class="deal-card" (click)="selectDeal(deal)">
+              <div class="deal-header">
+                <h4>{{ deal.title }}</h4>
+                <span class="deal-value">{{ formatCurrency(deal.value) }}</span>
+              </div>
+              <div class="deal-body">
+                <div class="deal-customer">{{ deal.customer }}</div>
+                <div class="deal-meta">
+                  <span class="deal-owner">👤 {{ deal.owner }}</span>
+                  <span class="deal-probability">{{ deal.probability }}%</span>
+                </div>
+                @if (deal.daysInStage !== undefined && deal.daysInStage > 0) {
+                  <div class="deal-velocity" [ngClass]="getVelocityClass(deal.daysInStage)">
+                    <svg class="velocity-icon-small" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    {{ deal.daysInStage }}d in stage
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (selectedDeal()) {
+    <div class="modal-overlay" (click)="closeDetails()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Deal Details</h2>
+          <button class="btn-close" (click)="closeDetails()">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-section">
+            <div class="detail-header">
+              <div class="deal-icon">🤝</div>
+              <div>
+                <h3>{{ selectedDeal()!.title }}</h3>
+                <p class="customer-name">{{ selectedDeal()!.customer }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Deal ID</label>
+              <div>{{ selectedDeal()!.id }}</div>
+            </div>
+            <div class="detail-item">
+              <label>Value</label>
+              <div class="value">{{ formatCurrency(selectedDeal()!.value) }}</div>
+            </div>
+            <div class="detail-item">
+              <label>Probability</label>
+              <div>{{ selectedDeal()!.probability }}%</div>
+            </div>
+            <div class="detail-item">
+              <label>Owner</label>
+              <div>{{ selectedDeal()!.owner }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="closeDetails()">Close</button>
+          <button class="btn-primary">View Full Details</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

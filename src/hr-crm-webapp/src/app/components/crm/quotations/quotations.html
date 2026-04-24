@@ -1,1 +1,232 @@
-<p>quotations works!</p>
+<div class="quotations-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Quotations</h1>
+      <p class="subtitle">Create and manage sales quotations</p>
+    </div>
+    <button class="btn-primary">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      New Quotation
+    </button>
+  </div>
+
+  <div class="workflow-bar">
+    <div class="workflow-stage" [class.active]="filterStatus() === 'draft'">
+      <div class="stage-icon">✏️</div>
+      <div class="stage-info">
+        <div class="stage-label">Draft</div>
+        <div class="stage-count">{{ getStatusCount('draft') }}</div>
+      </div>
+    </div>
+    <div class="workflow-connector"></div>
+    <div class="workflow-stage" [class.active]="filterStatus() === 'sent'">
+      <div class="stage-icon">📤</div>
+      <div class="stage-info">
+        <div class="stage-label">Sent</div>
+        <div class="stage-count">{{ getStatusCount('sent') }}</div>
+      </div>
+    </div>
+    <div class="workflow-connector"></div>
+    <div class="workflow-stage" [class.active]="filterStatus() === 'accepted'">
+      <div class="stage-icon">✅</div>
+      <div class="stage-info">
+        <div class="stage-label">Accepted</div>
+        <div class="stage-count">{{ getStatusCount('accepted') }}</div>
+      </div>
+    </div>
+    <div class="workflow-connector"></div>
+    <div class="workflow-stage" [class.active]="filterStatus() === 'rejected'">
+      <div class="stage-icon">❌</div>
+      <div class="stage-info">
+        <div class="stage-label">Rejected</div>
+        <div class="stage-count">{{ getStatusCount('rejected') }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-filter-bar">
+    <div class="search-box">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      <input
+        type="text"
+        placeholder="Search quotations..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+    <div class="filter-chips">
+      <button class="filter-chip" [class.active]="filterStatus() === 'all'" (click)="filterStatus.set('all')">All</button>
+      <button class="filter-chip" [class.active]="filterStatus() === 'draft'" (click)="filterStatus.set('draft')">Draft</button>
+      <button class="filter-chip" [class.active]="filterStatus() === 'sent'" (click)="filterStatus.set('sent')">Sent</button>
+      <button class="filter-chip" [class.active]="filterStatus() === 'accepted'" (click)="filterStatus.set('accepted')">Accepted</button>
+      <button class="filter-chip" [class.active]="filterStatus() === 'rejected'" (click)="filterStatus.set('rejected')">Rejected</button>
+      <button class="filter-chip" [class.active]="filterStatus() === 'expired'" (click)="filterStatus.set('expired')">Expired</button>
+    </div>
+  </div>
+
+  <div class="quotations-grid">
+    @for (quotation of filteredQuotations; track quotation.id) {
+      <div class="quotation-document" (click)="selectQuotation(quotation)">
+        <div class="document-header">
+          <div class="document-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <span class="status-badge" [ngClass]="getStatusClass(quotation.status)">
+            {{ getStatusLabel(quotation.status) }}
+          </span>
+        </div>
+        <div class="document-body">
+          <div class="document-id">{{ quotation.id }}</div>
+          <h3 class="document-title">{{ quotation.title }}</h3>
+          <div class="document-customer">{{ quotation.customer }}</div>
+          <div class="document-amount">{{ formatCurrency(quotation.amount) }}</div>
+          <div class="document-meta">
+            <div class="meta-item">
+              <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>{{ formatDate(quotation.createdAt) }}</span>
+            </div>
+            <div class="meta-item">
+              <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span>{{ quotation.items }} items</span>
+            </div>
+          </div>
+        </div>
+        <div class="document-footer">
+          <div class="expiry-countdown" [class.expiring-soon]="isExpiringSoon(quotation.validUntil)">
+            <svg class="countdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>{{ getDaysUntilExpiry(quotation.validUntil) }}</span>
+          </div>
+          <div class="document-actions">
+            <button class="doc-action-btn" (click)="$event.stopPropagation()" title="Download">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+            </button>
+            <button class="doc-action-btn" (click)="$event.stopPropagation()" title="Send">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <p>No quotations found</p>
+      </div>
+    }
+  </div>
+
+  @if (selectedQuotation()) {
+    <div class="modal-overlay" (click)="closeDetails()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Quotation Details</h2>
+          <button class="btn-close" (click)="closeDetails()">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-section">
+            <div class="detail-header">
+              <div class="quotation-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+              </div>
+              <div>
+                <h3>{{ selectedQuotation()!.title }}</h3>
+                <p class="customer-name">{{ selectedQuotation()!.customer }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Quotation ID</label>
+              <div class="quotation-id">{{ selectedQuotation()!.id }}</div>
+            </div>
+            <div class="detail-item">
+              <label>Status</label>
+              <span class="status-badge" [ngClass]="getStatusClass(selectedQuotation()!.status)">
+                {{ getStatusLabel(selectedQuotation()!.status) }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <label>Amount</label>
+              <div class="amount">{{ formatCurrency(selectedQuotation()!.amount) }}</div>
+            </div>
+            <div class="detail-item">
+              <label>Items</label>
+              <div>{{ selectedQuotation()!.items }} items</div>
+            </div>
+            <div class="detail-item">
+              <label>Created Date</label>
+              <div>{{ formatDate(selectedQuotation()!.createdAt) }}</div>
+            </div>
+            <div class="detail-item">
+              <label>Valid Until</label>
+              <div>{{ formatDate(selectedQuotation()!.validUntil) }}</div>
+            </div>
+          </div>
+
+          <div class="detail-actions">
+            <button class="btn-secondary">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Download PDF
+            </button>
+            <button class="btn-secondary">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+              Send to Customer
+            </button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="closeDetails()">Close</button>
+          <button class="btn-primary">Edit Quotation</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,224 @@
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes listItemEnter {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+[class*="-container"],
+[class*="container-"],
+.page-wrapper,
+.content-wrapper {
+  animation: pageEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+[class*="-card"],
+[class*="card-"],
+.card {
+  animation: cardEnter 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[class*="-card"]:hover,
+[class*="card-"]:hover,
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+[class*="-item"]:nth-child(1),
+[class*="item-"]:nth-child(1) {
+  animation: listItemEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0ms forwards;
+}
+
+[class*="-item"]:nth-child(2),
+[class*="item-"]:nth-child(2) {
+  animation: listItemEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) 50ms forwards;
+}
+
+[class*="-item"]:nth-child(3),
+[class*="item-"]:nth-child(3) {
+  animation: listItemEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) 100ms forwards;
+}
+
+[class*="-item"]:nth-child(4),
+[class*="item-"]:nth-child(4) {
+  animation: listItemEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) 150ms forwards;
+}
+
+[class*="-item"]:nth-child(5),
+[class*="item-"]:nth-child(5) {
+  animation: listItemEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) 200ms forwards;
+}
+
+[class*="-item"]:nth-child(n+6),
+[class*="item-"]:nth-child(n+6) {
+  animation: listItemEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) 250ms forwards;
+}
+
+[class*="-grid"] > *:nth-child(1),
+[class*="grid-"] > *:nth-child(1) {
+  animation: cardEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0ms forwards;
+}
+
+[class*="-grid"] > *:nth-child(2),
+[class*="grid-"] > *:nth-child(2) {
+  animation: cardEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1) 80ms forwards;
+}
+
+[class*="-grid"] > *:nth-child(3),
+[class*="grid-"] > *:nth-child(3) {
+  animation: cardEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1) 160ms forwards;
+}
+
+[class*="-grid"] > *:nth-child(4),
+[class*="grid-"] > *:nth-child(4) {
+  animation: cardEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1) 240ms forwards;
+}
+
+[class*="-grid"] > *:nth-child(n+5),
+[class*="grid-"] > *:nth-child(n+5) {
+  animation: cardEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1) 320ms forwards;
+}
+
+[class*="-list"] > *,
+[class*="list-"] > * {
+  animation: listItemEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+[class*="-list"] > *:nth-child(1),
+[class*="list-"] > *:nth-child(1) { animation-delay: 0ms; }
+[class*="-list"] > *:nth-child(2),
+[class*="list-"] > *:nth-child(2) { animation-delay: 40ms; }
+[class*="-list"] > *:nth-child(3),
+[class*="list-"] > *:nth-child(3) { animation-delay: 80ms; }
+[class*="-list"] > *:nth-child(4),
+[class*="list-"] > *:nth-child(4) { animation-delay: 120ms; }
+[class*="-list"] > *:nth-child(5),
+[class*="list-"] > *:nth-child(5) { animation-delay: 160ms; }
+[class*="-list"] > *:nth-child(n+6),
+[class*="list-"] > *:nth-child(n+6) { animation-delay: 200ms; }
+
+table tbody tr {
+  animation: listItemEnter 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+table tbody tr:nth-child(1) { animation-delay: 0ms; }
+table tbody tr:nth-child(2) { animation-delay: 30ms; }
+table tbody tr:nth-child(3) { animation-delay: 60ms; }
+table tbody tr:nth-child(4) { animation-delay: 90ms; }
+table tbody tr:nth-child(5) { animation-delay: 120ms; }
+table tbody tr:nth-child(n+6) { animation-delay: 150ms; }
+
+button,
+.btn,
+[class*="btn-"],
+[type="button"],
+[type="submit"] {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:hover:not(:disabled),
+.btn:hover:not(:disabled),
+[class*="btn-"]:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+button:active:not(:disabled),
+.btn:active:not(:disabled),
+[class*="btn-"]:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+input,
+textarea,
+select {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  transform: translateY(-1px);
+}
+
+[class*="-header"],
+[class*="header-"],
+.page-header,
+.section-header {
+  animation: pageEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+[class*="-modal"],
+[class*="modal-"],
+.modal,
+.dialog {
+  animation: cardEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+[class*="-badge"],
+[class*="badge-"],
+.badge {
+  animation: cardEnter 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[class*="-badge"]:hover,
+[class*="badge-"]:hover,
+.badge:hover {
+  transform: scale(1.05);
+}
+
+.loading,
+[class*="loading"],
+[class*="-loading"] {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

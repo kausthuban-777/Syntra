@@ -1,1 +1,259 @@
-<p>custom-reports works!</p>
+<div class="custom-reports-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Custom Dashboard</h1>
+      <p class="subtitle">Build your personalized analytics view</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-secondary" (click)="toggleEditMode()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          @if (editMode()) {
+            <polyline points="20 6 9 17 4 12"></polyline>
+          } @else {
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          }
+        </svg>
+        {{ editMode() ? 'Done' : 'Edit Layout' }}
+      </button>
+      <button class="btn-primary" (click)="showWidgetLibrary.set(true)">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Add Widget
+      </button>
+    </div>
+  </div>
+
+  @if (editMode()) {
+    <div class="edit-mode-banner">
+      <svg class="banner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>Edit mode active - Drag widgets to rearrange, click × to remove</span>
+    </div>
+  }
+
+  <div class="dashboard-grid" [class.edit-mode]="editMode()">
+    @for (widget of activeWidgets(); track widget.id) {
+      <div class="widget-card" [class.small]="widget.size === 'small'" [class.medium]="widget.size === 'medium'" [class.large]="widget.size === 'large'" [class.full]="widget.size === 'full'">
+        <div class="widget-header">
+          <h3>{{ widget.title }}</h3>
+          <div class="widget-actions">
+            @if (editMode()) {
+              <button class="widget-action-btn" (click)="removeWidget(widget.id)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            }
+            <button class="widget-action-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="1"></circle>
+                <circle cx="12" cy="5" r="1"></circle>
+                <circle cx="12" cy="19" r="1"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="widget-body">
+          @if (widget.type === 'metric') {
+            <div class="metric-widget">
+              <div class="metric-value">{{ widget.data.value }}</div>
+              <div class="metric-label">{{ widget.data.label }}</div>
+              <div class="metric-change" [class.positive]="widget.data.change > 0" [class.negative]="widget.data.change < 0">
+                <svg class="change-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  @if (widget.data.change > 0) {
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  } @else {
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  }
+                </svg>
+                {{ widget.data.change > 0 ? '+' : '' }}{{ widget.data.change }}%
+              </div>
+            </div>
+          }
+          @if (widget.type === 'chart') {
+            <div class="chart-widget">
+              <div class="mini-chart">
+                @for (bar of widget.data.bars; track $index) {
+                  <div class="chart-bar" [style.height.%]="bar.value" [style.background]="bar.color">
+                    <span class="bar-tooltip">{{ bar.label }}: {{ bar.value }}%</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+          @if (widget.type === 'list') {
+            <div class="list-widget">
+              @for (item of widget.data.items; track item.id) {
+                <div class="list-item">
+                  <div class="item-icon" [style.background]="item.color">
+                    {{ item.icon }}
+                  </div>
+                  <div class="item-info">
+                    <div class="item-name">{{ item.name }}</div>
+                    <div class="item-value">{{ item.value }}</div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          @if (widget.type === 'progress') {
+            <div class="progress-widget">
+              @for (item of widget.data.items; track item.id) {
+                <div class="progress-item">
+                  <div class="progress-header">
+                    <span class="progress-label">{{ item.label }}</span>
+                    <span class="progress-value">{{ item.value }}%</span>
+                  </div>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar" [style.width.%]="item.value" [style.background]="item.color"></div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          @if (widget.type === 'table') {
+            <div class="table-widget">
+              <table>
+                <thead>
+                  <tr>
+                    @for (col of widget.data.columns; track col) {
+                      <th>{{ col }}</th>
+                    }
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of widget.data.rows; track $index) {
+                    <tr>
+                      @for (cell of row; track $index) {
+                        <td>{{ cell }}</td>
+                      }
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+          @if (widget.type === 'gauge') {
+            <div class="gauge-widget">
+              <svg class="gauge-chart" viewBox="0 0 200 120">
+                <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--bg-primary)" stroke-width="20" stroke-linecap="round"/>
+                <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" [attr.stroke]="widget.data.color" stroke-width="20" stroke-linecap="round" [attr.stroke-dasharray]="251" [attr.stroke-dashoffset]="251 - (251 * widget.data.value / 100)"/>
+                <text x="100" y="90" text-anchor="middle" class="gauge-value">{{ widget.data.value }}%</text>
+              </svg>
+              <div class="gauge-label">{{ widget.data.label }}</div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    @if (activeWidgets().length === 0) {
+      <div class="empty-dashboard">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        <h3>Your dashboard is empty</h3>
+        <p>Click "Add Widget" to start building your custom analytics view</p>
+        <button class="btn-primary" (click)="showWidgetLibrary.set(true)">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Add Your First Widget
+        </button>
+      </div>
+    }
+  </div>
+
+  @if (showWidgetLibrary()) {
+    <div class="modal-overlay" (click)="showWidgetLibrary.set(false)">
+      <div class="modal-content widget-library" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Widget Library</h2>
+          <button class="btn-close" (click)="showWidgetLibrary.set(false)">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="widget-categories">
+            @for (category of widgetCategories(); track category.id) {
+              <button class="category-btn" [class.active]="selectedCategory() === category.id" (click)="selectedCategory.set(category.id)">
+                <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  @if (category.id === 'metrics') {
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                  }
+                  @if (category.id === 'charts') {
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                  }
+                  @if (category.id === 'tables') {
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                  }
+                  @if (category.id === 'gauges') {
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  }
+                </svg>
+                {{ category.name }}
+              </button>
+            }
+          </div>
+          <div class="widget-grid">
+            @for (widget of getFilteredWidgets(); track widget.id) {
+              <div class="widget-preview" (click)="addWidget(widget)">
+                <div class="preview-icon" [style.background]="widget.color">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    @if (widget.icon === 'trending-up') {
+                      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                      <polyline points="17 6 23 6 23 12"></polyline>
+                    }
+                    @if (widget.icon === 'bar-chart') {
+                      <line x1="18" y1="20" x2="18" y2="10"></line>
+                      <line x1="12" y1="20" x2="12" y2="4"></line>
+                      <line x1="6" y1="20" x2="6" y2="14"></line>
+                    }
+                    @if (widget.icon === 'users') {
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    }
+                    @if (widget.icon === 'activity') {
+                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    }
+                  </svg>
+                </div>
+                <div class="preview-info">
+                  <div class="preview-name">{{ widget.name }}</div>
+                  <div class="preview-description">{{ widget.description }}</div>
+                </div>
+                <button class="add-widget-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
