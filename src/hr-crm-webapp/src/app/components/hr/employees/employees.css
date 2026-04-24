@@ -290,6 +290,38 @@
   letter-spacing: 0.5px;
 }
 
+.employees-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--animation-duration-fast) var(--animation-easing);
+}
+
+.employees-table th.sortable:hover {
+  color: var(--accent-primary);
+}
+
+.sort-icon {
+  width: 14px;
+  height: 14px;
+  margin-left: 0.25rem;
+  vertical-align: middle;
+  opacity: 0.3;
+  transition: all var(--animation-duration-fast) var(--animation-easing);
+}
+
+.employees-table th.sortable:hover .sort-icon {
+  opacity: 0.6;
+}
+
+.sort-icon.active {
+  opacity: 1;
+  stroke: var(--accent-primary);
+}
+
+.sort-icon.desc {
+  transform: rotate(180deg);
+}
+
 .employee-row {
   border-bottom: 1px solid var(--border-color);
   cursor: pointer;

@@ -81,10 +81,30 @@
         <table class="employees-table">
           <thead>
             <tr>
-              <th class="col-name">Name</th>
-              <th class="col-email">Email</th>
-              <th class="col-department">Department</th>
-              <th class="col-position">Position</th>
+              <th class="col-name sortable" (click)="sortEmployees('firstName')">
+                Name
+                <svg class="sort-icon" [class.active]="sortBy() === 'firstName'" [class.desc]="sortBy() === 'firstName' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th class="col-email sortable" (click)="sortEmployees('email')">
+                Email
+                <svg class="sort-icon" [class.active]="sortBy() === 'email'" [class.desc]="sortBy() === 'email' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th class="col-department sortable" (click)="sortEmployees('department')">
+                Department
+                <svg class="sort-icon" [class.active]="sortBy() === 'department'" [class.desc]="sortBy() === 'department' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th class="col-position sortable" (click)="sortEmployees('position')">
+                Position
+                <svg class="sort-icon" [class.active]="sortBy() === 'position'" [class.desc]="sortBy() === 'position' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
               <th class="col-status">Status</th>
               <th class="col-actions">Actions</th>
             </tr>

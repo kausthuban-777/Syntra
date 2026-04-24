@@ -11,10 +11,11 @@ import {
   AttendanceSummary
 } from '../../../models/attendance.model';
 import { ConfirmationModal } from '../../shared/ui/confirmation-modal/confirmation-modal';
+import { TableSkeleton } from '../../shared/ui/table-skeleton/table-skeleton';
 
 @Component({
   selector: 'app-attendance',
-  imports: [CommonModule, FormsModule, ConfirmationModal],
+  imports: [CommonModule, FormsModule, ConfirmationModal, TableSkeleton],
   templateUrl: './attendance.html',
   styleUrl: './attendance.css'
 })
@@ -38,8 +39,29 @@ export class Attendance implements OnInit, OnDestroy {
     onLeaveToday: 0,
     lateToday: 0
   });
+  isLoading = signal<boolean>(false);
+  sortBy = signal<string>('employeeName');
+  sortDirection = signal<'asc' | 'desc'>('asc');
 
   readonly AttendanceStatus = AttendanceStatus;
+
+  sortedRecords = computed(() => {
+    const records = [...this.attendanceRecords()];
+    const sortField = this.sortBy();
+    const direction = this.sortDirection();
+
+    return records.sort((a: any, b: any) => {
+      let aVal = a[sortField];
+      let bVal = b[sortField];
+
+      if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+      if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+
+      if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+      if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  });
 
   readonly statusOptions = [
     { label: 'All statuses', value: 'all' },
@@ -74,6 +96,7 @@ export class Attendance implements OnInit, OnDestroy {
   }
 
   private loadAttendanceRecords(): void {
+    this.isLoading.set(true);
     const filter: AttendanceFilter = {
       date: this.selectedDate() ? new Date(this.selectedDate()) : undefined,
       employeeId: this.selectedEmployee() !== 'all' ? this.selectedEmployee() : undefined,
@@ -84,7 +107,17 @@ export class Attendance implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(response => {
         this.attendanceRecords.set(response.data as AttendanceRecord[]);
+        this.isLoading.set(false);
       });
+  }
+
+  sortRecords(field: string): void {
+    if (this.sortBy() === field) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortBy.set(field);
+      this.sortDirection.set('asc');
+    }
   }
 
   private loadSummary(): void {

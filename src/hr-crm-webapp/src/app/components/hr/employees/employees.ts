@@ -44,6 +44,10 @@ export class Employees implements OnInit, OnDestroy {
   protected pageSize = 10;
   protected totalCount = 0;
 
+  // Sorting
+  protected sortBy = signal('firstName');
+  protected sortDirection = signal<'asc' | 'desc'>('asc');
+
   // Component lifecycle
   private destroy$ = new Subject<void>();
 
@@ -309,5 +313,18 @@ export class Employees implements OnInit, OnDestroy {
       currency: 'USD',
       minimumFractionDigits: 0
     }).format(salary);
+  }
+
+  /**
+   * Sort employees by field
+   */
+  sortEmployees(field: string): void {
+    if (this.sortBy() === field) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortBy.set(field);
+      this.sortDirection.set('asc');
+    }
+    this.loadEmployees();
   }
 }

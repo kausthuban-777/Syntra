@@ -1,1 +1,225 @@
-<p>roles works!</p>
+<div class="roles-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Roles & Permissions</h1>
+      <p class="subtitle">Define access levels and manage user permissions</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-primary" (click)="openRoleModal()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Create Role
+      </button>
+    </div>
+  </div>
+
+  <div class="roles-layout">
+    <div class="roles-list">
+      <div class="list-header">
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" placeholder="Search roles..." [(ngModel)]="searchQuery" />
+        </div>
+      </div>
+
+      <div class="roles-grid">
+        @for (role of roles(); track role.id) {
+          <div class="role-card" [class.selected]="selectedRole()?.id === role.id" (click)="selectRole(role)">
+            <div class="role-header">
+              <div class="role-icon" [style.background]="role.color">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
+              <div class="role-actions">
+                <button class="role-action-btn" (click)="$event.stopPropagation(); duplicateRole(role)" title="Duplicate">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+                <button class="role-action-btn danger" (click)="$event.stopPropagation(); deleteRole(role.id)" title="Delete">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="role-body">
+              <h3 class="role-name">{{ role.name }}</h3>
+              <p class="role-description">{{ role.description }}</p>
+              <div class="role-users">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span>{{ role.users }} users</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="permissions-panel">
+      @if (selectedRole()) {
+        <div class="panel-header">
+          <div class="panel-title-section">
+            <h2>{{ selectedRole().name }}</h2>
+            <p>{{ selectedRole().description }}</p>
+          </div>
+          <button class="btn-secondary">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            Edit Role
+          </button>
+        </div>
+
+        <div class="permissions-content">
+          <div class="permissions-header">
+            <h3>Permissions</h3>
+            <div class="permission-legend">
+              <span class="legend-item">
+                <span class="legend-dot view"></span>
+                View
+              </span>
+              <span class="legend-item">
+                <span class="legend-dot create"></span>
+                Create
+              </span>
+              <span class="legend-item">
+                <span class="legend-dot edit"></span>
+                Edit
+              </span>
+              <span class="legend-item">
+                <span class="legend-dot delete"></span>
+                Delete
+              </span>
+            </div>
+          </div>
+
+          <div class="permissions-list">
+            @for (module of permissionModules; track module.id) {
+              <div class="permission-module">
+                <div class="module-header">
+                  <div class="module-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      @if (module.icon === 'users') {
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                      }
+                      @if (module.icon === 'shield') {
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                      }
+                      @if (module.icon === 'briefcase') {
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                      }
+                      @if (module.icon === 'trending-up') {
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                        <polyline points="17 6 23 6 23 12"></polyline>
+                      }
+                      @if (module.icon === 'bar-chart') {
+                        <line x1="12" y1="20" x2="12" y2="10"></line>
+                        <line x1="18" y1="20" x2="18" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="16"></line>
+                      }
+                      @if (module.icon === 'settings') {
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6m5.66-13.66l-4.24 4.24m-2.83 2.83l-4.24 4.24m12.73 0l-4.24-4.24m-2.83-2.83l-4.24-4.24"></path>
+                      }
+                    </svg>
+                  </div>
+                  <span class="module-label">{{ module.label }}</span>
+                </div>
+                <div class="module-permissions">
+                  <label class="permission-toggle">
+                    <input type="checkbox" [checked]="selectedRole().permissions[module.id].view" />
+                    <span class="toggle-slider view"></span>
+                    <span class="toggle-label">View</span>
+                  </label>
+                  <label class="permission-toggle">
+                    <input type="checkbox" [checked]="selectedRole().permissions[module.id].create" />
+                    <span class="toggle-slider create"></span>
+                    <span class="toggle-label">Create</span>
+                  </label>
+                  <label class="permission-toggle">
+                    <input type="checkbox" [checked]="selectedRole().permissions[module.id].edit" />
+                    <span class="toggle-slider edit"></span>
+                    <span class="toggle-label">Edit</span>
+                  </label>
+                  <label class="permission-toggle">
+                    <input type="checkbox" [checked]="selectedRole().permissions[module.id].delete" />
+                    <span class="toggle-slider delete"></span>
+                    <span class="toggle-label">Delete</span>
+                  </label>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <div class="empty-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <h3>Select a Role</h3>
+          <p>Choose a role from the list to view and manage its permissions</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+@if (showRoleModal()) {
+  <div class="modal-overlay" (click)="closeRoleModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Create New Role</h2>
+        <button class="modal-close" (click)="closeRoleModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Role Name</label>
+          <input type="text" placeholder="Enter role name" />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea placeholder="Describe the role's purpose and responsibilities" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Base Template</label>
+          <select>
+            <option>Start from scratch</option>
+            <option>Manager Template</option>
+            <option>User Template</option>
+            <option>Support Template</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeRoleModal()">Cancel</button>
+        <button class="btn-primary">Create Role</button>
+      </div>
+    </div>
+  </div>
+}

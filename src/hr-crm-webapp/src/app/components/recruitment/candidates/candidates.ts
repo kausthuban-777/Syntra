@@ -42,6 +42,9 @@ export class Candidates implements OnInit, OnDestroy {
   protected pageSize = 10;
   protected totalCount = 0;
 
+  protected sortBy = signal('name');
+  protected sortDirection = signal<'asc' | 'desc'>('asc');
+
   protected totalPages = computed(() => Math.ceil(this.totalCount / this.pageSize));
 
   private destroy$ = new Subject<void>();
@@ -255,5 +258,15 @@ export class Candidates implements OnInit, OnDestroy {
     if (candidate.resumeUrl) {
       window.open(candidate.resumeUrl, '_blank');
     }
+  }
+
+  sortCandidates(field: string): void {
+    if (this.sortBy() === field) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortBy.set(field);
+      this.sortDirection.set('asc');
+    }
+    this.loadCandidates();
   }
 }

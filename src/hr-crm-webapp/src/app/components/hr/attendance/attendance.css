@@ -186,53 +186,149 @@
   font-size: 0.95rem;
 }
 
+.attendance-table-wrapper {
+  overflow-x: auto;
+}
+
 .attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.attendance-table thead {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.attendance-table th {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.attendance-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--animation-duration-fast) var(--animation-easing);
+}
+
+.attendance-table th.sortable:hover {
+  color: var(--accent-primary);
+}
+
+.sort-icon {
+  width: 14px;
+  height: 14px;
+  margin-left: 0.25rem;
+  vertical-align: middle;
+  opacity: 0.3;
+  transition: all var(--animation-duration-fast) var(--animation-easing);
+}
+
+.attendance-table th.sortable:hover .sort-icon {
+  opacity: 0.6;
+}
+
+.sort-icon.active {
+  opacity: 1;
+  stroke: var(--accent-primary);
+}
+
+.sort-icon.desc {
+  transform: rotate(180deg);
+}
+
+.attendance-table tbody tr {
+  border-bottom: 1px solid var(--border-color);
+  transition: all var(--animation-duration-fast) var(--animation-easing);
+  animation: fadeIn var(--animation-duration-normal) var(--animation-easing);
+}
+
+.attendance-table tbody tr:hover {
+  background: rgba(118, 75, 162, 0.02);
+}
+
+.attendance-table td {
+  padding: 1rem 1.5rem;
+  color: var(--text-primary);
+}
+
+.employee-cell {
+  min-width: 200px;
+}
+
+.employee-info {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  padding: 1rem 1.5rem 1.5rem;
 }
 
-.table-row {
-  display: grid;
-  grid-template-columns: 2fr 1.2fr 1fr 1fr 0.8fr 2fr 1.2fr;
-  gap: 1rem;
-  align-items: center;
-  padding: 1rem 1rem;
-  border-radius: 14px;
-}
-
-.table-head {
-  background: var(--bg-primary);
-  color: var(--text-secondary);
-  font-size: 0.95rem;
+.employee-name {
   font-weight: 600;
-}
-
-.table-body {
-  cursor: pointer;
-  transition: background 0.2s ease;
-  background: var(--bg-card);
-}
-
-.table-body:hover {
-  background: rgba(97, 112, 255, 0.06);
-}
-
-.table-body span {
-  display: flex;
-  gap: 0.25rem;
   color: var(--text-primary);
-  font-size: 0.95rem;
 }
 
-.table-body strong {
-  font-weight: 600;
-}
-
-.table-body small {
-  color: var(--text-secondary);
+.employee-id {
   font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: pulse 2s var(--animation-easing) infinite;
+}
+
+.status-badge.active {
+  background: var(--accent-green-bg);
+  color: var(--accent-green);
+}
+
+.status-badge.active .status-dot {
+  background: var(--accent-green);
+}
+
+.status-badge.inactive {
+  background: var(--accent-red-bg);
+  color: var(--accent-red);
+}
+
+.status-badge.inactive .status-dot {
+  background: var(--accent-red);
+}
+
+.status-badge.late {
+  background: var(--accent-orange-bg);
+  color: var(--accent-orange);
+}
+
+.status-badge.late .status-dot {
+  background: var(--accent-orange);
+}
+
+.status-badge.on-leave {
+  background: var(--accent-warning-bg);
+  color: var(--accent-warning);
+}
+
+.status-badge.on-leave .status-dot {
+  background: var(--accent-warning);
 }
 
 .notes-cell {
@@ -242,96 +338,57 @@
   white-space: nowrap;
 }
 
-.actions-column {
+.actions-col {
+  width: 140px;
+}
+
+.action-buttons {
   display: flex;
-  justify-content: flex-end;
   gap: 0.5rem;
 }
 
 .action-btn {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border: 1px solid var(--border-color);
-  border-radius: 10px;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  cursor: pointer;
-  display: inline-flex;
+  border-radius: 6px;
+  background: var(--bg-card);
+  display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  cursor: pointer;
+  transition: all var(--animation-duration-fast) var(--animation-easing);
+}
+
+.action-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--text-secondary);
+  transition: stroke var(--animation-duration-fast) var(--animation-easing);
 }
 
 .action-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
+  background: var(--bg-primary);
   border-color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+
+.action-btn:hover:not(:disabled) svg {
+  stroke: var(--accent-primary);
+}
+
+.action-btn.danger:hover:not(:disabled) {
+  border-color: var(--accent-red);
+  background: var(--accent-red-bg);
+}
+
+.action-btn.danger:hover:not(:disabled) svg {
+  stroke: var(--accent-red);
 }
 
 .action-btn:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
-}
-
-.action-btn .icon {
-  width: 16px;
-  height: 16px;
-  stroke: currentColor;
-  fill: none;
-}
-
-.action-btn.present {
-  color: var(--accent-green);
-}
-
-.action-btn.absent {
-  color: var(--accent-red);
-}
-
-.action-btn.late {
-  color: var(--accent-orange);
-}
-
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.35rem 0.7rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  border: 1px solid transparent;
-  width: fit-content;
-}
-
-.status-pill.present {
-  color: var(--accent-green);
-  background: rgba(54, 209, 132, 0.15);
-  border-color: rgba(54, 209, 132, 0.3);
-}
-
-.status-pill.absent {
-  color: var(--accent-red);
-  background: rgba(223, 71, 82, 0.12);
-  border-color: rgba(223, 71, 82, 0.25);
-}
-
-.status-pill.on-leave {
-  color: var(--accent-warning);
-  background: rgba(255, 202, 105, 0.14);
-  border-color: rgba(255, 202, 105, 0.28);
-}
-
-.status-pill.late {
-  color: var(--accent-orange);
-  background: rgba(255, 138, 76, 0.14);
-  border-color: rgba(255, 138, 76, 0.28);
-}
-
-.status-pill.half-day {
-  color: var(--accent-primary);
-  background: rgba(97, 112, 255, 0.12);
-  border-color: rgba(97, 112, 255, 0.25);
 }
 
 .empty-state {

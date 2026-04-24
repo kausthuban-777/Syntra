@@ -1,1 +1,363 @@
-<p>system-settings works!</p>
+<div class="settings-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">System Settings</h1>
+      <p class="subtitle">Configure system preferences and behavior</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-secondary">Reset to Defaults</button>
+      <button class="btn-primary" (click)="saveSettings()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Save Changes
+      </button>
+    </div>
+  </div>
+
+  <div class="settings-layout">
+    <div class="settings-sidebar">
+      <nav class="settings-nav">
+        @for (category of categories; track category.id) {
+          <button
+            class="nav-item"
+            [class.active]="selectedCategory() === category.id"
+            (click)="selectCategory(category.id)"
+          >
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              @if (category.icon === 'settings') {
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 1v6m0 6v6m5.66-13.66l-4.24 4.24m-2.83 2.83l-4.24 4.24m12.73 0l-4.24-4.24m-2.83-2.83l-4.24-4.24"></path>
+              }
+              @if (category.icon === 'shield') {
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              }
+              @if (category.icon === 'bell') {
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              }
+              @if (category.icon === 'link') {
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              }
+              @if (category.icon === 'database') {
+                <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+              }
+              @if (category.icon === 'code') {
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              }
+            </svg>
+            <span>{{ category.label }}</span>
+          </button>
+        }
+      </nav>
+    </div>
+
+    <div class="settings-content">
+      @if (selectedCategory() === 'general') {
+        <div class="settings-section">
+          <div class="section-header">
+            <h2>General Settings</h2>
+            <p>Basic system configuration and preferences</p>
+          </div>
+
+          <div class="settings-group">
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Company Name</h3>
+                <p>Your organization's display name</p>
+              </div>
+              <div class="setting-control">
+                <input type="text" value="Acme Corporation" />
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Time Zone</h3>
+                <p>Default timezone for the system</p>
+              </div>
+              <div class="setting-control">
+                <select>
+                  <option>UTC (GMT+0:00)</option>
+                  <option selected>Eastern Time (GMT-5:00)</option>
+                  <option>Pacific Time (GMT-8:00)</option>
+                  <option>Central European Time (GMT+1:00)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Date Format</h3>
+                <p>How dates are displayed throughout the system</p>
+              </div>
+              <div class="setting-control">
+                <select>
+                  <option>MM/DD/YYYY</option>
+                  <option selected>DD/MM/YYYY</option>
+                  <option>YYYY-MM-DD</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Language</h3>
+                <p>System interface language</p>
+              </div>
+              <div class="setting-control">
+                <select>
+                  <option selected>English</option>
+                  <option>Spanish</option>
+                  <option>French</option>
+                  <option>German</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Dark Mode</h3>
+                <p>Enable dark theme for the interface</p>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" [checked]="themeService.isDarkMode()" (change)="toggleDarkMode()" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (selectedCategory() === 'security') {
+        <div class="settings-section">
+          <div class="section-header">
+            <h2>Security Settings</h2>
+            <p>Manage authentication and access control</p>
+          </div>
+
+          <div class="settings-group">
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Two-Factor Authentication</h3>
+                <p>Require 2FA for all user accounts</p>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="twoFactorAuth" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Session Timeout</h3>
+                <p>Automatically log out inactive users</p>
+              </div>
+              <div class="setting-control">
+                <select>
+                  <option>15 minutes</option>
+                  <option selected>30 minutes</option>
+                  <option>1 hour</option>
+                  <option>4 hours</option>
+                  <option>Never</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Password Policy</h3>
+                <p>Minimum password requirements</p>
+              </div>
+              <div class="setting-control">
+                <select>
+                  <option>Basic (8 characters)</option>
+                  <option selected>Standard (8 chars, mixed case)</option>
+                  <option>Strong (12 chars, mixed case, symbols)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>IP Whitelist</h3>
+                <p>Restrict access to specific IP addresses</p>
+              </div>
+              <div class="setting-control">
+                <button class="btn-secondary">Configure</button>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>API Access</h3>
+                <p>Enable external API integrations</p>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+
+      @if (selectedCategory() === 'backup') {
+        <div class="settings-section">
+          <div class="section-header">
+            <h2>Backup & Recovery</h2>
+            <p>Manage data backups and disaster recovery</p>
+          </div>
+
+          <div class="settings-group">
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Automatic Backups</h3>
+                <p>Enable scheduled automatic backups</p>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="autoBackup" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Backup Frequency</h3>
+                <p>How often to create backups</p>
+              </div>
+              <div class="setting-control">
+                <select>
+                  <option>Every 6 hours</option>
+                  <option selected>Daily</option>
+                  <option>Weekly</option>
+                  <option>Monthly</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Retention Period</h3>
+                <p>How long to keep backup files</p>
+              </div>
+              <div class="setting-control">
+                <select>
+                  <option>7 days</option>
+                  <option selected>30 days</option>
+                  <option>90 days</option>
+                  <option>1 year</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Last Backup</h3>
+                <p>Most recent successful backup</p>
+              </div>
+              <div class="setting-control">
+                <span class="backup-time">2 hours ago</span>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Manual Backup</h3>
+                <p>Create a backup right now</p>
+              </div>
+              <div class="setting-control">
+                <button class="btn-primary">Backup Now</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (selectedCategory() === 'advanced') {
+        <div class="settings-section">
+          <div class="section-header">
+            <h2>Advanced Settings</h2>
+            <p>Developer and system administration options</p>
+          </div>
+
+          <div class="settings-group">
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Maintenance Mode</h3>
+                <p>Temporarily disable access for maintenance</p>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="maintenanceMode" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Debug Mode</h3>
+                <p>Enable detailed error logging</p>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>API Rate Limiting</h3>
+                <p>Maximum requests per minute</p>
+              </div>
+              <div class="setting-control">
+                <input type="number" value="100" min="10" max="1000" />
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Cache Duration</h3>
+                <p>How long to cache data</p>
+              </div>
+              <div class="setting-control">
+                <select>
+                  <option>5 minutes</option>
+                  <option selected>15 minutes</option>
+                  <option>1 hour</option>
+                  <option>24 hours</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <h3>Clear Cache</h3>
+                <p>Remove all cached data</p>
+              </div>
+              <div class="setting-control">
+                <button class="btn-secondary">Clear Now</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

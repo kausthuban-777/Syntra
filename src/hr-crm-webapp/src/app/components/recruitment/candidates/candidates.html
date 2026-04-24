@@ -106,12 +106,37 @@
         <table class="candidates-table">
           <thead>
             <tr>
-              <th class="col-name">Name</th>
-              <th class="col-position">Applied Position</th>
-              <th class="col-experience">Experience</th>
-              <th class="col-source">Source</th>
+              <th class="col-name sortable" (click)="sortCandidates('firstName')">
+                Name
+                <svg class="sort-icon" [class.active]="sortBy() === 'firstName'" [class.desc]="sortBy() === 'firstName' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th class="col-position sortable" (click)="sortCandidates('position')">
+                Applied Position
+                <svg class="sort-icon" [class.active]="sortBy() === 'position'" [class.desc]="sortBy() === 'position' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th class="col-experience sortable" (click)="sortCandidates('experienceLevel')">
+                Experience
+                <svg class="sort-icon" [class.active]="sortBy() === 'experienceLevel'" [class.desc]="sortBy() === 'experienceLevel' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th class="col-source sortable" (click)="sortCandidates('source')">
+                Source
+                <svg class="sort-icon" [class.active]="sortBy() === 'source'" [class.desc]="sortBy() === 'source' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
               <th class="col-status">Status</th>
-              <th class="col-rating">Rating</th>
+              <th class="col-rating sortable" (click)="sortCandidates('rating')">
+                Rating
+                <svg class="sort-icon" [class.active]="sortBy() === 'rating'" [class.desc]="sortBy() === 'rating' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
               <th class="col-actions">Actions</th>
             </tr>
           </thead>

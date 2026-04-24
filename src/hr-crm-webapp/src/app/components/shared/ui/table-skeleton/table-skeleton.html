@@ -1,0 +1,10 @@
+<div class="skeleton-table">
+  <div class="skeleton-row skeleton-header">
+    <div class="skeleton-cell" *ngFor="let col of columnsArray()"></div>
+  </div>
+  <div class="skeleton-row" *ngFor="let row of rowsArray()">
+    <div class="skeleton-cell" *ngFor="let col of columnsArray()">
+      <div class="skeleton-shimmer"></div>
+    </div>
+  </div>
+</div>

@@ -69,68 +69,101 @@
         </div>
       </div>
 
-      <div class="requests-table">
-        <div class="table-row table-head">
-          <span>Employee</span>
-          <span>Leave type</span>
-          <span>Duration</span>
-          <span>Submitted</span>
-          <span>Status</span>
-          <span class="actions-column">Actions</span>
-        </div>
+      <div class="requests-table-wrapper">
+        @if (isLoading()) {
+          <app-table-skeleton [rows]="5" [columns]="6"></app-table-skeleton>
+        } @else {
+          <table class="requests-table">
+            <thead>
+              <tr>
+                <th (click)="sortRequests('employeeName')" class="sortable">
+                  Employee
+                  <svg class="sort-icon" [class.active]="sortBy() === 'employeeName'" [class.desc]="sortBy() === 'employeeName' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </th>
+                <th (click)="sortRequests('leaveType')" class="sortable">
+                  Leave type
+                  <svg class="sort-icon" [class.active]="sortBy() === 'leaveType'" [class.desc]="sortBy() === 'leaveType' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </th>
+                <th>Duration</th>
+                <th (click)="sortRequests('submittedDate')" class="sortable">
+                  Submitted
+                  <svg class="sort-icon" [class.active]="sortBy() === 'submittedDate'" [class.desc]="sortBy() === 'submittedDate' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </th>
+                <th (click)="sortRequests('status')" class="sortable">
+                  Status
+                  <svg class="sort-icon" [class.active]="sortBy() === 'status'" [class.desc]="sortBy() === 'status' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </th>
+                <th class="actions-col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (request of sortedRequests(); track request.id) {
+                <tr [class.selected]="selectedRequest()?.id === request.id" (click)="selectRequest(request)">
+                  <td class="employee-cell">
+                    <div class="employee-info">
+                      <div class="employee-name">{{ request.employeeName }}</div>
+                      <div class="employee-id">{{ request.employeeId }}</div>
+                    </div>
+                  </td>
+                  <td>{{ request.leaveType }}</td>
+                  <td>{{ getRequestDuration(request) }}</td>
+                  <td>{{ formatDate(request.submittedDate) }}</td>
+                  <td>
+                    <span class="status-badge" [class.pending]="request.status === LeaveRequestStatus.Pending" [class.approved]="request.status === LeaveRequestStatus.Approved" [class.rejected]="request.status === LeaveRequestStatus.Rejected">
+                      <span class="status-dot"></span>
+                      {{ request.status }}
+                    </span>
+                  </td>
+                  <td class="actions-col">
+                    <div class="action-buttons">
+                      <button class="action-btn" title="View request" (click)="selectRequest(request); $event.stopPropagation()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                      </button>
+                      <button
+                        class="action-btn"
+                        [disabled]="request.status !== LeaveRequestStatus.Pending"
+                        title="Approve request"
+                        (click)="openActionConfirmation(request, 'approve'); $event.stopPropagation()"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </button>
+                      <button
+                        class="action-btn danger"
+                        [disabled]="request.status !== LeaveRequestStatus.Pending"
+                        title="Reject request"
+                        (click)="openActionConfirmation(request, 'reject'); $event.stopPropagation()"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
 
-        <div
-          *ngFor="let request of leaveRequests()"
-          class="table-row table-body"
-          [class.selected]="selectedRequest()?.id === request.id"
-          (click)="selectRequest(request)"
-        >
-          <span>
-            <strong>{{ request.employeeName }}</strong>
-            <small>{{ request.employeeId }}</small>
-          </span>
-          <span>{{ request.leaveType }}</span>
-          <span>{{ getRequestDuration(request) }}</span>
-          <span>{{ formatDate(request.submittedDate) }}</span>
-          <span>
-            <span class="status-pill" [ngClass]="getStatusClass(request.status)">{{ request.status }}</span>
-          </span>
-          <span class="actions-column">
-            <button type="button" class="icon-button" title="View request" (click)="selectRequest(request); $event.stopPropagation()">
-              <svg viewBox="0 0 24 24" class="icon" aria-hidden="true">
-                <path d="M12 5c-7 0-11 6.5-11 7s4 7 11 7 11-6.5 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"></path>
-                <circle cx="12" cy="12" r="2.5"></circle>
-              </svg>
-            </button>
-            <button
-              type="button"
-              class="icon-button approve"
-              [disabled]="request.status !== LeaveRequestStatus.Pending"
-              title="Approve request"
-              (click)="openActionConfirmation(request, 'approve'); $event.stopPropagation()"
-            >
-              <svg viewBox="0 0 24 24" class="icon" aria-hidden="true">
-                <path d="M20 6L9 17l-5-5"></path>
-              </svg>
-            </button>
-            <button
-              type="button"
-              class="icon-button reject"
-              [disabled]="request.status !== LeaveRequestStatus.Pending"
-              title="Reject request"
-              (click)="openActionConfirmation(request, 'reject'); $event.stopPropagation()"
-            >
-              <svg viewBox="0 0 24 24" class="icon" aria-hidden="true">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </span>
-        </div>
-
-        <div *ngIf="!leaveRequests().length" class="empty-state">
-          No leave requests match the selected filters.
-        </div>
+          @if (!sortedRequests().length) {
+            <div class="empty-state">
+              No leave requests match the selected filters.
+            </div>
+          }
+        }
       </div>
     </section>
 

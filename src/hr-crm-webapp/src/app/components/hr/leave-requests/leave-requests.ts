@@ -12,10 +12,11 @@ import {
   LeaveRequestSummary
 } from '../../../models/leave-request.model';
 import { ConfirmationModal } from '../../shared/ui/confirmation-modal/confirmation-modal';
+import { TableSkeleton } from '../../shared/ui/table-skeleton/table-skeleton';
 
 @Component({
   selector: 'app-leave-requests',
-  imports: [CommonModule, FormsModule, ConfirmationModal],
+  imports: [CommonModule, FormsModule, ConfirmationModal, TableSkeleton],
   templateUrl: './leave-requests.html',
   styleUrl: './leave-requests.css'
 })
@@ -39,9 +40,30 @@ export class LeaveRequests implements OnInit, OnDestroy {
     approvedCount: 0,
     rejectedCount: 0
   });
+  isLoading = signal<boolean>(false);
+  sortBy = signal<string>('employeeName');
+  sortDirection = signal<'asc' | 'desc'>('asc');
 
   readonly LeaveRequestStatus = LeaveRequestStatus;
   readonly LeaveType = LeaveType;
+
+  sortedRequests = computed(() => {
+    const requests = [...this.leaveRequests()];
+    const sortField = this.sortBy();
+    const direction = this.sortDirection();
+
+    return requests.sort((a: any, b: any) => {
+      let aVal = a[sortField];
+      let bVal = b[sortField];
+
+      if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+      if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+
+      if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+      if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  });
 
   readonly statusOptions = [
     { label: 'All statuses', value: 'all' },
@@ -72,6 +94,7 @@ export class LeaveRequests implements OnInit, OnDestroy {
   }
 
   private loadLeaveRequests(): void {
+    this.isLoading.set(true);
     const filter: LeaveRequestFilter = {
       searchTerm: this.searchText() || undefined,
       status: this.statusFilter() !== 'all' ? this.statusFilter() as LeaveRequestStatus : undefined,
@@ -86,7 +109,17 @@ export class LeaveRequests implements OnInit, OnDestroy {
         if (!this.selectedRequest() || !requests.some(item => item.id === this.selectedRequest()?.id)) {
           this.selectedRequest.set(requests.length ? requests[0] : null);
         }
+        this.isLoading.set(false);
       });
+  }
+
+  sortRequests(field: string): void {
+    if (this.sortBy() === field) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortBy.set(field);
+      this.sortDirection.set('asc');
+    }
   }
 
   private loadSummary(): void {

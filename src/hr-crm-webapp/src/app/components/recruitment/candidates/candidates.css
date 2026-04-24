@@ -213,6 +213,38 @@
   letter-spacing: 0.5px;
 }
 
+.candidates-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--animation-duration-fast) var(--animation-easing);
+}
+
+.candidates-table th.sortable:hover {
+  color: var(--accent-primary);
+}
+
+.sort-icon {
+  width: 14px;
+  height: 14px;
+  margin-left: 0.25rem;
+  vertical-align: middle;
+  opacity: 0.3;
+  transition: all var(--animation-duration-fast) var(--animation-easing);
+}
+
+.candidates-table th.sortable:hover .sort-icon {
+  opacity: 0.6;
+}
+
+.sort-icon.active {
+  opacity: 1;
+  stroke: var(--accent-primary);
+}
+
+.sort-icon.desc {
+  transform: rotate(180deg);
+}
+
 .candidates-table tbody tr {
   border-bottom: 1px solid var(--border-color);
   transition: background-color 0.2s ease;

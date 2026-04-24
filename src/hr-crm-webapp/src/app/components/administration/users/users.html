@@ -1,1 +1,265 @@
-<p>users works!</p>
+<div class="users-container">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">User Management</h1>
+      <p class="subtitle">Manage user accounts, roles, and permissions</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-secondary">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Export
+      </button>
+      <button class="btn-primary" (click)="openUserModal()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Add User
+      </button>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    @for (stat of stats(); track stat.label) {
+      <div class="stat-card">
+        <div class="stat-icon" [style.background]="stat.color">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            @if (stat.icon === 'users') {
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            }
+            @if (stat.icon === 'activity') {
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            }
+            @if (stat.icon === 'clock') {
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            }
+            @if (stat.icon === 'pause') {
+              <rect x="6" y="4" width="4" height="16"></rect>
+              <rect x="14" y="4" width="4" height="16"></rect>
+            }
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">{{ stat.label }}</div>
+          <div class="stat-value">{{ stat.value }}</div>
+          <div class="stat-change" [class.positive]="stat.trend === 'up'" [class.negative]="stat.trend === 'down'">
+            <svg class="change-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              @if (stat.trend === 'up') {
+                <polyline points="18 15 12 9 6 15"></polyline>
+              } @else {
+                <polyline points="6 9 12 15 18 9"></polyline>
+              }
+            </svg>
+            {{ stat.change }} this month
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="users-content">
+    <div class="filters-bar">
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input type="text" placeholder="Search users..." [(ngModel)]="searchQuery" />
+      </div>
+      <div class="filter-group">
+        <select [(ngModel)]="selectedRole" class="filter-select">
+          <option value="all">All Roles</option>
+          <option value="admin">Admin</option>
+          <option value="manager">Manager</option>
+          <option value="user">User</option>
+        </select>
+        <select [(ngModel)]="selectedStatus" class="filter-select">
+          <option value="all">All Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+    </div>
+
+    @if (showBulkActions()) {
+      <div class="bulk-actions-bar">
+        <div class="bulk-info">
+          <span class="selected-count">{{ selectedUsers().size }} selected</span>
+        </div>
+        <div class="bulk-buttons">
+          <button class="bulk-btn" (click)="bulkAction('activate')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Activate
+          </button>
+          <button class="bulk-btn" (click)="bulkAction('deactivate')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+            Deactivate
+          </button>
+          <button class="bulk-btn danger" (click)="bulkAction('delete')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Delete
+          </button>
+        </div>
+      </div>
+    }
+
+    <div class="users-table-container">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th class="checkbox-col">
+              <input type="checkbox" (change)="toggleSelectAll()" [checked]="selectedUsers().size === sortedUsers().length" />
+            </th>
+            <th (click)="sortUsers('name')" class="sortable">
+              User
+              <svg class="sort-icon" [class.active]="sortBy() === 'name'" [class.desc]="sortBy() === 'name' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </th>
+            <th>Role</th>
+            <th (click)="sortUsers('department')" class="sortable">
+              Department
+              <svg class="sort-icon" [class.active]="sortBy() === 'department'" [class.desc]="sortBy() === 'department' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </th>
+            <th>Status</th>
+            <th (click)="sortUsers('lastActive')" class="sortable">
+              Last Active
+              <svg class="sort-icon" [class.active]="sortBy() === 'lastActive'" [class.desc]="sortBy() === 'lastActive' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </th>
+            <th class="actions-col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of sortedUsers(); track user.id) {
+            <tr [class.selected]="isSelected(user.id)">
+              <td class="checkbox-col">
+                <input type="checkbox" [checked]="isSelected(user.id)" (change)="toggleUserSelection(user.id)" />
+              </td>
+              <td class="user-cell">
+                <div class="user-info">
+                  <div class="user-avatar" [style.background]="user.avatarColor">
+                    {{ user.avatar }}
+                  </div>
+                  <div class="user-details">
+                    <div class="user-name">{{ user.name }}</div>
+                    <div class="user-email">{{ user.email }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="role-badge" [class.admin]="user.role === 'Admin'" [class.manager]="user.role === 'Manager'">
+                  {{ user.role }}
+                </span>
+              </td>
+              <td>{{ user.department }}</td>
+              <td>
+                <span class="status-badge" [class.active]="user.status === 'active'" [class.inactive]="user.status === 'inactive'" [class.pending]="user.status === 'pending'">
+                  <span class="status-dot"></span>
+                  {{ user.status }}
+                </span>
+              </td>
+              <td class="last-active">{{ user.lastActive }}</td>
+              <td class="actions-col">
+                <div class="action-buttons">
+                  <button class="action-btn" title="Edit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </button>
+                  <button class="action-btn" title="Deactivate" (click)="deactivateUser(user.id)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                    </svg>
+                  </button>
+                  <button class="action-btn danger" title="Delete" (click)="deleteUser(user.id)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+@if (showUserModal()) {
+  <div class="modal-overlay" (click)="closeUserModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Add New User</h2>
+        <button class="modal-close" (click)="closeUserModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" placeholder="Enter full name" />
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="Enter email" />
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <select>
+              <option>Select role</option>
+              <option>Admin</option>
+              <option>Manager</option>
+              <option>User</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Department</label>
+            <select>
+              <option>Select department</option>
+              <option>IT</option>
+              <option>Sales</option>
+              <option>Marketing</option>
+              <option>HR</option>
+              <option>Finance</option>
+              <option>Operations</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeUserModal()">Cancel</button>
+        <button class="btn-primary">Create User</button>
+      </div>
+    </div>
+  </div>
+}

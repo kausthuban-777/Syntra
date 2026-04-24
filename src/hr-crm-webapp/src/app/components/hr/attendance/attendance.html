@@ -114,78 +114,117 @@
       </div>
     </div>
 
-    <div class="attendance-table">
-      <div class="table-row table-head">
-        <span>Employee</span>
-        <span>Status</span>
-        <span>Check-in</span>
-        <span>Check-out</span>
-        <span>Hours</span>
-        <span>Notes</span>
-        <span class="actions-column">Actions</span>
-      </div>
+    <div class="attendance-table-wrapper">
+      @if (isLoading()) {
+        <app-table-skeleton [rows]="5" [columns]="7"></app-table-skeleton>
+      } @else {
+        <table class="attendance-table">
+          <thead>
+            <tr>
+              <th (click)="sortRecords('employeeName')" class="sortable">
+                Employee
+                <svg class="sort-icon" [class.active]="sortBy() === 'employeeName'" [class.desc]="sortBy() === 'employeeName' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th (click)="sortRecords('status')" class="sortable">
+                Status
+                <svg class="sort-icon" [class.active]="sortBy() === 'status'" [class.desc]="sortBy() === 'status' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th (click)="sortRecords('checkInTime')" class="sortable">
+                Check-in
+                <svg class="sort-icon" [class.active]="sortBy() === 'checkInTime'" [class.desc]="sortBy() === 'checkInTime' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th (click)="sortRecords('checkOutTime')" class="sortable">
+                Check-out
+                <svg class="sort-icon" [class.active]="sortBy() === 'checkOutTime'" [class.desc]="sortBy() === 'checkOutTime' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th (click)="sortRecords('hoursWorked')" class="sortable">
+                Hours
+                <svg class="sort-icon" [class.active]="sortBy() === 'hoursWorked'" [class.desc]="sortBy() === 'hoursWorked' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th>Notes</th>
+              <th class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (record of sortedRecords(); track record.id) {
+              <tr>
+                <td class="employee-cell">
+                  <div class="employee-info">
+                    <div class="employee-name">{{ record.employeeName }}</div>
+                    <div class="employee-id">{{ record.employeeId }}</div>
+                  </div>
+                </td>
+                <td>
+                  <span class="status-badge" [class.active]="record.status === AttendanceStatus.Present" [class.inactive]="record.status === AttendanceStatus.Absent" [class.late]="record.status === AttendanceStatus.Late" [class.on-leave]="record.status === AttendanceStatus.OnLeave">
+                    <span class="status-dot"></span>
+                    {{ record.status }}
+                  </span>
+                </td>
+                <td>{{ formatTime(record.checkInTime) }}</td>
+                <td>{{ formatTime(record.checkOutTime) }}</td>
+                <td>{{ formatHours(record.hoursWorked) }}</td>
+                <td class="notes-cell">
+                  <span *ngIf="record.notes; else noNotes">{{ record.notes }}</span>
+                  <ng-template #noNotes>-</ng-template>
+                </td>
+                <td class="actions-col">
+                  <div class="action-buttons">
+                    <button
+                      class="action-btn"
+                      [disabled]="record.status === AttendanceStatus.Present"
+                      title="Mark as present"
+                      (click)="openStatusConfirmation(record, AttendanceStatus.Present)"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </button>
+                    <button
+                      class="action-btn danger"
+                      [disabled]="record.status === AttendanceStatus.Absent"
+                      title="Mark as absent"
+                      (click)="openStatusConfirmation(record, AttendanceStatus.Absent)"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                      </svg>
+                    </button>
+                    <button
+                      class="action-btn"
+                      [disabled]="record.status === AttendanceStatus.Late"
+                      title="Mark as late"
+                      (click)="openStatusConfirmation(record, AttendanceStatus.Late)"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
 
-      <div
-        *ngFor="let record of attendanceRecords()"
-        class="table-row table-body"
-      >
-        <span>
-          <strong>{{ record.employeeName }}</strong>
-          <small>{{ record.employeeId }}</small>
-        </span>
-        <span>
-          <span class="status-pill" [ngClass]="getStatusClass(record.status)">{{ record.status }}</span>
-        </span>
-        <span>{{ formatTime(record.checkInTime) }}</span>
-        <span>{{ formatTime(record.checkOutTime) }}</span>
-        <span>{{ formatHours(record.hoursWorked) }}</span>
-        <span class="notes-cell">
-          <span *ngIf="record.notes; else noNotes">{{ record.notes }}</span>
-          <ng-template #noNotes>-</ng-template>
-        </span>
-        <span class="actions-column">
-          <button
-            type="button"
-            class="action-btn present"
-            [disabled]="record.status === AttendanceStatus.Present"
-            title="Mark as present"
-            (click)="openStatusConfirmation(record, AttendanceStatus.Present)"
-          >
-            <svg viewBox="0 0 24 24" class="icon">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="action-btn absent"
-            [disabled]="record.status === AttendanceStatus.Absent"
-            title="Mark as absent"
-            (click)="openStatusConfirmation(record, AttendanceStatus.Absent)"
-          >
-            <svg viewBox="0 0 24 24" class="icon">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="15" y1="9" x2="9" y2="15"/>
-              <line x1="9" y1="9" x2="15" y2="15"/>
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="action-btn late"
-            [disabled]="record.status === AttendanceStatus.Late"
-            title="Mark as late"
-            (click)="openStatusConfirmation(record, AttendanceStatus.Late)"
-          >
-            <svg viewBox="0 0 24 24" class="icon">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12,6 12,12 16,14"/>
-            </svg>
-          </button>
-        </span>
-      </div>
-
-      <div *ngIf="!attendanceRecords().length" class="empty-state">
-        No attendance records found for the selected date and filters.
-      </div>
+        @if (!sortedRecords().length) {
+          <div class="empty-state">
+            No attendance records found for the selected date and filters.
+          </div>
+        }
+      }
     </div>
   </section>
 

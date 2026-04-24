@@ -50,9 +50,8 @@
           <i class="bi bi-sun"></i>
         }
       </button>
-      <button class="nav-icon-btn" id="btn-search" title="Search"><i class="bi bi-search"></i></button>
-      <button class="nav-icon-btn" id="btn-mail" title="Mail"><i class="bi bi-envelope"></i></button>
-      <button class="nav-icon-btn" id="btn-bell" title="Notifications">
+      <button class="nav-icon-btn" id="btn-mail" title="Mail" routerLink="/support/inbox"><i class="bi bi-envelope"></i></button>
+      <button class="nav-icon-btn" id="btn-bell" title="Notifications" routerLink="/administration/notifications">
         <i class="bi bi-bell"></i>
         <span class="notification-dot"></span>
       </button>
@@ -133,11 +132,11 @@
           <i class="bi bi-search"></i>
           <span>Search</span>
         </button>
-        <button class="mobile-settings-item" id="mobileMail">
+        <button class="mobile-settings-item" id="mobileMail" routerLink="/support/inbox" (click)="closeMobileMenu()">
           <i class="bi bi-envelope"></i>
           <span>Mail</span>
         </button>
-        <button class="mobile-settings-item" id="mobileBell">
+        <button class="mobile-settings-item" id="mobileBell" routerLink="/administration/notifications" (click)="closeMobileMenu()">
           <i class="bi bi-bell"></i>
           <span>Notifications</span>
         </button>
