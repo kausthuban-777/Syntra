@@ -1,1 +1,388 @@
-<p>whatsapp-api works!</p>
+<div class="whatsapp-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="integration-badge">
+        <span class="integration-icon whatsapp">📱</span>
+        <div class="integration-meta">
+          <div class="eyebrow">Integration</div>
+          <h1>WhatsApp Business</h1>
+        </div>
+      </div>
+      <p class="subtitle">Customer messaging and engagement via WhatsApp API</p>
+    </div>
+    <div class="header-actions">
+      @if (isConnected()) {
+        <div class="connection-status connected">
+          <span class="status-dot"></span>
+          <span>{{ phoneNumber() }}</span>
+        </div>
+        <button class="btn-secondary" (click)="disconnect()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Disconnect
+        </button>
+      } @else {
+        <button class="btn-primary" (click)="reconnect()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          Connect WhatsApp
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (isConnected()) {
+    <div class="message-stats-banner">
+      <div class="stat-item">
+        <div class="stat-icon sent">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ messageStats().sent }}</div>
+          <div class="stat-label">Sent</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon delivered">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ messageStats().delivered }}</div>
+          <div class="stat-label">Delivered</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon read">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+            <polyline points="23 6 12 17 7 12"></polyline>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ messageStats().read }}</div>
+          <div class="stat-label">Read</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon failed">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">{{ messageStats().failed }}</div>
+          <div class="stat-label">Failed</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view-selector">
+      <button class="view-btn" [class.active]="activeView() === 'overview'" (click)="activeView.set('overview')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        Overview
+      </button>
+      <button class="view-btn" [class.active]="activeView() === 'templates'" (click)="activeView.set('templates')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        Templates
+      </button>
+      <button class="view-btn" [class.active]="activeView() === 'conversations'" (click)="activeView.set('conversations')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        Conversations
+        @if (stats().unreadMessages > 0) {
+          <span class="unread-badge">{{ stats().unreadMessages }}</span>
+        }
+      </button>
+    </div>
+
+    @if (activeView() === 'overview') {
+      <div class="overview-content">
+        <div class="overview-grid">
+          <div class="overview-card templates-card">
+            <div class="card-header">
+              <h3>Message Templates</h3>
+              <span class="card-badge">{{ stats().approvedTemplates }}/{{ stats().totalTemplates }}</span>
+            </div>
+            <div class="card-body">
+              <div class="progress-ring">
+                <svg viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="54" class="progress-ring-bg"></circle>
+                  <circle cx="60" cy="60" r="54" class="progress-ring-fill"
+                    [style.stroke-dashoffset]="339 - (339 * stats().approvedTemplates / stats().totalTemplates)"></circle>
+                </svg>
+                <div class="progress-text">
+                  <div class="progress-number">{{ (stats().approvedTemplates / stats().totalTemplates * 100).toFixed(0) }}%</div>
+                  <div class="progress-label">Approved</div>
+                </div>
+              </div>
+              <div class="card-stats">
+                <div class="card-stat">
+                  <span class="stat-dot approved"></span>
+                  <span>{{ stats().approvedTemplates }} Approved</span>
+                </div>
+                <div class="card-stat">
+                  <span class="stat-dot pending"></span>
+                  <span>{{ stats().totalTemplates - stats().approvedTemplates }} Pending</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="overview-card conversations-card">
+            <div class="card-header">
+              <h3>Active Conversations</h3>
+              <span class="card-badge">{{ stats().activeConversations }}</span>
+            </div>
+            <div class="card-body">
+              <div class="conversation-preview">
+                @for (conv of conversations().slice(0, 3); track conv.id) {
+                  <div class="preview-item">
+                    <div class="preview-avatar">{{ conv.customerName.charAt(0) }}</div>
+                    <div class="preview-info">
+                      <div class="preview-name">{{ conv.customerName }}</div>
+                      <div class="preview-message">{{ conv.lastMessage }}</div>
+                    </div>
+                    @if (conv.unread > 0) {
+                      <span class="preview-unread">{{ conv.unread }}</span>
+                    }
+                  </div>
+                }
+              </div>
+              <button class="view-all-btn" (click)="activeView.set('conversations')">
+                View All Conversations
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="overview-card features-card">
+            <div class="card-header">
+              <h3>Quick Actions</h3>
+            </div>
+            <div class="card-body">
+              <div class="quick-actions">
+                <button class="quick-action-btn">
+                  <div class="action-icon">📝</div>
+                  <span>Create Template</span>
+                </button>
+                <button class="quick-action-btn">
+                  <div class="action-icon">📤</div>
+                  <span>Send Broadcast</span>
+                </button>
+                <button class="quick-action-btn">
+                  <div class="action-icon">📊</div>
+                  <span>View Analytics</span>
+                </button>
+                <button class="quick-action-btn">
+                  <div class="action-icon">⚙️</div>
+                  <span>Settings</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (activeView() === 'templates') {
+      <div class="templates-content">
+        <div class="content-header">
+          <div class="search-filter-bar">
+            <div class="search-container">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input
+                type="text"
+                placeholder="Search templates..."
+                [(ngModel)]="searchQuery"
+                (ngModelChange)="searchQuery.set($event)"
+              />
+            </div>
+            <div class="filter-group">
+              <select class="filter-select" [(ngModel)]="filterCategory" (ngModelChange)="filterCategory.set($event)">
+                <option value="all">All Categories</option>
+                <option value="marketing">Marketing</option>
+                <option value="utility">Utility</option>
+                <option value="authentication">Authentication</option>
+              </select>
+              <select class="filter-select" [(ngModel)]="filterStatus" (ngModelChange)="filterStatus.set($event)">
+                <option value="all">All Status</option>
+                <option value="approved">Approved</option>
+                <option value="pending">Pending</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="templates-grid">
+          @for (template of filteredTemplates(); track template.id) {
+            <div class="template-card" [class]="template.status">
+              <div class="template-header">
+                <div class="template-category">
+                  <span class="category-icon">{{ getCategoryIcon(template.category) }}</span>
+                  <span class="category-label">{{ template.category }}</span>
+                </div>
+                <span class="template-status" [style.background]="getStatusColor(template.status) + '20'" [style.color]="getStatusColor(template.status)">
+                  {{ template.status }}
+                </span>
+              </div>
+              <h3 class="template-name">{{ template.name }}</h3>
+              <div class="template-preview">
+                <div class="message-bubble">
+                  {{ template.content }}
+                </div>
+              </div>
+              <div class="template-footer">
+                <div class="template-meta">
+                  <span class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 6v6l4 2"></path>
+                    </svg>
+                    {{ template.language }}
+                  </span>
+                  <span class="meta-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 20h9"></path>
+                      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                    {{ template.variables }} variables
+                  </span>
+                </div>
+                <button class="use-template-btn">
+                  Use Template
+                </button>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state">
+              <div class="empty-icon">📝</div>
+              <h3>No templates found</h3>
+              <p>Try adjusting your filters or create a new template</p>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    @if (activeView() === 'conversations') {
+      <div class="conversations-content">
+        <div class="content-header">
+          <div class="search-container">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input
+              type="text"
+              placeholder="Search conversations..."
+              [(ngModel)]="searchQuery"
+              (ngModelChange)="searchQuery.set($event)"
+            />
+          </div>
+        </div>
+
+        <div class="conversations-list">
+          @for (conversation of filteredConversations(); track conversation.id) {
+            <div class="conversation-item" [class]="conversation.status">
+              <div class="conversation-avatar">{{ conversation.customerName.charAt(0) }}</div>
+              <div class="conversation-details">
+                <div class="conversation-header">
+                  <h3>{{ conversation.customerName }}</h3>
+                  <span class="conversation-time">{{ formatTime(conversation.timestamp) }}</span>
+                </div>
+                <div class="conversation-preview">
+                  <p>{{ conversation.lastMessage }}</p>
+                  @if (conversation.unread > 0) {
+                    <span class="unread-count">{{ conversation.unread }}</span>
+                  }
+                </div>
+                <div class="conversation-meta">
+                  <span class="phone-number">{{ conversation.customerPhone }}</span>
+                  <span class="status-badge" [class]="conversation.status">{{ conversation.status }}</span>
+                </div>
+              </div>
+              <div class="conversation-actions">
+                <button class="action-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state">
+              <div class="empty-icon">💬</div>
+              <h3>No conversations found</h3>
+              <p>Start a conversation with your customers</p>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  } @else {
+    <div class="disconnected-state">
+      <div class="disconnected-icon">
+        <svg viewBox="0 0 200 200" fill="none">
+          <circle cx="100" cy="100" r="80" stroke="var(--border-color)" stroke-width="3" stroke-dasharray="8 8"/>
+          <path d="M70 100h60M100 70v60" stroke="var(--text-muted)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2>Connect WhatsApp Business</h2>
+      <p>Enable customer messaging and engagement through WhatsApp Business API</p>
+      <div class="features-showcase">
+        <div class="showcase-item">
+          <div class="showcase-icon">📱</div>
+          <h3>Customer Messaging</h3>
+          <p>Direct communication with customers</p>
+        </div>
+        <div class="showcase-item">
+          <div class="showcase-icon">📝</div>
+          <h3>Message Templates</h3>
+          <p>Pre-approved message templates</p>
+        </div>
+        <div class="showcase-item">
+          <div class="showcase-icon">📊</div>
+          <h3>Analytics</h3>
+          <p>Track message delivery and engagement</p>
+        </div>
+      </div>
+      <button class="btn-primary-large" (click)="reconnect()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+        Connect WhatsApp Business
+      </button>
+    </div>
+  }
+</div>

@@ -1,0 +1,349 @@
+<div class="integrations-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="eyebrow">Integrations Hub</div>
+      <h1>Connect Your Tools</h1>
+      <p class="subtitle">Seamlessly integrate with your favorite apps and services</p>
+    </div>
+    <div class="header-actions">
+      <div class="view-toggle">
+        <button
+          class="view-btn"
+          [class.active]="viewMode() === 'grid'"
+          (click)="viewMode.set('grid')"
+          title="Grid View">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </button>
+        <button
+          class="view-btn"
+          [class.active]="viewMode() === 'list'"
+          (click)="viewMode.set('list')"
+          title="List View">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="metrics-dashboard">
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-icon">🔌</span>
+        <span class="metric-badge total">Total</span>
+      </div>
+      <div class="metric-value">{{ stats().total }}</div>
+      <div class="metric-label">Available Integrations</div>
+      <div class="metric-bar">
+        <div class="metric-bar-fill total" style="width: 100%;"></div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-icon">✓</span>
+        <span class="metric-badge connected">Active</span>
+      </div>
+      <div class="metric-value">{{ stats().connected }}</div>
+      <div class="metric-label">Connected Services</div>
+      <div class="metric-bar">
+        <div class="metric-bar-fill connected" [style.width]="(stats().connected / stats().total * 100) + '%'"></div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-icon">⏳</span>
+        <span class="metric-badge pending">Pending</span>
+      </div>
+      <div class="metric-value">{{ stats().pending }}</div>
+      <div class="metric-label">Pending Setup</div>
+      <div class="metric-bar">
+        <div class="metric-bar-fill pending" [style.width]="(stats().pending / stats().total * 100) + '%'"></div>
+      </div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-icon">⚠️</span>
+        <span class="metric-badge error">Errors</span>
+      </div>
+      <div class="metric-value">{{ stats().errors }}</div>
+      <div class="metric-label">Needs Attention</div>
+      <div class="metric-bar">
+        <div class="metric-bar-fill error" [style.width]="(stats().errors / stats().total * 100) + '%'"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filters-section">
+    <div class="search-container">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      <input
+        type="text"
+        placeholder="Search integrations by name or category..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+    <div class="filter-buttons">
+      <button class="filter-btn" [class.active]="filterCategory() === 'all'" (click)="filterCategory.set('all')">
+        All
+      </button>
+      <button class="filter-btn" [class.active]="filterCategory() === 'communication'" (click)="filterCategory.set('communication')">
+        💬 Communication
+      </button>
+      <button class="filter-btn" [class.active]="filterCategory() === 'productivity'" (click)="filterCategory.set('productivity')">
+        ⚡ Productivity
+      </button>
+      <button class="filter-btn" [class.active]="filterCategory() === 'finance'" (click)="filterCategory.set('finance')">
+        💰 Finance
+      </button>
+      <button class="filter-btn" [class.active]="filterCategory() === 'development'" (click)="filterCategory.set('development')">
+        ⚙️ Development
+      </button>
+      <button class="filter-btn" [class.active]="filterCategory() === 'marketing'" (click)="filterCategory.set('marketing')">
+        📈 Marketing
+      </button>
+    </div>
+    <select class="sort-dropdown" [(ngModel)]="filterStatus" (ngModelChange)="filterStatus.set($event)">
+      <option value="all">All Status</option>
+      <option value="connected">Connected</option>
+      <option value="disconnected">Not Connected</option>
+      <option value="pending">Pending</option>
+      <option value="error">Error</option>
+    </select>
+  </div>
+
+  <div class="integrations-grid" [class.list-view]="viewMode() === 'list'">
+    @for (integration of filteredIntegrations(); track integration.id) {
+      <div class="integration-card" [class.connected]="integration.status === 'connected'" (click)="selectIntegration(integration)">
+        @if (integration.isPopular) {
+          <div class="popular-badge">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            Popular
+          </div>
+        }
+
+        <div class="card-header">
+          <div class="integration-icon">{{ integration.icon }}</div>
+          <div class="integration-info">
+            <h3>{{ integration.name }}</h3>
+            <p class="category-tag">{{ getCategoryLabel(integration.category) }}</p>
+          </div>
+          <span class="status-indicator" [ngClass]="getStatusClass(integration.status)"></span>
+        </div>
+
+        <p class="integration-description">{{ integration.description }}</p>
+
+        <div class="features-list">
+          @for (feature of integration.features.slice(0, 3); track feature) {
+            <span class="feature-tag">{{ feature }}</span>
+          }
+          @if (integration.features.length > 3) {
+            <span class="feature-tag more">+{{ integration.features.length - 3 }}</span>
+          }
+        </div>
+
+        @if (integration.status === 'connected') {
+          <div class="sync-info">
+            <div class="sync-item">
+              <svg class="sync-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+              </svg>
+              <span>{{ integration.syncFrequency }}</span>
+            </div>
+            <div class="sync-item">
+              <svg class="sync-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>{{ formatDate(integration.lastSync!) }}</span>
+            </div>
+            @if (integration.dataPoints) {
+              <div class="sync-item">
+                <svg class="sync-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>{{ formatNumber(integration.dataPoints) }} records</span>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="card-footer">
+          <span class="status-badge" [ngClass]="getStatusClass(integration.status)">
+            {{ getStatusLabel(integration.status) }}
+          </span>
+          <div class="action-buttons">
+            @if (integration.status === 'connected') {
+              @if (integration.route) {
+                <button class="action-btn manage" (click)="navigateToIntegration(integration); $event.stopPropagation()" title="Manage">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m0-6l4.2-4.2"></path>
+                  </svg>
+                </button>
+              }
+              <button class="action-btn disconnect" (click)="disconnectIntegration(integration); $event.stopPropagation()" title="Disconnect">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            } @else if (integration.status === 'error') {
+              <button class="action-btn retry" (click)="retryConnection(integration); $event.stopPropagation()" title="Retry">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+              </button>
+            } @else {
+              <button class="action-btn connect" (click)="connectIntegration(integration); $event.stopPropagation()" title="Connect">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg viewBox="0 0 200 200" fill="none">
+            <circle cx="100" cy="100" r="80" stroke="var(--border-color)" stroke-width="2" stroke-dasharray="8 8"/>
+            <path d="M70 90h60M70 110h40" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>No integrations found</h3>
+        <p>Try adjusting your filters or search query</p>
+      </div>
+    }
+  </div>
+
+  @if (selectedIntegration()) {
+    <div class="modal-overlay" (click)="closeDetails()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-title-section">
+            <div class="integration-icon-large">{{ selectedIntegration()!.icon }}</div>
+            <div>
+              <h2>{{ selectedIntegration()!.name }}</h2>
+              <p class="modal-subtitle">{{ getCategoryLabel(selectedIntegration()!.category) }}</p>
+            </div>
+          </div>
+          <button class="btn-close" (click)="closeDetails()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-section">
+            <p class="integration-description-full">{{ selectedIntegration()!.description }}</p>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Status</label>
+              <span class="status-badge" [ngClass]="getStatusClass(selectedIntegration()!.status)">
+                {{ getStatusLabel(selectedIntegration()!.status) }}
+              </span>
+            </div>
+            <div class="detail-item">
+              <label>Category</label>
+              <div>{{ getCategoryLabel(selectedIntegration()!.category) }}</div>
+            </div>
+            <div class="detail-item">
+              <label>Setup Complexity</label>
+              <div class="complexity-badge" [class]="selectedIntegration()!.setupComplexity">
+                {{ selectedIntegration()!.setupComplexity }}
+              </div>
+            </div>
+            @if (selectedIntegration()!.lastSync) {
+              <div class="detail-item">
+                <label>Last Sync</label>
+                <div>{{ formatDate(selectedIntegration()!.lastSync!) }}</div>
+              </div>
+            }
+            @if (selectedIntegration()!.syncFrequency) {
+              <div class="detail-item">
+                <label>Sync Frequency</label>
+                <div>{{ selectedIntegration()!.syncFrequency }}</div>
+              </div>
+            }
+            @if (selectedIntegration()!.dataPoints) {
+              <div class="detail-item">
+                <label>Data Points</label>
+                <div class="data-points">{{ formatNumber(selectedIntegration()!.dataPoints!) }}</div>
+              </div>
+            }
+          </div>
+
+          <div class="detail-section">
+            <label>Features</label>
+            <div class="features-grid">
+              @for (feature of selectedIntegration()!.features; track feature) {
+                <div class="feature-item">
+                  <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>{{ feature }}</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          @if (selectedIntegration()!.status === 'error') {
+            <div class="error-section">
+              <div class="error-header">
+                <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <span>Connection Error</span>
+              </div>
+              <p>Unable to sync with {{ selectedIntegration()!.name }}. Please check your credentials and try again.</p>
+            </div>
+          }
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="closeDetails()">Close</button>
+          @if (selectedIntegration()!.status === 'connected') {
+            @if (selectedIntegration()!.route) {
+              <button class="btn-primary" (click)="navigateToIntegration(selectedIntegration()!)">
+                Manage Integration
+              </button>
+            }
+            <button class="btn-danger" (click)="disconnectIntegration(selectedIntegration()!)">
+              Disconnect
+            </button>
+          } @else if (selectedIntegration()!.status === 'error') {
+            <button class="btn-primary" (click)="retryConnection(selectedIntegration()!)">
+              Retry Connection
+            </button>
+          } @else {
+            <button class="btn-primary" (click)="connectIntegration(selectedIntegration()!)">
+              Connect Now
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

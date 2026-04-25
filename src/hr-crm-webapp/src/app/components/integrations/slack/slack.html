@@ -1,1 +1,292 @@
-<p>slack works!</p>
+<div class="slack-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="integration-badge">
+        <span class="integration-icon">💬</span>
+        <div class="integration-meta">
+          <div class="eyebrow">Integration</div>
+          <h1>Slack</h1>
+        </div>
+      </div>
+      <p class="subtitle">Team communication and collaboration platform</p>
+    </div>
+    <div class="header-actions">
+      @if (isConnected()) {
+        <div class="connection-status connected">
+          <span class="status-dot"></span>
+          <span>Connected to {{ workspaceName() }}</span>
+        </div>
+        <button class="btn-secondary" (click)="disconnect()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Disconnect
+        </button>
+      } @else {
+        <div class="connection-status disconnected">
+          <span class="status-dot"></span>
+          <span>Not Connected</span>
+        </div>
+        <button class="btn-primary" (click)="reconnect()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          Connect Slack
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (isConnected()) {
+    <div class="metrics-dashboard">
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-icon">#</span>
+          <span class="metric-badge total">Channels</span>
+        </div>
+        <div class="metric-value">{{ stats().totalChannels }}</div>
+        <div class="metric-label">Total Channels</div>
+        <div class="metric-bar">
+          <div class="metric-bar-fill total" style="width: 100%;"></div>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-icon">✓</span>
+          <span class="metric-badge active">Active</span>
+        </div>
+        <div class="metric-value">{{ stats().activeChannels }}</div>
+        <div class="metric-label">Active Channels</div>
+        <div class="metric-bar">
+          <div class="metric-bar-fill active" [style.width]="(stats().activeChannels / stats().totalChannels * 100) + '%'"></div>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-icon">💬</span>
+          <span class="metric-badge messages">Messages</span>
+        </div>
+        <div class="metric-value">{{ stats().totalMessages }}</div>
+        <div class="metric-label">Messages Today</div>
+        <div class="metric-bar">
+          <div class="metric-bar-fill messages" style="width: 75%;"></div>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-icon">🔔</span>
+          <span class="metric-badge notifications">Alerts</span>
+        </div>
+        <div class="metric-value">{{ stats().notifications }}</div>
+        <div class="metric-label">Active Notifications</div>
+        <div class="metric-bar">
+          <div class="metric-bar-fill notifications" [style.width]="(stats().notifications / 5 * 100) + '%'"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-sections">
+      <div class="channels-section">
+        <div class="section-header">
+          <h2>Channels</h2>
+          <div class="section-actions">
+            <div class="search-container">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input
+                type="text"
+                placeholder="Search channels..."
+                [(ngModel)]="searchQuery"
+                (ngModelChange)="searchQuery.set($event)"
+              />
+            </div>
+            <div class="filter-buttons">
+              <button class="filter-btn" [class.active]="filterType() === 'all'" (click)="filterType.set('all')">
+                All
+              </button>
+              <button class="filter-btn" [class.active]="filterType() === 'public'" (click)="filterType.set('public')">
+                Public
+              </button>
+              <button class="filter-btn" [class.active]="filterType() === 'private'" (click)="filterType.set('private')">
+                Private
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="channels-list">
+          @for (channel of filteredChannels(); track channel.id) {
+            <div class="channel-card" [class.active]="channel.isActive" (click)="selectChannel(channel)">
+              <div class="channel-header">
+                <div class="channel-info">
+                  <span class="channel-icon">{{ getChannelIcon(channel.type) }}</span>
+                  <div class="channel-details">
+                    <h3>{{ channel.name }}</h3>
+                    <p>{{ channel.members }} members</p>
+                  </div>
+                </div>
+                <div class="channel-status">
+                  @if (channel.unreadCount > 0) {
+                    <span class="unread-badge">{{ channel.unreadCount }}</span>
+                  }
+                  <label class="toggle-switch" (click)="$event.stopPropagation()">
+                    <input type="checkbox" [checked]="channel.isActive" (change)="toggleChannel(channel)">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="channel-footer">
+                <span class="last-activity">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  {{ formatDate(channel.lastActivity) }}
+                </span>
+                <span class="channel-type-badge" [class]="channel.type">{{ channel.type }}</span>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state">
+              <p>No channels found</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="notifications-section">
+        <div class="section-header">
+          <h2>Notification Rules</h2>
+          <p class="section-subtitle">Configure automated notifications for key events</p>
+        </div>
+
+        <div class="notifications-list">
+          @for (notification of notifications(); track notification.id) {
+            <div class="notification-card" [class.enabled]="notification.enabled">
+              <div class="notification-content">
+                <div class="notification-header">
+                  <h3>{{ notification.event }}</h3>
+                  <label class="toggle-switch">
+                    <input type="checkbox" [checked]="notification.enabled" (change)="toggleNotification(notification)">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <p class="notification-description">{{ notification.description }}</p>
+                <div class="notification-meta">
+                  <span class="channel-tag">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    #{{ notification.channel }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    @if (selectedChannel()) {
+      <div class="modal-overlay" (click)="closeDetails()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <div class="modal-title-section">
+              <span class="channel-icon-large">{{ getChannelIcon(selectedChannel()!.type) }}</span>
+              <div>
+                <h2>{{ selectedChannel()!.name }}</h2>
+                <p class="modal-subtitle">{{ selectedChannel()!.type }} channel</p>
+              </div>
+            </div>
+            <button class="btn-close" (click)="closeDetails()">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="detail-grid">
+              <div class="detail-item">
+                <label>Members</label>
+                <div>{{ selectedChannel()!.members }}</div>
+              </div>
+              <div class="detail-item">
+                <label>Type</label>
+                <div class="channel-type-badge" [class]="selectedChannel()!.type">{{ selectedChannel()!.type }}</div>
+              </div>
+              <div class="detail-item">
+                <label>Status</label>
+                <div>
+                  <span class="status-badge" [class.active]="selectedChannel()!.isActive">
+                    {{ selectedChannel()!.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </div>
+              </div>
+              <div class="detail-item">
+                <label>Last Activity</label>
+                <div>{{ formatDate(selectedChannel()!.lastActivity) }}</div>
+              </div>
+              @if (selectedChannel()!.unreadCount > 0) {
+                <div class="detail-item">
+                  <label>Unread Messages</label>
+                  <div class="unread-count">{{ selectedChannel()!.unreadCount }}</div>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn-secondary" (click)="closeDetails()">Close</button>
+            <button class="btn-primary" (click)="toggleChannel(selectedChannel()!); closeDetails()">
+              {{ selectedChannel()!.isActive ? 'Deactivate' : 'Activate' }} Channel
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  } @else {
+    <div class="disconnected-state">
+      <div class="disconnected-icon">
+        <svg viewBox="0 0 200 200" fill="none">
+          <circle cx="100" cy="100" r="80" stroke="var(--border-color)" stroke-width="3" stroke-dasharray="8 8"/>
+          <path d="M70 100h60M100 70v60" stroke="var(--text-muted)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2>Connect Your Slack Workspace</h2>
+      <p>Enable real-time notifications and team collaboration by connecting your Slack workspace</p>
+      <div class="features-list">
+        <div class="feature-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Real-time notifications</span>
+        </div>
+        <div class="feature-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Channel management</span>
+        </div>
+        <div class="feature-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Custom event triggers</span>
+        </div>
+        <div class="feature-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Team collaboration</span>
+        </div>
+      </div>
+      <button class="btn-primary-large" (click)="reconnect()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+        Connect Slack Workspace
+      </button>
+    </div>
+  }
+</div>
+

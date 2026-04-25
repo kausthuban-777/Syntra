@@ -49,74 +49,99 @@
   height: 20px;
 }
 
-.workflow-bar {
-  display: flex;
-  align-items: center;
+.metrics-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
   background: var(--bg-card);
   border-radius: 12px;
   padding: 1.5rem;
-  margin-bottom: 1.5rem;
   box-shadow: var(--shadow-card);
-  overflow-x: auto;
-}
-
-.workflow-stage {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1.25rem;
-  border-radius: 8px;
-  cursor: pointer;
   transition: all 0.3s ease;
-  min-width: 140px;
 }
 
-.workflow-stage:hover {
-  background: var(--bg-primary);
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
 }
 
-.workflow-stage.active {
-  background: var(--accent-purple-bg);
-}
-
-.stage-icon {
-  font-size: 1.5rem;
-  width: 40px;
-  height: 40px;
+.metric-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  background: var(--bg-primary);
-  border-radius: 8px;
+  margin-bottom: 1rem;
 }
 
-.workflow-stage.active .stage-icon {
-  background: white;
+.metric-icon {
+  font-size: 1.5rem;
 }
 
-.stage-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-}
-
-.stage-label {
-  font-size: 0.875rem;
+.metric-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-primary);
-}
-
-.stage-count {
-  font-size: 1.25rem;
-  font-weight: 700;
+  text-transform: uppercase;
+  background: var(--accent-purple-bg);
   color: var(--accent-purple);
 }
 
-.workflow-connector {
-  width: 40px;
-  height: 2px;
-  background: var(--border-color);
-  margin: 0 0.5rem;
+.metric-badge.draft {
+  background: var(--accent-purple-bg);
+  color: var(--accent-purple);
+}
+
+.metric-badge.sent {
+  background: var(--accent-orange-bg);
+  color: var(--accent-orange);
+}
+
+.metric-badge.accepted {
+  background: var(--accent-green-bg);
+  color: var(--accent-green);
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.metric-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.metric-bar {
+  height: 4px;
+  background: var(--bg-primary);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.metric-bar-fill {
+  height: 100%;
+  background: var(--accent-purple);
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+.metric-bar-fill.draft {
+  background: var(--accent-purple);
+}
+
+.metric-bar-fill.sent {
+  background: var(--accent-orange);
+}
+
+.metric-bar-fill.accepted {
+  background: var(--accent-green);
 }
 
 .search-filter-bar {
@@ -614,6 +639,10 @@
     padding: 1.5rem;
   }
 
+  .metrics-dashboard {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .quotations-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
@@ -629,8 +658,8 @@
     align-items: flex-start;
   }
 
-  .workflow-bar {
-    overflow-x: scroll;
+  .metrics-dashboard {
+    grid-template-columns: 1fr;
   }
 
   .search-filter-bar {
@@ -653,9 +682,5 @@
 
   .page-header h1 {
     font-size: 1.5rem;
-  }
-
-  .workflow-stage {
-    min-width: 120px;
   }
 }

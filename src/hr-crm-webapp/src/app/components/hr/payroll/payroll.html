@@ -1,272 +1,321 @@
 <section class="payroll-page">
-  <div class="page-heading">
+  <header class="page-heading">
     <div>
-      <div class="eyebrow">HR Management</div>
-      <h1>Payroll Management</h1>
-      <p class="description">
-        Comprehensive payroll processing and employee compensation management system
-      </p>
-    </div>
-  </div>
-
-  <div class="summary-grid" *ngIf="summary()">
-    <div class="summary-card">
-      <div class="summary-icon">
-        <svg viewBox="0 0 24 24" class="icon">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-      </div>
-      <div class="summary-content">
-        <div class="summary-label">Total Employees</div>
-        <div class="summary-value">{{ summary()?.totalEmployees }}</div>
-      </div>
+      <p class="eyebrow">HR payroll management</p>
+      <h1>Payroll</h1>
+      <p class="description">Comprehensive payroll processing and employee compensation management.</p>
     </div>
 
-    <div class="summary-card">
-      <div class="summary-icon">
-        <svg viewBox="0 0 24 24" class="icon">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-        </svg>
-      </div>
-      <div class="summary-content">
-        <div class="summary-label">Processed Payrolls</div>
-        <div class="summary-value">{{ summary()?.processedPayrolls }}</div>
+    <div class="toolbar-group">
+      <div class="filter-controls">
+        <select
+          [ngModel]="selectedStatus()"
+          (ngModelChange)="selectedStatus.set($event); onStatusFilterChange()"
+          aria-label="Filter by status"
+        >
+          <option value="">All statuses</option>
+          <option [value]="PayrollStatus.Pending">Pending</option>
+          <option [value]="PayrollStatus.Processing">Processing</option>
+          <option [value]="PayrollStatus.Completed">Completed</option>
+          <option [value]="PayrollStatus.Failed">Failed</option>
+        </select>
+
+        <input
+          type="month"
+          [ngModel]="selectedPeriod()"
+          (ngModelChange)="selectedPeriod.set($event); onPeriodFilterChange()"
+          aria-label="Select period"
+        />
       </div>
     </div>
+  </header>
 
-    <div class="summary-card">
-      <div class="summary-icon">
-        <svg viewBox="0 0 24 24" class="icon">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-        </svg>
-      </div>
-      <div class="summary-content">
-        <div class="summary-label">Pending Payrolls</div>
-        <div class="summary-value">{{ summary()?.pendingPayrolls }}</div>
-      </div>
+  @if (summary()) {
+    <div class="summary-grid">
+      <article class="summary-card">
+        <div class="summary-icon">
+          <svg viewBox="0 0 24 24" class="icon">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </div>
+        <div class="summary-content">
+          <p class="summary-label">Total employees</p>
+          <strong class="summary-value">{{ summary()!.totalEmployees }}</strong>
+        </div>
+      </article>
+
+      <article class="summary-card processed">
+        <div class="summary-icon">
+          <svg viewBox="0 0 24 24" class="icon">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+          </svg>
+        </div>
+        <div class="summary-content">
+          <p class="summary-label">Processed payrolls</p>
+          <strong class="summary-value">{{ summary()!.processedPayrolls }}</strong>
+        </div>
+      </article>
+
+      <article class="summary-card pending">
+        <div class="summary-icon">
+          <svg viewBox="0 0 24 24" class="icon">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12,6 12,12 16,14"/>
+          </svg>
+        </div>
+        <div class="summary-content">
+          <p class="summary-label">Pending payrolls</p>
+          <strong class="summary-value">{{ summary()!.pendingPayrolls }}</strong>
+        </div>
+      </article>
+
+      <article class="summary-card total">
+        <div class="summary-icon">
+          <svg viewBox="0 0 24 24" class="icon">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <div class="summary-content">
+          <p class="summary-label">Total net pay</p>
+          <strong class="summary-value">{{ formatCurrency(summary()!.totalNetPay) }}</strong>
+        </div>
+      </article>
     </div>
+  }
 
-    <div class="summary-card">
-      <div class="summary-icon">
-        <svg viewBox="0 0 24 24" class="icon">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-        </svg>
-      </div>
-      <div class="summary-content">
-        <div class="summary-label">Total Net Pay</div>
-        <div class="summary-value">{{ formatCurrency(summary()?.totalNetPay || 0) }}</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="filters-toolbar">
-    <div class="filter-chips">
-      <button class="filter-chip" [class.active]="selectedStatus() === ''" (click)="selectedStatus.set('')">
-        All Status
-      </button>
-      <button class="filter-chip" [class.active]="selectedStatus() === PayrollStatus.Pending" (click)="selectedStatus.set(PayrollStatus.Pending)">
-        <span class="chip-dot pending"></span> Pending
-      </button>
-      <button class="filter-chip" [class.active]="selectedStatus() === PayrollStatus.Processing" (click)="selectedStatus.set(PayrollStatus.Processing)">
-        <span class="chip-dot processing"></span> Processing
-      </button>
-      <button class="filter-chip" [class.active]="selectedStatus() === PayrollStatus.Completed" (click)="selectedStatus.set(PayrollStatus.Completed)">
-        <span class="chip-dot completed"></span> Completed
-      </button>
-      <button class="filter-chip" [class.active]="selectedStatus() === PayrollStatus.Failed" (click)="selectedStatus.set(PayrollStatus.Failed)">
-        <span class="chip-dot failed"></span> Failed
-      </button>
-    </div>
-
-    <input
-      type="month"
-      class="period-select-modern"
-      [(ngModel)]="selectedPeriod"
-      (change)="onPeriodFilterChange()"
-      placeholder="Select period"
-    >
-  </div>
-
-  <div class="payroll-table-card">
+  <section class="payroll-table-card">
     <div class="section-header">
-      <h2>Payroll Records</h2>
-      <p class="section-meta">{{ filteredRecords().length }} records found</p>
-    </div>
-
-    <div class="payroll-table">
-      <div class="table-row table-head">
-        <span>Employee Name</span>
-        <span>Employee ID</span>
-        <span>Pay Period</span>
-        <span>Gross Pay</span>
-        <span>Deductions</span>
-        <span>Net Pay</span>
-        <span>Status</span>
-        <span class="actions-column-header">Actions</span>
-      </div>
-
-      <div
-        *ngFor="let record of filteredRecords()"
-        class="table-row table-body"
-      >
-        <span>{{ record.employeeName }}</span>
-        <span>{{ record.employeeId }}</span>
-        <span class="pay-period-cell">{{ formatDate(record.payPeriodStart) }} - {{ formatDate(record.payPeriodEnd) }}</span>
-        <span class="amount-cell">{{ formatCurrency(record.grossPay) }}</span>
-        <span class="amount-cell">{{ formatCurrency(record.deductions.reduce((sum, d) => sum + d.amount, 0)) }}</span>
-        <span class="amount-cell net-pay">{{ formatCurrency(record.netPay) }}</span>
-        <span>
-          <span class="status-pill" [ngClass]="getStatusClass(record.status)">
-            {{ record.status }}
-          </span>
-        </span>
-        <span class="actions-column">
-          <button
-            type="button"
-            class="action-btn view-btn"
-            title="View details"
-            (click)="viewPayrollDetails(record)"
-          >
-            <svg viewBox="0 0 24 24" class="icon">
-              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="action-btn process-btn"
-            [disabled]="record.status !== 'pending'"
-            [title]="record.status === 'pending' ? 'Process payroll' : 'Cannot process'"
-            (click)="record.status === 'pending' && processPayroll(record)"
-          >
-            <svg viewBox="0 0 24 24" class="icon">
-              <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="action-btn complete-btn"
-            [disabled]="record.status !== 'processing'"
-            [title]="record.status === 'processing' ? 'Mark as completed' : 'Cannot complete'"
-            (click)="record.status === 'processing' && completePayroll(record)"
-          >
-            <svg viewBox="0 0 24 24" class="icon">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="action-btn download-btn"
-            [disabled]="record.status !== 'completed'"
-            [title]="record.status === 'completed' ? 'Download payroll receipt' : 'Not available'"
-            (click)="record.status === 'completed' && downloadPayrollReceipt(record)"
-          >
-            <svg viewBox="0 0 24 24" class="icon">
-              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-            </svg>
-          </button>
-        </span>
-      </div>
-
-      <div *ngIf="!filteredRecords().length" class="empty-state">
-        No payroll records match the selected filters.
+      <div>
+        <h2>Payroll records</h2>
+        <p class="section-meta">{{ sortedRecords().length }} records found.</p>
       </div>
     </div>
-  </div>
+
+    <div class="payroll-table-wrapper">
+      @if (isLoading()) {
+        <app-table-skeleton [rows]="5" [columns]="8"></app-table-skeleton>
+      } @else {
+        <table class="payroll-table">
+          <thead>
+            <tr>
+              <th (click)="sortRecords('employeeName')" class="sortable">
+                Employee
+                <svg class="sort-icon" [class.active]="sortBy() === 'employeeName'" [class.desc]="sortBy() === 'employeeName' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th (click)="sortRecords('employeeId')" class="sortable">
+                ID
+                <svg class="sort-icon" [class.active]="sortBy() === 'employeeId'" [class.desc]="sortBy() === 'employeeId' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th (click)="sortRecords('payPeriodStart')" class="sortable">
+                Pay period
+                <svg class="sort-icon" [class.active]="sortBy() === 'payPeriodStart'" [class.desc]="sortBy() === 'payPeriodStart' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th (click)="sortRecords('grossPay')" class="sortable">
+                Gross pay
+                <svg class="sort-icon" [class.active]="sortBy() === 'grossPay'" [class.desc]="sortBy() === 'grossPay' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th>Deductions</th>
+              <th (click)="sortRecords('netPay')" class="sortable">
+                Net pay
+                <svg class="sort-icon" [class.active]="sortBy() === 'netPay'" [class.desc]="sortBy() === 'netPay' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th>Status</th>
+              <th class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (record of sortedRecords(); track record.id) {
+              <tr>
+                <td class="employee-cell">
+                  <div class="employee-name">{{ record.employeeName }}</div>
+                </td>
+                <td>{{ record.employeeId }}</td>
+                <td class="period-cell">
+                  <div>{{ formatDate(record.payPeriodStart) }}</div>
+                  <div class="period-end">to {{ formatDate(record.payPeriodEnd) }}</div>
+                </td>
+                <td class="amount-cell">{{ formatCurrency(record.grossPay) }}</td>
+                <td class="amount-cell">{{ formatCurrency(record.deductions.reduce((sum, d) => sum + d.amount, 0)) }}</td>
+                <td class="amount-cell net-pay">{{ formatCurrency(record.netPay) }}</td>
+                <td>
+                  <span class="status-badge" [class]="getStatusClass(record.status)">
+                    <span class="status-dot"></span>
+                    {{ record.status }}
+                  </span>
+                </td>
+                <td class="actions-col">
+                  <div class="action-buttons">
+                    <button
+                      class="action-btn"
+                      title="View details"
+                      (click)="viewPayrollDetails(record)"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
+                    <button
+                      class="action-btn"
+                      [disabled]="record.status !== PayrollStatus.Pending"
+                      title="Process payroll"
+                      (click)="processPayroll(record)"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </button>
+                    <button
+                      class="action-btn"
+                      [disabled]="record.status !== PayrollStatus.Processing"
+                      title="Complete payroll"
+                      (click)="completePayroll(record)"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                    </button>
+                    <button
+                      class="action-btn"
+                      [disabled]="record.status !== PayrollStatus.Completed"
+                      title="Download receipt"
+                      (click)="downloadPayrollReceipt(record)"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        @if (!sortedRecords().length) {
+          <div class="empty-state">
+            No payroll records match the selected filters.
+          </div>
+        }
+      }
+    </div>
+  </section>
+
+  @if (showDetailsModal() && selectedRecord()) {
+    <div class="modal-overlay" (click)="closeDetailsModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Payroll Details</h3>
+          <button class="close-btn" (click)="closeDetailsModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="details-grid">
+            <div class="detail-section">
+              <h4>Employee Information</h4>
+              <div class="detail-row">
+                <span class="detail-label">Name:</span>
+                <span class="detail-value">{{ selectedRecord()!.employeeName }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Employee ID:</span>
+                <span class="detail-value">{{ selectedRecord()!.employeeId }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Pay Frequency:</span>
+                <span class="detail-value">{{ selectedRecord()!.payFrequency }}</span>
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <h4>Pay Period</h4>
+              <div class="detail-row">
+                <span class="detail-label">Start Date:</span>
+                <span class="detail-value">{{ formatDate(selectedRecord()!.payPeriodStart) }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">End Date:</span>
+                <span class="detail-value">{{ formatDate(selectedRecord()!.payPeriodEnd) }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Pay Date:</span>
+                <span class="detail-value">{{ formatDate(selectedRecord()!.payDate) }}</span>
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <h4>Earnings</h4>
+              <div class="detail-row">
+                <span class="detail-label">Base Salary:</span>
+                <span class="detail-value">{{ formatCurrency(selectedRecord()!.baseSalary) }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Hours Worked:</span>
+                <span class="detail-value">{{ selectedRecord()!.hoursWorked.toFixed(1) }}</span>
+              </div>
+              @if (selectedRecord()!.overtimeHours > 0) {
+                <div class="detail-row">
+                  <span class="detail-label">Overtime Hours:</span>
+                  <span class="detail-value">{{ selectedRecord()!.overtimeHours.toFixed(1) }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Overtime Rate:</span>
+                  <span class="detail-value">{{ formatCurrency(selectedRecord()!.overtimeRate) }}/hr</span>
+                </div>
+              }
+            </div>
+
+            <div class="detail-section">
+              <h4>Deductions</h4>
+              @for (deduction of selectedRecord()!.deductions; track deduction.name) {
+                <div class="deduction-item">
+                  <span class="deduction-name">{{ deduction.name }}</span>
+                  <span class="deduction-amount">{{ formatCurrency(deduction.amount) }}</span>
+                </div>
+              }
+              <div class="deduction-total">
+                <span class="deduction-name">Total Deductions:</span>
+                <span class="deduction-amount">{{ formatCurrency(selectedRecord()!.deductions.reduce((sum, d) => sum + d.amount, 0)) }}</span>
+              </div>
+            </div>
+
+            <div class="detail-section summary-section">
+              <h4>Summary</h4>
+              <div class="summary-row">
+                <span class="summary-label">Gross Pay:</span>
+                <span class="summary-value">{{ formatCurrency(selectedRecord()!.grossPay) }}</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">Total Deductions:</span>
+                <span class="summary-value">-{{ formatCurrency(selectedRecord()!.deductions.reduce((sum, d) => sum + d.amount, 0)) }}</span>
+              </div>
+              <div class="summary-row net-total">
+                <span class="summary-label">Net Pay:</span>
+                <span class="summary-value">{{ formatCurrency(selectedRecord()!.netPay) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </section>
-
-<div *ngIf="showDetailsModal() && selectedRecord()" class="modal-overlay" (click)="closeDetailsModal()">
-  <div class="payroll-details-modal" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>Payroll Details</h3>
-      <button type="button" class="close-btn" (click)="closeDetailsModal()">
-        <svg viewBox="0 0 24 24" class="icon">
-          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-        </svg>
-      </button>
-    </div>
-
-    <div class="modal-body" *ngIf="selectedRecord() as record">
-      <div class="details-grid">
-        <div class="detail-section">
-          <h4>Employee Information</h4>
-          <div class="detail-row">
-            <span class="detail-label">Name:</span>
-            <span class="detail-value">{{ record.employeeName }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Employee ID:</span>
-            <span class="detail-value">{{ record.employeeId }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Pay Frequency:</span>
-            <span class="detail-value">{{ record.payFrequency }}</span>
-          </div>
-        </div>
-
-        <div class="detail-section">
-          <h4>Pay Period</h4>
-          <div class="detail-row">
-            <span class="detail-label">Start Date:</span>
-            <span class="detail-value">{{ formatDate(record.payPeriodStart) }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">End Date:</span>
-            <span class="detail-value">{{ formatDate(record.payPeriodEnd) }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Pay Date:</span>
-            <span class="detail-value">{{ formatDate(record.payDate) }}</span>
-          </div>
-        </div>
-
-        <div class="detail-section">
-          <h4>Earnings</h4>
-          <div class="detail-row">
-            <span class="detail-label">Base Salary:</span>
-            <span class="detail-value">{{ formatCurrency(record.baseSalary) }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">Hours Worked:</span>
-            <span class="detail-value">{{ record.hoursWorked.toFixed(1) }}</span>
-          </div>
-          <div class="detail-row" *ngIf="record.overtimeHours > 0">
-            <span class="detail-label">Overtime Hours:</span>
-            <span class="detail-value">{{ record.overtimeHours.toFixed(1) }}</span>
-          </div>
-          <div class="detail-row" *ngIf="record.overtimeHours > 0">
-            <span class="detail-label">Overtime Rate:</span>
-            <span class="detail-value">{{ formatCurrency(record.overtimeRate) }}/hr</span>
-          </div>
-        </div>
-
-        <div class="detail-section">
-          <h4>Deductions</h4>
-          <div class="deduction-item" *ngFor="let deduction of record.deductions">
-            <span class="deduction-name">{{ deduction.name }}</span>
-            <span class="deduction-amount">{{ formatCurrency(deduction.amount) }}</span>
-          </div>
-          <div class="deduction-total">
-            <span class="deduction-name">Total Deductions:</span>
-            <span class="deduction-amount">{{ formatCurrency(record.deductions.reduce((sum, d) => sum + d.amount, 0)) }}</span>
-          </div>
-        </div>
-
-        <div class="detail-section">
-          <h4>Summary</h4>
-          <div class="summary-row">
-            <span class="summary-label">Gross Pay:</span>
-            <span class="summary-value">{{ formatCurrency(record.grossPay) }}</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">Total Deductions:</span>
-            <span class="summary-value">-{{ formatCurrency(record.deductions.reduce((sum, d) => sum + d.amount, 0)) }}</span>
-          </div>
-          <div class="summary-row net-total">
-            <span class="summary-label">Net Pay:</span>
-            <span class="summary-value">{{ formatCurrency(record.netPay) }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>

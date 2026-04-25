@@ -6,17 +6,18 @@ import { takeUntil } from 'rxjs/operators';
 import { Interview, InterviewFilter, InterviewType, InterviewStatus } from '../../../models/recruitment.model';
 import { RecruitmentService } from '../../../services/recruitment.service';
 import { ConfirmationModal } from '../../shared/ui/confirmation-modal/confirmation-modal';
+import { TableSkeleton } from '../../shared/ui/table-skeleton/table-skeleton';
 
 @Component({
   selector: 'app-interview-scheduling',
-  imports: [CommonModule, FormsModule, ConfirmationModal],
+  imports: [CommonModule, FormsModule, ConfirmationModal, TableSkeleton],
   templateUrl: './interview-scheduling.html',
   styleUrl: './interview-scheduling.css',
   providers: [RecruitmentService]
 })
 export class InterviewScheduling implements OnInit, OnDestroy {
   protected interviews = signal<Interview[]>([]);
-  protected isLoading = signal(false);
+  protected isLoading = signal<boolean>(false);
   protected selectedInterview = signal<Interview | null>(null);
   protected showForm = signal(false);
   protected isEditing = signal(false);
@@ -29,7 +30,6 @@ export class InterviewScheduling implements OnInit, OnDestroy {
   protected searchTerm = '';
   protected selectedStatus = '';
   protected selectedType = '';
-  protected sortBy = 'date';
 
   protected statuses = signal<string[]>([]);
   protected interviewTypes = signal<string[]>([]);
@@ -37,6 +37,41 @@ export class InterviewScheduling implements OnInit, OnDestroy {
   protected currentPage = 1;
   protected pageSize = 10;
   protected totalCount = 0;
+
+  protected sortBy = signal<string>('date');
+  protected sortDirection = signal<'asc' | 'desc'>('asc');
+
+  protected sortedInterviews = computed(() => {
+    const interviews = [...this.interviews()];
+    const sortField = this.sortBy();
+    const direction = this.sortDirection();
+
+    if (sortField === 'date') {
+      return interviews.sort((a, b) => {
+        const aTime = new Date(a.scheduledDate).getTime();
+        const bTime = new Date(b.scheduledDate).getTime();
+        return direction === 'asc' ? aTime - bTime : bTime - aTime;
+      });
+    } else if (sortField === 'rating') {
+      return interviews.sort((a, b) => {
+        const aRating = a.rating || 0;
+        const bRating = b.rating || 0;
+        return direction === 'asc' ? aRating - bRating : bRating - aRating;
+      });
+    } else {
+      return interviews.sort((a: any, b: any) => {
+        let aVal = a[sortField];
+        let bVal = b[sortField];
+
+        if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+        if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+
+        if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+  });
 
   protected totalPages = computed(() => Math.ceil(this.totalCount / this.pageSize));
   protected upcomingInterviews = computed(() => {
@@ -74,15 +109,7 @@ export class InterviewScheduling implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          let sorted = [...response.data];
-
-          if (this.sortBy === 'date') {
-            sorted.sort((a, b) => new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime());
-          } else if (this.sortBy === 'rating') {
-            sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-          }
-
-          this.interviews.set(sorted);
+          this.interviews.set(response.data);
           this.totalCount = response.totalCount;
           this.isLoading.set(false);
         },
@@ -120,15 +147,23 @@ export class InterviewScheduling implements OnInit, OnDestroy {
   }
 
   onSortChange(sort: string): void {
-    this.sortBy = sort;
-    this.loadInterviews();
+    this.sortBy.set(sort);
+  }
+
+  sortInterviews(field: string): void {
+    if (this.sortBy() === field) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortBy.set(field);
+      this.sortDirection.set('asc');
+    }
   }
 
   clearFilters(): void {
     this.searchTerm = '';
     this.selectedStatus = '';
     this.selectedType = '';
-    this.sortBy = 'date';
+    this.sortBy.set('date');
     this.currentPage = 1;
     this.loadInterviews();
   }

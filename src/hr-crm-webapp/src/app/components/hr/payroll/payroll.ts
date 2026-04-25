@@ -4,10 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { PayrollService } from '../../../services/payroll.service';
 import { PayrollRecord, PayrollStatus, PayrollSummary, PayrollFilter } from '../../../models/payroll.model';
+import { TableSkeleton } from '../../shared/ui/table-skeleton/table-skeleton';
 
 @Component({
   selector: 'app-payroll',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TableSkeleton],
   templateUrl: './payroll.html',
   styleUrl: './payroll.css',
 })
@@ -21,9 +22,13 @@ export class Payroll implements OnInit, OnDestroy {
   selectedRecord = signal<PayrollRecord | null>(null);
   showDetailsModal = signal(false);
   summary = signal<PayrollSummary | null>(null);
+  isLoading = signal<boolean>(false);
 
   selectedStatus = signal<PayrollStatus | ''>('');
   selectedPeriod = signal('');
+
+  sortBy = signal<string>('employeeName');
+  sortDirection = signal<'asc' | 'desc'>('asc');
 
   filteredRecords = computed(() => {
     let records = this.payrollRecords();
@@ -42,6 +47,24 @@ export class Payroll implements OnInit, OnDestroy {
     return records;
   });
 
+  sortedRecords = computed(() => {
+    const records = [...this.filteredRecords()];
+    const sortField = this.sortBy();
+    const direction = this.sortDirection();
+
+    return records.sort((a: any, b: any) => {
+      let aVal = a[sortField];
+      let bVal = b[sortField];
+
+      if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+      if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+
+      if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+      if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  });
+
   constructor(private payrollService: PayrollService) {}
 
   ngOnInit(): void {
@@ -54,10 +77,12 @@ export class Payroll implements OnInit, OnDestroy {
   }
 
   private loadPayrollData(): void {
+    this.isLoading.set(true);
     this.payrollService.getPayrollRecords().pipe(
       takeUntil(this.destroy$)
     ).subscribe(records => {
       this.payrollRecords.set(records);
+      this.isLoading.set(false);
     });
 
     this.payrollService.getPayrollSummary().pipe(
@@ -169,5 +194,14 @@ Generated: ${new Date().toLocaleString()}
 
   onPeriodFilterChange(): void {
     // Filter will be applied automatically via computed signal
+  }
+
+  sortRecords(field: string): void {
+    if (this.sortBy() === field) {
+      this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortBy.set(field);
+      this.sortDirection.set('asc');
+    }
   }
 }

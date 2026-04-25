@@ -154,6 +154,10 @@ export class Quotations implements OnInit {
     return this.quotations().filter(q => q.status === status).length;
   }
 
+  getTotalCount(): number {
+    return this.quotations().length;
+  }
+
   getDaysUntilExpiry(validUntil: Date): string {
     const now = new Date();
     const diff = validUntil.getTime() - now.getTime();

@@ -13,36 +13,49 @@
     </button>
   </div>
 
-  <div class="workflow-bar">
-    <div class="workflow-stage" [class.active]="filterStatus() === 'draft'">
-      <div class="stage-icon">✏️</div>
-      <div class="stage-info">
-        <div class="stage-label">Draft</div>
-        <div class="stage-count">{{ getStatusCount('draft') }}</div>
+  <div class="metrics-dashboard">
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-icon">📄</span>
+        <span class="metric-badge">Total</span>
+      </div>
+      <div class="metric-value">{{ getTotalCount() }}</div>
+      <div class="metric-label">Quotations</div>
+      <div class="metric-bar">
+        <div class="metric-bar-fill" style="width: 100%;"></div>
       </div>
     </div>
-    <div class="workflow-connector"></div>
-    <div class="workflow-stage" [class.active]="filterStatus() === 'sent'">
-      <div class="stage-icon">📤</div>
-      <div class="stage-info">
-        <div class="stage-label">Sent</div>
-        <div class="stage-count">{{ getStatusCount('sent') }}</div>
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-icon">✏️</span>
+        <span class="metric-badge draft">Draft</span>
+      </div>
+      <div class="metric-value">{{ getStatusCount('draft') }}</div>
+      <div class="metric-label">Draft Quotations</div>
+      <div class="metric-bar">
+        <div class="metric-bar-fill draft" [style.width]="(getStatusCount('draft') / getTotalCount() * 100) + '%'"></div>
       </div>
     </div>
-    <div class="workflow-connector"></div>
-    <div class="workflow-stage" [class.active]="filterStatus() === 'accepted'">
-      <div class="stage-icon">✅</div>
-      <div class="stage-info">
-        <div class="stage-label">Accepted</div>
-        <div class="stage-count">{{ getStatusCount('accepted') }}</div>
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-icon">📤</span>
+        <span class="metric-badge sent">Sent</span>
+      </div>
+      <div class="metric-value">{{ getStatusCount('sent') }}</div>
+      <div class="metric-label">Sent Quotations</div>
+      <div class="metric-bar">
+        <div class="metric-bar-fill sent" [style.width]="(getStatusCount('sent') / getTotalCount() * 100) + '%'"></div>
       </div>
     </div>
-    <div class="workflow-connector"></div>
-    <div class="workflow-stage" [class.active]="filterStatus() === 'rejected'">
-      <div class="stage-icon">❌</div>
-      <div class="stage-info">
-        <div class="stage-label">Rejected</div>
-        <div class="stage-count">{{ getStatusCount('rejected') }}</div>
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-icon">✅</span>
+        <span class="metric-badge accepted">Accepted</span>
+      </div>
+      <div class="metric-value">{{ getStatusCount('accepted') }}</div>
+      <div class="metric-label">Accepted Quotations</div>
+      <div class="metric-bar">
+        <div class="metric-bar-fill accepted" [style.width]="(getStatusCount('accepted') / getTotalCount() * 100) + '%'"></div>
       </div>
     </div>
   </div>

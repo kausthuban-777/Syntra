@@ -6,17 +6,18 @@ import { takeUntil } from 'rxjs/operators';
 import { Candidate, CandidateFilter, ExperienceLevel, CandidateStatus } from '../../../models/recruitment.model';
 import { RecruitmentService } from '../../../services/recruitment.service';
 import { ConfirmationModal } from '../../shared/ui/confirmation-modal/confirmation-modal';
+import { TableSkeleton } from '../../shared/ui/table-skeleton/table-skeleton';
 
 @Component({
   selector: 'app-candidates',
-  imports: [CommonModule, FormsModule, ConfirmationModal],
+  imports: [CommonModule, FormsModule, ConfirmationModal, TableSkeleton],
   templateUrl: './candidates.html',
   styleUrl: './candidates.css',
   providers: [RecruitmentService]
 })
 export class Candidates implements OnInit, OnDestroy {
   protected candidates = signal<Candidate[]>([]);
-  protected isLoading = signal(false);
+  protected isLoading = signal<boolean>(false);
   protected selectedCandidate = signal<Candidate | null>(null);
   protected showForm = signal(false);
   protected isEditing = signal(false);
@@ -42,8 +43,26 @@ export class Candidates implements OnInit, OnDestroy {
   protected pageSize = 10;
   protected totalCount = 0;
 
-  protected sortBy = signal('name');
+  protected sortBy = signal<string>('name');
   protected sortDirection = signal<'asc' | 'desc'>('asc');
+
+  protected sortedCandidates = computed(() => {
+    const candidates = [...this.candidates()];
+    const sortField = this.sortBy();
+    const direction = this.sortDirection();
+
+    return candidates.sort((a: any, b: any) => {
+      let aVal = a[sortField];
+      let bVal = b[sortField];
+
+      if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+      if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+
+      if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+      if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  });
 
   protected totalPages = computed(() => Math.ceil(this.totalCount / this.pageSize));
 
@@ -267,6 +286,5 @@ export class Candidates implements OnInit, OnDestroy {
       this.sortBy.set(field);
       this.sortDirection.set('asc');
     }
-    this.loadCandidates();
   }
 }

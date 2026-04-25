@@ -1,277 +1,250 @@
-<div class="interviews-container">
-  <div class="interviews-header">
-    <div class="header-content">
-      <h1 class="page-title">Interview Scheduling</h1>
-      <p class="page-subtitle">Manage and track all recruitment interviews</p>
+<section class="interviews-page">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">Recruitment Management</p>
+      <h1>Interview Scheduling</h1>
+      <p class="description">Schedule and manage candidate interviews throughout the hiring process.</p>
     </div>
-    <button class="btn btn-primary" (click)="openAddForm()">
-      <span class="btn-icon">+</span>
-      Schedule Interview
-    </button>
-  </div>
 
-  <div class="interview-stats">
-    <div class="stat-card">
-      <span class="stat-icon">⏰</span>
-      <div class="stat-info">
-        <p class="stat-label">Upcoming</p>
-        <p class="stat-value">{{ upcomingInterviews().length }}</p>
-      </div>
-    </div>
-    <div class="stat-card">
-      <span class="stat-icon">✅</span>
-      <div class="stat-info">
-        <p class="stat-label">Completed</p>
-        <p class="stat-value">{{ completedInterviews().length }}</p>
-      </div>
-    </div>
-    <div class="stat-card">
-      <span class="stat-icon">📋</span>
-      <div class="stat-info">
-        <p class="stat-label">Total</p>
-        <p class="stat-value">{{ interviews().length }}</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="interviews-filters">
-    <div class="filter-inputs">
-      <div class="search-box-modern">
-        <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.35-4.35"></path>
-        </svg>
+    <div class="toolbar-group">
+      <div class="filter-controls">
         <input
           type="text"
-          placeholder="Search by candidate name..."
+          placeholder="Search interviews..."
           [value]="searchTerm"
           (input)="onSearchChange($any($event.target).value ?? '')"
+          aria-label="Search interviews"
         />
+
+        <select
+          [value]="selectedStatus"
+          (change)="onStatusChange($any($event.target).value ?? '')"
+          aria-label="Filter by status"
+        >
+          <option value="">All statuses</option>
+          <option *ngFor="let status of statuses()" [value]="status">{{ status }}</option>
+        </select>
+
+        <select
+          [value]="selectedType"
+          (change)="onTypeChange($any($event.target).value ?? '')"
+          aria-label="Filter by type"
+        >
+          <option value="">All types</option>
+          <option *ngFor="let type of interviewTypes()" [value]="type">{{ type }}</option>
+        </select>
       </div>
 
-      <select
-        class="sort-select-modern"
-        [value]="selectedStatus"
-        (change)="onStatusChange($any($event.target).value ?? '')"
-      >
-        <option value="">All Statuses</option>
-        <option *ngFor="let status of statuses()" [value]="status">
-          {{ status }}
-        </option>
-      </select>
-
-      <select
-        class="sort-select-modern"
-        [value]="selectedType"
-        (change)="onTypeChange($any($event.target).value ?? '')"
-      >
-        <option value="">All Types</option>
-        <option *ngFor="let type of interviewTypes()" [value]="type">
-          {{ type }}
-        </option>
-      </select>
-
-      <select
-        class="sort-select-modern"
-        [value]="sortBy"
-        (change)="onSortChange($any($event.target).value ?? '')"
-      >
-        <option value="date">Sort by Date</option>
-        <option value="rating">Sort by Rating</option>
-      </select>
+      <button class="btn-primary" (click)="openAddForm()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Schedule Interview
+      </button>
     </div>
+  </header>
 
-    <div class="results-info">
-      <span class="result-count">{{ totalCount }} interview{{ totalCount !== 1 ? 's' : '' }}</span>
-    </div>
+  <div class="summary-grid">
+    <article class="summary-card">
+      <div class="summary-icon">
+        <svg viewBox="0 0 24 24" class="icon">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </div>
+      <div class="summary-content">
+        <p class="summary-label">Total interviews</p>
+        <strong class="summary-value">{{ totalCount }}</strong>
+      </div>
+    </article>
+
+    <article class="summary-card upcoming">
+      <div class="summary-icon">
+        <svg viewBox="0 0 24 24" class="icon">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12,6 12,12 16,14"/>
+        </svg>
+      </div>
+      <div class="summary-content">
+        <p class="summary-label">Upcoming</p>
+        <strong class="summary-value">{{ upcomingInterviews().length }}</strong>
+      </div>
+    </article>
+
+    <article class="summary-card completed">
+      <div class="summary-icon">
+        <svg viewBox="0 0 24 24" class="icon">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>
+      </div>
+      <div class="summary-content">
+        <p class="summary-label">Completed</p>
+        <strong class="summary-value">{{ completedInterviews().length }}</strong>
+      </div>
+    </article>
   </div>
 
-  <div class="content-wrapper">
-    <div class="interviews-list-section">
-      <div *ngIf="isLoading()" class="loading-state">
-        <div class="spinner"></div>
-        <p>Loading interviews...</p>
+  <section class="interviews-table-card">
+    <div class="section-header">
+      <div>
+        <h2>Interview records</h2>
+        <p class="section-meta">{{ sortedInterviews().length }} interviews found.</p>
       </div>
+    </div>
 
-      <div *ngIf="!isLoading() && interviews().length === 0" class="empty-state">
-        <span class="empty-icon">📅</span>
-        <h3>No Interviews Scheduled</h3>
-        <p>Start by scheduling your first interview</p>
-        <button class="btn btn-primary" (click)="openAddForm()">Schedule Your First Interview</button>
-      </div>
+    <div class="interviews-table-wrapper">
+      @if (isLoading()) {
+        <app-table-skeleton [rows]="5" [columns]="7"></app-table-skeleton>
+      } @else {
+        <table class="interviews-table">
+          <thead>
+            <tr>
+              <th (click)="sortInterviews('candidateName')" class="sortable">
+                Candidate
+                <svg class="sort-icon" [class.active]="sortBy() === 'candidateName'" [class.desc]="sortBy() === 'candidateName' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th (click)="sortInterviews('position')" class="sortable">
+                Position
+                <svg class="sort-icon" [class.active]="sortBy() === 'position'" [class.desc]="sortBy() === 'position' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th (click)="sortInterviews('interviewType')" class="sortable">
+                Type
+                <svg class="sort-icon" [class.active]="sortBy() === 'interviewType'" [class.desc]="sortBy() === 'interviewType' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th (click)="sortInterviews('scheduledDate')" class="sortable">
+                Date & Time
+                <svg class="sort-icon" [class.active]="sortBy() === 'scheduledDate'" [class.desc]="sortBy() === 'scheduledDate' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th>Interviewer</th>
+              <th>Status</th>
+              <th (click)="sortInterviews('rating')" class="sortable">
+                Rating
+                <svg class="sort-icon" [class.active]="sortBy() === 'rating'" [class.desc]="sortBy() === 'rating' && sortDirection() === 'desc'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </th>
+              <th class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (interview of sortedInterviews(); track interview.id) {
+              <tr>
+                <td class="candidate-cell">
+                  <div class="candidate-info">
+                    <div class="candidate-name">{{ interview.candidateName }}</div>
+                    <div class="candidate-id">{{ interview.candidateId }}</div>
+                  </div>
+                </td>
+                <td>{{ interview.position }}</td>
+                <td>
+                  <span class="type-badge" [class]="getTypeColor(interview.interviewType)">
+                    {{ interview.interviewType }}
+                  </span>
+                </td>
+                <td class="datetime-cell">
+                  <div>{{ interview.scheduledDate | date: 'MMM dd, yyyy' }}</div>
+                  <div class="time-text">{{ formatTime(interview.scheduledDate) }}</div>
+                </td>
+                <td>{{ interview.interviewerName }}</td>
+                <td>
+                  <span class="status-badge" [class]="getStatusColor(interview.status)">
+                    <span class="status-dot"></span>
+                    {{ interview.status }}
+                  </span>
+                </td>
+                <td class="rating-cell">
+                  <span class="rating-stars" *ngIf="interview.rating">{{ getRatingStars(interview.rating) }}</span>
+                  <span class="no-rating" *ngIf="!interview.rating">-</span>
+                </td>
+                <td class="actions-col">
+                  <div class="action-buttons">
+                    <button
+                      class="action-btn"
+                      title="View details"
+                      (click)="selectInterview(interview)"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
+                    <button
+                      class="action-btn"
+                      title="Edit interview"
+                      (click)="selectInterview(interview); openEditForm()"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </button>
+                    <button
+                      class="action-btn danger"
+                      title="Cancel interview"
+                      (click)="deleteInterview(interview.id)"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
 
-      <div *ngIf="!isLoading() && interviews().length > 0" class="interviews-grid">
-        <div class="interviews-table-header">
-          <div class="header-col header-candidate">Candidate / Position</div>
-          <div class="header-col header-datetime">Date / Time</div>
-          <div class="header-col header-type">Interview Type</div>
-          <div class="header-col header-interviewer">Interviewer</div>
-          <div class="header-col header-link">Meeting Link</div>
-          <div class="header-col header-status">Status</div>
-        </div>
-
-        <div
-          *ngFor="let interview of interviews(); trackBy: trackByInterviewId"
-          class="interview-card"
-          [class.selected]="isInterviewSelected(interview)"
-          (click)="selectInterview(interview)"
-        >
-          <div class="interview-col interview-candidate-info">
-            <div class="candidate-content">
-              <h3 class="interview-candidate">{{ interview.candidateName }}</h3>
-              <p class="interview-position">{{ interview.position }}</p>
-            </div>
+        @if (!sortedInterviews().length) {
+          <div class="empty-state">
+            No interviews found for the selected filters.
           </div>
+        }
+      }
+    </div>
 
-          <div class="interview-col interview-datetime">
-            <div class="datetime-content">
-              <span class="date-value">{{ interview.scheduledDate | date: 'MMM dd, yyyy' }}</span>
-              <span class="time-value">{{ formatTime(interview.scheduledDate) }}</span>
-              <span class="duration-badge">{{ interview.duration }} min</span>
-            </div>
-          </div>
-
-          <div class="interview-col interview-type">
-            <span class="type-badge" [class]="getTypeColor(interview.interviewType)">
-              {{ interview.interviewType }}
-            </span>
-          </div>
-
-          <div class="interview-col interview-interviewer">
-            <span class="interviewer-name">{{ interview.interviewerName || 'TBD' }}</span>
-            <span class="interviewer-rating" *ngIf="interview.rating">{{ getRatingStars(interview.rating) }}</span>
-          </div>
-
-          <div class="interview-col interview-link">
-            <a *ngIf="interview.meetingLink" [href]="interview.meetingLink" target="_blank" class="meeting-link-btn">
-              📞 Join Meeting
-            </a>
-            <span *ngIf="!interview.meetingLink" class="meeting-link-empty">—</span>
-          </div>
-
-          <div class="interview-col interview-status">
-            <span class="badge" [class]="getStatusColor(interview.status)">
-              {{ interview.status }}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div *ngIf="!isLoading() && interviews().length > 0" class="pagination-controls">
+    @if (!isLoading() && sortedInterviews().length > 0) {
+      <div class="pagination">
         <button
-          class="pagination-btn"
+          class="btn btn-secondary btn-sm"
           (click)="previousPage()"
           [disabled]="currentPage === 1"
-          aria-label="Previous page"
         >
           ← Previous
         </button>
-        <span class="page-indicator">Page {{ currentPage }} of {{ totalPages() }}</span>
+        <span class="pagination-info">
+          Page {{ currentPage }} of {{ totalPages() }}
+        </span>
         <button
-          class="pagination-btn"
+          class="btn btn-secondary btn-sm"
           (click)="nextPage()"
-          [disabled]="currentPage >= totalPages()"
-          aria-label="Next page"
+          [disabled]="currentPage === totalPages()"
         >
           Next →
         </button>
       </div>
-    </div>
-  </div>
-
-  <!-- Interview Detail Modal -->
-  <div *ngIf="selectedInterview()" class="modal-overlay" (click)="closeDetail()"></div>
-  <div *ngIf="selectedInterview()" class="modal-container" (click)="$event.stopPropagation()">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Interview Details</h2>
-        <button class="close-btn" (click)="closeDetail()" aria-label="Close panel">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-
-      <div class="modal-body">
-        <div class="detail-header-section">
-          <h3 class="detail-title">{{ selectedInterview()!.candidateName }}</h3>
-          <p class="detail-subtitle">{{ selectedInterview()!.position }}</p>
-          <div class="detail-meta">
-            <span class="meta-badge" [class]="'badge-' + getStatusColor(selectedInterview()!.status)">
-              {{ selectedInterview()!.status }}
-            </span>
-            <span class="meta-badge" [class]="getTypeColor(selectedInterview()!.interviewType)">
-              {{ selectedInterview()!.interviewType }}
-            </span>
-          </div>
-        </div>
-
-        <div class="detail-grid">
-          <div class="detail-item">
-            <label>Date & Time</label>
-            <p>{{ selectedInterview()!.scheduledDate | date: 'MMMM dd, yyyy • hh:mm a' }}</p>
-          </div>
-          <div class="detail-item">
-            <label>Duration</label>
-            <p>{{ selectedInterview()!.duration }} minutes</p>
-          </div>
-          <div class="detail-item">
-            <label>Interviewer</label>
-            <p>{{ selectedInterview()!.interviewerName || 'Not assigned' }}</p>
-          </div>
-          <div class="detail-item">
-            <label>Rating</label>
-            <p>{{ getRatingStars(selectedInterview()!.rating) }}</p>
-          </div>
-        </div>
-
-        <div *ngIf="selectedInterview()!.feedback" class="detail-section">
-          <h4 class="section-title">Feedback</h4>
-          <p class="section-content">{{ selectedInterview()!.feedback }}</p>
-        </div>
-
-        <div *ngIf="selectedInterview()!.notes" class="detail-section">
-          <h4 class="section-title">Notes</h4>
-          <p class="section-content">{{ selectedInterview()!.notes }}</p>
-        </div>
-
-        <div *ngIf="selectedInterview()!.meetingLink" class="detail-section">
-          <h4 class="section-title">Meeting</h4>
-          <a [href]="selectedInterview()!.meetingLink" target="_blank" class="meeting-link-btn">
-            Join Video Call →
-          </a>
-        </div>
-
-        <div class="detail-actions">
-          <button class="btn btn-primary" (click)="openEditForm()">
-            Edit Interview
-          </button>
-          <select
-            class="status-select"
-            [value]="selectedInterview()!.status"
-            (change)="updateInterviewStatus(selectedInterview()!.id, $any($event.target).value)"
-            aria-label="Update interview status"
-          >
-            <option value="Scheduled">Scheduled</option>
-            <option value="Completed">Completed</option>
-            <option value="Rescheduled">Rescheduled</option>
-            <option value="Cancelled">Cancelled</option>
-            <option value="Feedback Pending">Feedback Pending</option>
-          </select>
-          <button class="btn btn-danger" (click)="deleteInterview(selectedInterview()!.id)">
-            Cancel Interview
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+    }
+  </section>
 
   <app-confirmation-modal
-    *ngIf="showConfirmModal()"
+    [isOpen]="showConfirmModal()"
     [title]="confirmModalTitle"
     [message]="confirmModalMessage"
-    (confirm)="handleConfirm()"
-    (cancel)="handleCancel()"
+    [confirmText]="'Confirm'"
+    [cancelText]="'Cancel'"
+    [isDanger]="true"
+    (onConfirm)="handleConfirm()"
+    (onCancel)="handleCancel()"
   ></app-confirmation-modal>
-</div>
+</section>

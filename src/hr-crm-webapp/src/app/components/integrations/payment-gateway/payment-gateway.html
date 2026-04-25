@@ -1,1 +1,385 @@
-<p>payment-gateway works!</p>
+<div class="payment-gateway-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="integration-badge">
+        <span class="integration-icon payment">💳</span>
+        <div class="integration-meta">
+          <div class="eyebrow">Integration</div>
+          <h1>Payment Gateway</h1>
+        </div>
+      </div>
+      <p class="subtitle">Unified payment processing across multiple providers</p>
+    </div>
+    <div class="header-actions">
+      @if (isConnected()) {
+        <div class="connection-status connected">
+          <span class="status-dot"></span>
+          <span>{{ providers().filter(p => p.status === 'active').length }} Active Providers</span>
+        </div>
+        <button class="btn-secondary" (click)="disconnect()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Disconnect
+        </button>
+      } @else {
+        <button class="btn-primary" (click)="reconnect()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          Connect Payment Gateway
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (isConnected()) {
+    <div class="stats-overview">
+      <div class="stat-card revenue">
+        <div class="stat-header">
+          <div class="stat-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+          </div>
+          <span class="stat-badge">Total Revenue</span>
+        </div>
+        <div class="stat-value">{{ formatCurrency(stats().totalRevenue) }}</div>
+        <div class="stat-trend positive">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+          <span>+12.5% from last month</span>
+        </div>
+      </div>
+
+      <div class="stat-card transactions">
+        <div class="stat-header">
+          <div class="stat-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+          </div>
+          <span class="stat-badge">Transactions</span>
+        </div>
+        <div class="stat-value">{{ stats().totalTransactions.toLocaleString() }}</div>
+        <div class="stat-trend positive">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+          <span>+8.3% from last month</span>
+        </div>
+      </div>
+
+      <div class="stat-card success-rate">
+        <div class="stat-header">
+          <div class="stat-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <span class="stat-badge">Success Rate</span>
+        </div>
+        <div class="stat-value">{{ stats().successRate.toFixed(1) }}%</div>
+        <div class="stat-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width]="stats().successRate + '%'"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-card average">
+        <div class="stat-header">
+          <div class="stat-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="20" x2="12" y2="10"></line>
+              <line x1="18" y1="20" x2="18" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="16"></line>
+            </svg>
+          </div>
+          <span class="stat-badge">Avg Transaction</span>
+        </div>
+        <div class="stat-value">{{ formatCurrency(stats().averageTransaction) }}</div>
+        <div class="stat-trend neutral">
+          <span>Stable</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-navigation">
+      <button class="tab-btn" [class.active]="activeTab() === 'overview'" (click)="activeTab.set('overview')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        Overview
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'transactions'" (click)="activeTab.set('transactions')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="8" y1="6" x2="21" y2="6"></line>
+          <line x1="8" y1="12" x2="21" y2="12"></line>
+          <line x1="8" y1="18" x2="21" y2="18"></line>
+          <line x1="3" y1="6" x2="3.01" y2="6"></line>
+          <line x1="3" y1="12" x2="3.01" y2="12"></line>
+          <line x1="3" y1="18" x2="3.01" y2="18"></line>
+        </svg>
+        Transactions
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'providers'" (click)="activeTab.set('providers')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        Providers
+      </button>
+    </div>
+
+    @if (activeTab() === 'overview') {
+      <div class="overview-content">
+        <div class="providers-summary">
+          <h2>Payment Providers</h2>
+          <div class="providers-grid">
+            @for (provider of providers(); track provider.id) {
+              <div class="provider-summary-card" [class.active]="provider.status === 'active'">
+                <div class="provider-logo">
+                  <img [src]="provider.logo" [alt]="provider.name" />
+                </div>
+                <div class="provider-info">
+                  <h3>{{ provider.name }}</h3>
+                  <div class="provider-stats-mini">
+                    <div class="mini-stat">
+                      <span class="mini-label">Transactions</span>
+                      <span class="mini-value">{{ provider.transactionCount.toLocaleString() }}</span>
+                    </div>
+                    <div class="mini-stat">
+                      <span class="mini-label">Revenue</span>
+                      <span class="mini-value">{{ formatCurrency(provider.totalAmount) }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="provider-status-badge" [class]="provider.status">
+                  {{ provider.status }}
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="recent-transactions">
+          <div class="section-header">
+            <h2>Recent Transactions</h2>
+            <button class="view-all-link" (click)="activeTab.set('transactions')">
+              View All
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
+          <div class="transactions-list-compact">
+            @for (txn of transactions().slice(0, 5); track txn.id) {
+              <div class="transaction-compact" [class]="txn.status">
+                <div class="txn-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </div>
+                <div class="txn-details">
+                  <div class="txn-customer">{{ txn.customer }}</div>
+                  <div class="txn-meta">{{ txn.provider }} • {{ txn.method }}</div>
+                </div>
+                <div class="txn-amount">
+                  <div class="amount-value">{{ formatCurrency(txn.amount) }}</div>
+                  <div class="txn-status-badge" [style.background]="getStatusColor(txn.status) + '20'" [style.color]="getStatusColor(txn.status)">
+                    {{ txn.status }}
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (activeTab() === 'transactions') {
+      <div class="transactions-content">
+        <div class="content-header">
+          <div class="search-filter-bar">
+            <div class="search-container">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input
+                type="text"
+                placeholder="Search transactions..."
+                [(ngModel)]="searchQuery"
+                (ngModelChange)="searchQuery.set($event)"
+              />
+            </div>
+            <div class="filter-group">
+              <select class="filter-select" [(ngModel)]="filterProvider" (ngModelChange)="filterProvider.set($event)">
+                <option value="all">All Providers</option>
+                <option value="Stripe">Stripe</option>
+                <option value="PayPal">PayPal</option>
+                <option value="Square">Square</option>
+              </select>
+              <select class="filter-select" [(ngModel)]="filterStatus" (ngModelChange)="filterStatus.set($event)">
+                <option value="all">All Status</option>
+                <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
+                <option value="failed">Failed</option>
+                <option value="refunded">Refunded</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="transactions-table">
+          <div class="table-header">
+            <div class="th txn-id">Transaction ID</div>
+            <div class="th customer">Customer</div>
+            <div class="th provider">Provider</div>
+            <div class="th method">Method</div>
+            <div class="th amount">Amount</div>
+            <div class="th status">Status</div>
+            <div class="th time">Time</div>
+          </div>
+          <div class="table-body">
+            @for (txn of filteredTransactions(); track txn.id) {
+              <div class="table-row" [class]="txn.status">
+                <div class="td txn-id">
+                  <span class="txn-id-badge">{{ txn.id }}</span>
+                </div>
+                <div class="td customer">
+                  <div class="customer-info">
+                    <div class="customer-avatar">{{ txn.customer.charAt(0) }}</div>
+                    <span>{{ txn.customer }}</span>
+                  </div>
+                </div>
+                <div class="td provider">{{ txn.provider }}</div>
+                <div class="td method">{{ txn.method }}</div>
+                <div class="td amount">
+                  <span class="amount-highlight">{{ formatCurrency(txn.amount) }}</span>
+                </div>
+                <div class="td status">
+                  <span class="status-badge" [style.background]="getStatusColor(txn.status) + '20'" [style.color]="getStatusColor(txn.status)">
+                    {{ txn.status }}
+                  </span>
+                </div>
+                <div class="td time">{{ formatDate(txn.timestamp) }}</div>
+              </div>
+            } @empty {
+              <div class="empty-state">
+                <div class="empty-icon">💳</div>
+                <h3>No transactions found</h3>
+                <p>Try adjusting your filters</p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (activeTab() === 'providers') {
+      <div class="providers-content">
+        <div class="providers-list">
+          @for (provider of providers(); track provider.id) {
+            <div class="provider-card" [class.active]="provider.status === 'active'">
+              <div class="provider-header">
+                <div class="provider-logo-large">
+                  <img [src]="provider.logo" [alt]="provider.name" />
+                </div>
+                <div class="provider-actions">
+                  <label class="toggle-switch">
+                    <input type="checkbox" [checked]="provider.status === 'active'" (change)="toggleProvider(provider)">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="provider-body">
+                <h3>{{ provider.name }}</h3>
+                <div class="provider-metrics">
+                  <div class="metric-row">
+                    <span class="metric-label">Total Transactions</span>
+                    <span class="metric-value">{{ provider.transactionCount.toLocaleString() }}</span>
+                  </div>
+                  <div class="metric-row">
+                    <span class="metric-label">Total Revenue</span>
+                    <span class="metric-value">{{ formatCurrency(provider.totalAmount) }}</span>
+                  </div>
+                  <div class="metric-row">
+                    <span class="metric-label">Processing Fee</span>
+                    <span class="metric-value">{{ provider.fees }}%</span>
+                  </div>
+                  <div class="metric-row">
+                    <span class="metric-label">Last Transaction</span>
+                    <span class="metric-value">{{ formatDate(provider.lastTransaction) }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="provider-footer">
+                <span class="provider-status-indicator" [class]="provider.status">
+                  <span class="status-dot"></span>
+                  {{ provider.status }}
+                </span>
+                <button class="config-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m0-6l4.2-4.2"></path>
+                  </svg>
+                  Configure
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  } @else {
+    <div class="disconnected-state">
+      <div class="disconnected-icon">
+        <svg viewBox="0 0 200 200" fill="none">
+          <circle cx="100" cy="100" r="80" stroke="var(--border-color)" stroke-width="3" stroke-dasharray="8 8"/>
+          <path d="M70 100h60M100 70v60" stroke="var(--text-muted)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2>Connect Payment Gateway</h2>
+      <p>Integrate multiple payment providers to accept payments from customers worldwide</p>
+      <div class="features-showcase">
+        <div class="showcase-item">
+          <div class="showcase-icon">💳</div>
+          <h3>Multiple Providers</h3>
+          <p>Support for Stripe, PayPal, Square, and more</p>
+        </div>
+        <div class="showcase-item">
+          <div class="showcase-icon">🔒</div>
+          <h3>Secure Processing</h3>
+          <p>PCI-compliant payment processing</p>
+        </div>
+        <div class="showcase-item">
+          <div class="showcase-icon">📊</div>
+          <h3>Real-time Analytics</h3>
+          <p>Track transactions and revenue in real-time</p>
+        </div>
+      </div>
+      <button class="btn-primary-large" (click)="reconnect()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+        Connect Payment Gateway
+      </button>
+    </div>
+  }
+</div>

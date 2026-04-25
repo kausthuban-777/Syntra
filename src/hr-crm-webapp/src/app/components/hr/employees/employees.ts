@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -6,10 +6,11 @@ import { takeUntil } from 'rxjs/operators';
 import { Employee, EmployeeFilter } from '../../../models/employee.model';
 import { EmployeeService } from '../../../services/employee.service';
 import { ConfirmationModal } from '../../shared/ui/confirmation-modal/confirmation-modal';
+import { TableSkeleton } from '../../shared/ui/table-skeleton/table-skeleton';
 
 @Component({
   selector: 'app-employees',
-  imports: [CommonModule, FormsModule, ConfirmationModal],
+  imports: [CommonModule, FormsModule, ConfirmationModal, TableSkeleton],
   templateUrl: './employees.html',
   styleUrl: './employees.css',
   providers: [EmployeeService]
@@ -17,7 +18,7 @@ import { ConfirmationModal } from '../../shared/ui/confirmation-modal/confirmati
 export class Employees implements OnInit, OnDestroy {
   // Signals for state management
   protected employees = signal<Employee[]>([]);
-  protected isLoading = signal(false);
+  protected isLoading = signal<boolean>(false);
   protected selectedEmployee = signal<Employee | null>(null);
   protected showForm = signal(false);
   protected isEditing = signal(false);
@@ -45,8 +46,26 @@ export class Employees implements OnInit, OnDestroy {
   protected totalCount = 0;
 
   // Sorting
-  protected sortBy = signal('firstName');
+  protected sortBy = signal<string>('firstName');
   protected sortDirection = signal<'asc' | 'desc'>('asc');
+
+  protected sortedEmployees = computed(() => {
+    const employees = [...this.employees()];
+    const sortField = this.sortBy();
+    const direction = this.sortDirection();
+
+    return employees.sort((a: any, b: any) => {
+      let aVal = a[sortField];
+      let bVal = b[sortField];
+
+      if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+      if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+
+      if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+      if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  });
 
   // Component lifecycle
   private destroy$ = new Subject<void>();
@@ -325,6 +344,5 @@ export class Employees implements OnInit, OnDestroy {
       this.sortBy.set(field);
       this.sortDirection.set('asc');
     }
-    this.loadEmployees();
   }
 }

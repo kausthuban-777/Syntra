@@ -1,1 +1,360 @@
-<p>google-workspace works!</p>
+<div class="google-workspace-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="integration-badge">
+        <span class="integration-icon google">🔷</span>
+        <div class="integration-meta">
+          <div class="eyebrow">Integration</div>
+          <h1>Google Workspace</h1>
+        </div>
+      </div>
+      <p class="subtitle">Unified productivity suite for email, calendar, and collaboration</p>
+    </div>
+    <div class="header-actions">
+      @if (isConnected()) {
+        <div class="connection-status connected">
+          <span class="status-dot"></span>
+          <span>{{ accountEmail() }}</span>
+        </div>
+        <button class="btn-secondary" (click)="disconnect()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Disconnect
+        </button>
+      } @else {
+        <button class="btn-primary" (click)="reconnect()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          Connect Google Workspace
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (isConnected()) {
+    <div class="tab-navigation">
+      <button class="tab-btn" [class.active]="activeTab() === 'overview'" (click)="activeTab.set('overview')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        Overview
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'calendar'" (click)="activeTab.set('calendar')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        Calendar
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'email'" (click)="activeTab.set('email')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+        Email
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'drive'" (click)="activeTab.set('drive')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        </svg>
+        Drive
+      </button>
+    </div>
+
+    @if (activeTab() === 'overview') {
+      <div class="overview-content">
+        <div class="services-grid">
+          @for (service of services(); track service.id) {
+            <div class="service-card" [class.active]="service.status === 'active'" [class.syncing]="service.status === 'syncing'">
+              <div class="service-header">
+                <div class="service-icon-wrapper" [style.background]="service.color + '20'">
+                  <span class="service-icon">{{ service.icon }}</span>
+                </div>
+                <div class="service-actions">
+                  @if (service.status === 'syncing') {
+                    <div class="sync-spinner"></div>
+                  } @else {
+                    <button class="icon-btn" (click)="syncService(service)" title="Sync Now">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                      </svg>
+                    </button>
+                  }
+                  <label class="toggle-switch" (click)="$event.stopPropagation()">
+                    <input type="checkbox" [checked]="service.status === 'active'" (change)="toggleService(service)" [disabled]="service.status === 'syncing'">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="service-body">
+                <h3>{{ service.name }}</h3>
+                <p class="service-description">{{ service.description }}</p>
+                <div class="service-stats">
+                  <div class="stat-item">
+                    <span class="stat-value">{{ service.itemCount }}</span>
+                    <span class="stat-label">Items</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-value">{{ formatDate(service.lastSync) }}</span>
+                    <span class="stat-label">Last Sync</span>
+                  </div>
+                </div>
+              </div>
+              <div class="service-footer">
+                <span class="status-badge" [class]="service.status">
+                  {{ service.status === 'syncing' ? 'Syncing...' : service.status }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="quick-stats">
+          <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+              <div class="stat-number">{{ stats().totalItems }}</div>
+              <div class="stat-text">Total Items Synced</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✓</div>
+            <div class="stat-content">
+              <div class="stat-number">{{ stats().active }}/{{ stats().total }}</div>
+              <div class="stat-text">Active Services</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⚡</div>
+            <div class="stat-content">
+              <div class="stat-number">Every 15min</div>
+              <div class="stat-text">Sync Frequency</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (activeTab() === 'calendar') {
+      <div class="calendar-content">
+        <div class="calendar-header">
+          <h2>Upcoming Events</h2>
+          <p class="section-subtitle">Your schedule for today and tomorrow</p>
+        </div>
+        <div class="events-timeline">
+          @for (event of upcomingEvents(); track event.id) {
+            <div class="event-card" [class]="event.type">
+              <div class="event-time-marker">
+                <div class="time-dot"></div>
+                <div class="time-line"></div>
+              </div>
+              <div class="event-content">
+                <div class="event-header">
+                  <span class="event-icon">{{ getEventIcon(event.type) }}</span>
+                  <div class="event-info">
+                    <h3>{{ event.title }}</h3>
+                    <div class="event-meta">
+                      <span class="event-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        {{ formatTime(event.start) }}
+                        @if (event.type === 'meeting') {
+                          - {{ formatTime(event.end) }}
+                        }
+                      </span>
+                      @if (event.attendees > 0) {
+                        <span class="event-attendees">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                          </svg>
+                          {{ event.attendees }} attendees
+                        </span>
+                      }
+                    </div>
+                  </div>
+                </div>
+                @if (isToday(event.start)) {
+                  <span class="today-badge">Today</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    @if (activeTab() === 'email') {
+      <div class="email-content">
+        <div class="email-stats-grid">
+          <div class="email-stat-card inbox">
+            <div class="email-stat-icon">📥</div>
+            <div class="email-stat-content">
+              <div class="email-stat-number">{{ emailStats().inbox }}</div>
+              <div class="email-stat-label">Inbox</div>
+            </div>
+            <div class="email-stat-chart">
+              <div class="chart-bar" style="height: 75%;"></div>
+            </div>
+          </div>
+          <div class="email-stat-card sent">
+            <div class="email-stat-icon">📤</div>
+            <div class="email-stat-content">
+              <div class="email-stat-number">{{ emailStats().sent }}</div>
+              <div class="email-stat-label">Sent</div>
+            </div>
+            <div class="email-stat-chart">
+              <div class="chart-bar" style="height: 60%;"></div>
+            </div>
+          </div>
+          <div class="email-stat-card drafts">
+            <div class="email-stat-icon">📝</div>
+            <div class="email-stat-content">
+              <div class="email-stat-number">{{ emailStats().drafts }}</div>
+              <div class="email-stat-label">Drafts</div>
+            </div>
+            <div class="email-stat-chart">
+              <div class="chart-bar" style="height: 25%;"></div>
+            </div>
+          </div>
+          <div class="email-stat-card unread">
+            <div class="email-stat-icon">🔔</div>
+            <div class="email-stat-content">
+              <div class="email-stat-number">{{ emailStats().unread }}</div>
+              <div class="email-stat-label">Unread</div>
+            </div>
+            <div class="email-stat-chart">
+              <div class="chart-bar" style="height: 40%;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="email-info-section">
+          <div class="info-card">
+            <h3>Email Synchronization</h3>
+            <p>Your Gmail account is synced in real-time. All emails, labels, and filters are automatically synchronized with the CRM.</p>
+            <div class="feature-list">
+              <div class="feature-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Two-way sync</span>
+              </div>
+              <div class="feature-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Smart categorization</span>
+              </div>
+              <div class="feature-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Attachment tracking</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (activeTab() === 'drive') {
+      <div class="drive-content">
+        <div class="drive-header">
+          <h2>Recent Files</h2>
+          <p class="section-subtitle">Files modified in the last 24 hours</p>
+        </div>
+        <div class="files-grid">
+          @for (file of recentFiles(); track file.id) {
+            <div class="file-card" [class.shared]="file.shared">
+              <div class="file-icon-wrapper">
+                <span class="file-icon">{{ getFileIcon(file.type) }}</span>
+                @if (file.shared) {
+                  <span class="shared-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                  </span>
+                }
+              </div>
+              <div class="file-info">
+                <h3>{{ file.name }}</h3>
+                <div class="file-meta">
+                  <span class="file-size">{{ file.size }}</span>
+                  <span class="file-separator">•</span>
+                  <span class="file-modified">{{ formatDate(file.modified) }}</span>
+                </div>
+              </div>
+              <div class="file-actions">
+                <button class="file-action-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+                <button class="file-action-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  } @else {
+    <div class="disconnected-state">
+      <div class="disconnected-icon">
+        <svg viewBox="0 0 200 200" fill="none">
+          <circle cx="100" cy="100" r="80" stroke="var(--border-color)" stroke-width="3" stroke-dasharray="8 8"/>
+          <path d="M70 100h60M100 70v60" stroke="var(--text-muted)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2>Connect Google Workspace</h2>
+      <p>Integrate Gmail, Calendar, Drive, and more to streamline your workflow</p>
+      <div class="features-showcase">
+        <div class="showcase-item">
+          <div class="showcase-icon">📧</div>
+          <h3>Email Integration</h3>
+          <p>Sync emails and track conversations</p>
+        </div>
+        <div class="showcase-item">
+          <div class="showcase-icon">📅</div>
+          <h3>Calendar Sync</h3>
+          <p>Manage meetings and schedules</p>
+        </div>
+        <div class="showcase-item">
+          <div class="showcase-icon">📁</div>
+          <h3>Drive Access</h3>
+          <p>Share and collaborate on files</p>
+        </div>
+      </div>
+      <button class="btn-primary-large" (click)="reconnect()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+        Connect Google Workspace
+      </button>
+    </div>
+  }
+</div>
