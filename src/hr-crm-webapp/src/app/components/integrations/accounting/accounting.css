@@ -1,0 +1,962 @@
+/* ===================================
+   ACCOUNTING INTEGRATION - FINANCIAL DESIGN
+   Professional Financial Management Theme
+   =================================== */
+
+.accounting-container {
+  padding: 2rem;
+  max-width: 1800px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ────────────────────────────────
+   PAGE HEADER
+   ──────────────────────────────── */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2.5rem;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.header-content {
+  flex: 1;
+  min-width: 300px;
+}
+
+.integration-badge {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.integration-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 0.5rem;
+}
+
+.integration-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.integration-meta {
+  flex: 1;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #0066cc;
+  margin-bottom: 0.25rem;
+}
+
+.header-content h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  background: linear-gradient(135deg, #0066cc, #004c99);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  background: white;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.connection-status.connected {
+  color: #0066cc;
+  border: 2px solid #0066cc;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #0066cc;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+.btn-primary,
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0066cc 0%, #004c99 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 102, 204, 0.4);
+}
+
+.btn-secondary {
+  border: 2px solid var(--border-color);
+  background: white;
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-primary);
+  border-color: var(--accent-red);
+  color: var(--accent-red);
+  transform: translateY(-2px);
+}
+
+.btn-primary svg,
+.btn-secondary svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ────────────────────────────────
+   FINANCIAL DASHBOARD
+   ──────────────────────────────── */
+
+.financial-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.dashboard-card {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-left: 4px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  opacity: 0.05;
+  transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-card.balance-card {
+  border-left-color: #0066cc;
+}
+
+.dashboard-card.income-card {
+  border-left-color: #34A853;
+}
+
+.dashboard-card.expenses-card {
+  border-left-color: #EA4335;
+}
+
+.dashboard-card.profit-card {
+  border-left-color: #9C27B0;
+}
+
+.card-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.card-icon-wrapper.balance {
+  background: linear-gradient(135deg, rgba(0, 102, 204, 0.15), rgba(0, 76, 153, 0.1));
+  color: #0066cc;
+}
+
+.card-icon-wrapper.income {
+  background: linear-gradient(135deg, rgba(52, 168, 83, 0.15), rgba(34, 139, 34, 0.1));
+  color: #34A853;
+}
+
+.card-icon-wrapper.expenses {
+  background: linear-gradient(135deg, rgba(234, 67, 53, 0.15), rgba(211, 47, 47, 0.1));
+  color: #EA4335;
+}
+
+.card-icon-wrapper.profit {
+  background: linear-gradient(135deg, rgba(156, 39, 176, 0.15), rgba(123, 31, 162, 0.1));
+  color: #9C27B0;
+}
+
+.card-icon-wrapper svg {
+  width: 28px;
+  height: 28px;
+}
+
+.card-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+}
+
+.card-value {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  line-height: 1;
+}
+
+.card-change {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.card-change.positive {
+  color: #34A853;
+}
+
+.card-change.negative {
+  color: #EA4335;
+}
+
+.card-change svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ────────────────────────────────
+   CONTENT GRID
+   ──────────────────────────────── */
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ────────────────────────────────
+   TRANSACTIONS SECTION
+   ──────────────────────────────── */
+
+.recent-transactions-section {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: var(--bg-primary);
+  padding: 0.375rem;
+  border-radius: 10px;
+}
+
+.filter-tab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-tab:hover {
+  background: white;
+  color: var(--text-primary);
+}
+
+.filter-tab.active {
+  background: linear-gradient(135deg, #0066cc, #004c99);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+}
+
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.transaction-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.transaction-item:hover {
+  background: rgba(0, 102, 204, 0.05);
+  transform: translateX(6px);
+}
+
+.transaction-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.transaction-icon.income {
+  background: linear-gradient(135deg, rgba(52, 168, 83, 0.2), rgba(34, 139, 34, 0.15));
+  color: #34A853;
+}
+
+.transaction-icon.expense {
+  background: linear-gradient(135deg, rgba(234, 67, 53, 0.2), rgba(211, 47, 47, 0.15));
+  color: #EA4335;
+}
+
+.transaction-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.transaction-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.transaction-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transaction-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.transaction-category {
+  padding: 0.2rem 0.6rem;
+  background: rgba(0, 102, 204, 0.1);
+  color: #0066cc;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.transaction-amount {
+  font-size: 1.125rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.transaction-amount.income {
+  color: #34A853;
+}
+
+.transaction-amount.expense {
+  color: #EA4335;
+}
+
+/* ────────────────────────────────
+   INVOICES SECTION
+   ──────────────────────────────── */
+
+.invoices-section {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.create-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, #0066cc, #004c99);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.create-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+.create-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.invoices-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.invoice-card {
+  background: var(--bg-primary);
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.invoice-card:hover {
+  background: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transform: translateY(-3px);
+}
+
+.invoice-card.paid {
+  border-left-color: #34A853;
+}
+
+.invoice-card.pending {
+  border-left-color: #FBBC05;
+}
+
+.invoice-card.overdue {
+  border-left-color: #EA4335;
+}
+
+.invoice-card.draft {
+  border-left-color: #9E9E9E;
+}
+
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.invoice-number {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+}
+
+.invoice-status-badge {
+  padding: 0.375rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.invoice-status-badge.paid {
+  background: rgba(52, 168, 83, 0.15);
+  color: #34A853;
+}
+
+.invoice-status-badge.pending {
+  background: rgba(251, 188, 5, 0.15);
+  color: #FBBC05;
+}
+
+.invoice-status-badge.overdue {
+  background: rgba(234, 67, 53, 0.15);
+  color: #EA4335;
+}
+
+.invoice-status-badge.draft {
+  background: rgba(158, 158, 158, 0.15);
+  color: #9E9E9E;
+}
+
+.invoice-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.invoice-client {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.client-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0066cc, #004c99);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.client-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.invoice-date {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.invoice-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.invoice-footer {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.invoice-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem;
+  border: 2px solid var(--border-color);
+  background: white;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.invoice-action-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.invoice-action-btn.view:hover {
+  border-color: #0066cc;
+  color: #0066cc;
+  background: rgba(0, 102, 204, 0.05);
+}
+
+.invoice-action-btn.send:hover {
+  border-color: #34A853;
+  color: #34A853;
+  background: rgba(52, 168, 83, 0.05);
+}
+
+.invoice-action-btn.remind:hover {
+  border-color: #FBBC05;
+  color: #FBBC05;
+  background: rgba(251, 188, 5, 0.05);
+}
+
+/* ────────────────────────────────
+   SYNC INFO
+   ──────────────────────────────── */
+
+.sync-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.sync-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sync-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(0, 102, 204, 0.15), rgba(0, 76, 153, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0066cc;
+}
+
+.sync-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.sync-icon svg.spinning {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sync-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.sync-time {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sync-now-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #0066cc, #004c99);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sync-now-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+.sync-now-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ────────────────────────────────
+   DISCONNECTED STATE
+   ──────────────────────────────── */
+
+.disconnected-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.disconnected-icon {
+  width: 200px;
+  height: 200px;
+  margin-bottom: 2rem;
+  opacity: 0.5;
+}
+
+.disconnected-state h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.disconnected-state p {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin-bottom: 3rem;
+  line-height: 1.6;
+}
+
+.platforms-showcase {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.platform-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: var(--bg-primary);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  min-width: 150px;
+}
+
+.platform-option:hover {
+  background: white;
+  border-color: #0066cc;
+  transform: translateY(-6px);
+  box-shadow: 0 8px 24px rgba(0, 102, 204, 0.15);
+}
+
+.platform-option img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.platform-option span {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.features-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  width: 100%;
+  max-width: 800px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.feature-item svg {
+  width: 20px;
+  height: 20px;
+  color: #34A853;
+  flex-shrink: 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* ────────────────────────────────
+   RESPONSIVE DESIGN
+   ──────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .accounting-container {
+    padding: 1.5rem;
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .financial-dashboard {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .accounting-container {
+    padding: 1rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-content h1 {
+    font-size: 1.75rem;
+  }
+
+  .financial-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .platforms-showcase {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .platform-option {
+    width: 100%;
+  }
+
+  .features-list {
+    grid-template-columns: 1fr;
+  }
+
+  .sync-info {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .sync-now-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .accounting-container {
+    padding: 0.75rem;
+  }
+
+  .header-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .integration-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .card-value {
+    font-size: 1.75rem;
+  }
+
+  .disconnected-state h2 {
+    font-size: 1.5rem;
+  }
+
+  .disconnected-state p {
+    font-size: 1rem;
+  }
+}

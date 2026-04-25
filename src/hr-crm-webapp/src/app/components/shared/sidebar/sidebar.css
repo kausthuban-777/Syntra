@@ -3,7 +3,7 @@
   height: 100%;
   background: var(--bg-card);
   border-right: 1px solid var(--border-color);
-  padding: 16px 0;
+  padding: 0;
   overflow-y: auto;
   overflow-x: hidden;
   transition: all 0.3s ease;
@@ -19,15 +19,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 16px 16px;
+  padding: 16px 16px 16px 16px;
   border-bottom: 1px solid var(--border-color);
-  margin-bottom: 16px;
+  margin-bottom: 0;
   transition: all 0.3s ease;
   position: relative;
 }
 
 .sidebar.collapsed .sidebar-header {
-  padding-top: 12px;
+  padding: 16px 16px 16px 16px;
 }
 
 .sidebar-title {
@@ -83,7 +83,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 0 8px;
+  padding: 8px 8px;
   flex: 1;
   overflow-y: auto;
   transition: padding 0.3s ease;

@@ -1,7 +1,57 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, HostListener } from '@angular/core';
 import { NavigationService } from '../../../services/navigation.service';
 import { FormsModule } from '@angular/forms';
+
+/**
+ * WhatsApp Business API Integration Component
+ *
+ * BACKEND INTEGRATION GUIDE:
+ * ========================
+ *
+ * 1. API Service Structure:
+ *    - Create a WhatsAppService in services/whatsapp.service.ts
+ *    - Implement methods: getConversations(), getMessages(conversationId), sendMessage(conversationId, message)
+ *
+ * 2. Data Models (should match backend):
+ *    interface WhatsAppConversation {
+ *      id: string;
+ *      customerName: string;
+ *      customerPhone: string;
+ *      timestamp: Date;
+ *      unread: number;
+ *      status: 'active' | 'resolved' | 'pending';
+ *      messages: WhatsAppMessage[];
+ *    }
+ *
+ *    interface WhatsAppMessage {
+ *      id: string;
+ *      type: 'sent' | 'received' | 'media';
+ *      content: string;
+ *      timestamp: Date;
+ *      status?: 'sent' | 'delivered' | 'read';
+ *      caption?: string;
+ *    }
+ *
+ * 3. API Endpoints (example):
+ *    GET  /api/whatsapp/conversations - List all conversations
+ *    GET  /api/whatsapp/conversations/:id/messages - Get messages for a conversation
+ *    POST /api/whatsapp/conversations/:id/messages - Send a new message
+ *    GET  /api/whatsapp/templates - Get message templates
+ *    GET  /api/whatsapp/stats - Get message statistics
+ *
+ * 4. WebSocket Integration (for real-time updates):
+ *    - Connect to WebSocket on component init
+ *    - Listen for events: 'new_message', 'message_status_update', 'new_conversation'
+ *    - Update signals accordingly
+ *
+ * 5. Implementation Steps:
+ *    a. Replace signal data with API calls in ngOnInit()
+ *    b. Implement sendMessage() to call API and update UI
+ *    c. Add WebSocket listener for real-time message updates
+ *    d. Add error handling and loading states
+ *    e. Implement pagination for conversations and messages
+ */
 
 interface WhatsAppTemplate {
   id: string;
@@ -13,6 +63,16 @@ interface WhatsAppTemplate {
   variables: number;
 }
 
+interface Message {
+  id: string;
+  type: 'sent' | 'received' | 'media';
+  content: string;
+  timestamp: Date;
+  status?: 'sent' | 'delivered' | 'read';
+  caption?: string;
+  group?: Message[];
+}
+
 interface Conversation {
   id: string;
   customerName: string;
@@ -21,6 +81,7 @@ interface Conversation {
   timestamp: Date;
   unread: number;
   status: 'active' | 'resolved' | 'pending';
+  messages: Message[];
 }
 
 interface MessageStats {
@@ -109,7 +170,14 @@ export class WhatsappApi implements OnInit {
       lastMessage: 'Thank you for the quick response!',
       timestamp: new Date('2026-04-25T11:30:00'),
       unread: 0,
-      status: 'resolved'
+      status: 'resolved',
+      messages: [
+        { id: 'M001', type: 'received', content: 'Hi, I have a question about my order', timestamp: new Date('2026-04-25T10:00:00'), group: [] },
+        { id: 'M002', type: 'sent', content: 'Hi Sarah! Happy to help. What can I assist you with?', timestamp: new Date('2026-04-25T10:05:00'), status: 'read', group: [] },
+        { id: 'M003', type: 'received', content: 'Can I change the delivery address?', timestamp: new Date('2026-04-25T10:10:00'), group: [] },
+        { id: 'M004', type: 'sent', content: 'Of course! What\'s your new address?', timestamp: new Date('2026-04-25T10:15:00'), status: 'read', group: [] },
+        { id: 'M005', type: 'received', content: 'Thank you for the quick response!', timestamp: new Date('2026-04-25T11:30:00'), group: [] }
+      ]
     },
     {
       id: 'C002',
@@ -118,7 +186,8 @@ export class WhatsappApi implements OnInit {
       lastMessage: 'When will my order be delivered?',
       timestamp: new Date('2026-04-25T11:15:00'),
       unread: 2,
-      status: 'active'
+      status: 'active',
+      messages: []
     },
     {
       id: 'C003',
@@ -127,7 +196,8 @@ export class WhatsappApi implements OnInit {
       lastMessage: 'I need help with my account',
       timestamp: new Date('2026-04-25T10:45:00'),
       unread: 1,
-      status: 'pending'
+      status: 'pending',
+      messages: []
     },
     {
       id: 'C004',
@@ -136,7 +206,8 @@ export class WhatsappApi implements OnInit {
       lastMessage: 'Perfect, thanks!',
       timestamp: new Date('2026-04-25T09:30:00'),
       unread: 0,
-      status: 'resolved'
+      status: 'resolved',
+      messages: []
     },
     {
       id: 'C005',
@@ -145,7 +216,8 @@ export class WhatsappApi implements OnInit {
       lastMessage: 'Can I change my delivery address?',
       timestamp: new Date('2026-04-25T08:20:00'),
       unread: 3,
-      status: 'active'
+      status: 'active',
+      messages: []
     }
   ]);
 
@@ -171,6 +243,9 @@ export class WhatsappApi implements OnInit {
   searchQuery = signal('');
   filterCategory = signal<string>('all');
   filterStatus = signal<string>('all');
+  selectedConversation = signal<Conversation | null>(null);
+  messageInput = signal('');
+  isConversationsExpanded = signal(false);
 
   filteredTemplates = computed(() => {
     let filtered = this.templates();
@@ -247,6 +322,74 @@ export class WhatsappApi implements OnInit {
       hour: '2-digit',
       minute: '2-digit'
     }).format(date);
+  }
+
+  formatDateOnly(date: Date): string {
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    }).format(date);
+  }
+
+  formatTimeOnly(date: Date): string {
+    return new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).format(date);
+  }
+
+  shouldShowDateSeparator(messages: Message[], currentIndex: number): boolean {
+    if (currentIndex === 0) return true;
+    const prevDate = this.formatDateOnly(messages[currentIndex - 1].timestamp);
+    const currDate = this.formatDateOnly(messages[currentIndex].timestamp);
+    return prevDate !== currDate;
+  }
+
+  selectConversation(conversation: Conversation) {
+    this.selectedConversation.set(conversation);
+
+    // Mark conversation as read
+    const convs = this.conversations();
+    const index = convs.findIndex(c => c.id === conversation.id);
+    if (index !== -1) {
+      convs[index].unread = 0;
+      this.conversations.set([...convs]);
+    }
+  }
+
+  deselectConversation() {
+    this.selectedConversation.set(null);
+  }
+
+  toggleConversationsExpand() {
+    this.isConversationsExpanded.set(!this.isConversationsExpanded());
+
+    // Prevent body scroll when expanded
+    if (this.isConversationsExpanded()) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
+
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscapeKey(event: Event) {
+    if (this.isConversationsExpanded()) {
+      this.isConversationsExpanded.set(false);
+      document.body.style.overflow = '';
+      event.preventDefault();
+    }
+  }
+
+  sendMessage() {
+    const input = this.messageInput();
+    if (!input.trim()) return;
+
+    // Add message logic here
+    console.log('Sending message:', input);
+    this.messageInput.set('');
   }
 
   disconnect() {

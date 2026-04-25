@@ -1,1 +1,316 @@
-<p>accounting works!</p>
+<div class="accounting-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="integration-badge">
+        <div class="integration-icon accounting">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 48px; height: 48px;">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2.182c5.423 0 9.818 4.395 9.818 9.818 0 5.423-4.395 9.818-9.818 9.818-5.423 0-9.818-4.395-9.818-9.818 0-5.423 4.395-9.818 9.818-9.818z" fill="#2CA01C"/>
+            <path d="M11.455 6.545h1.09v10.91h-1.09V6.545zm-3.273 2.182h1.09v8.728h-1.09V8.727zm6.545 0h1.091v8.728h-1.09V8.727z" fill="#2CA01C"/>
+          </svg>
+        </div>
+        <div class="integration-meta">
+          <div class="eyebrow">Integration</div>
+          <h1>Accounting Software</h1>
+        </div>
+      </div>
+      <p class="subtitle">Automated financial management and bookkeeping integration</p>
+    </div>
+    <div class="header-actions">
+      @if (isConnected()) {
+        <div class="connection-status connected">
+          <span class="status-dot"></span>
+          <span>Connected to {{ connectedPlatform() }}</span>
+        </div>
+        <button class="btn-secondary" (click)="disconnect()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          Disconnect
+        </button>
+      } @else {
+        <button class="btn-primary" (click)="reconnect()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          Connect Accounting
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (isConnected()) {
+    <div class="financial-dashboard">
+      <div class="dashboard-card balance-card">
+        <div class="card-icon-wrapper balance">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+            <line x1="1" y1="10" x2="23" y2="10"></line>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-label">Account Balance</div>
+          <div class="card-value">{{ formatCurrency(financialData().balance) }}</div>
+          <div class="card-change positive">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+              <polyline points="17 6 23 6 23 12"></polyline>
+            </svg>
+            <span>+{{ financialData().balanceChange }}% this month</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-card income-card">
+        <div class="card-icon-wrapper income">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-label">Total Income</div>
+          <div class="card-value">{{ formatCurrency(financialData().income) }}</div>
+          <div class="card-change positive">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+              <polyline points="17 6 23 6 23 12"></polyline>
+            </svg>
+            <span>+{{ financialData().incomeChange }}% this month</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-card expenses-card">
+        <div class="card-icon-wrapper expenses">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+            <polyline points="17 18 23 18 23 12"></polyline>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-label">Total Expenses</div>
+          <div class="card-value">{{ formatCurrency(financialData().expenses) }}</div>
+          <div class="card-change negative">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+              <polyline points="17 18 23 18 23 12"></polyline>
+            </svg>
+            <span>+{{ financialData().expensesChange }}% this month</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-card profit-card">
+        <div class="card-icon-wrapper profit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-label">Net Profit</div>
+          <div class="card-value">{{ formatCurrency(financialData().profit) }}</div>
+          <div class="card-change positive">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+              <polyline points="17 6 23 6 23 12"></polyline>
+            </svg>
+            <span>+{{ financialData().profitChange }}% this month</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div class="recent-transactions-section">
+        <div class="section-header">
+          <h2>Recent Transactions</h2>
+          <div class="filter-tabs">
+            <button class="filter-tab" [class.active]="transactionFilter() === 'all'" (click)="transactionFilter.set('all')">All</button>
+            <button class="filter-tab" [class.active]="transactionFilter() === 'income'" (click)="transactionFilter.set('income')">Income</button>
+            <button class="filter-tab" [class.active]="transactionFilter() === 'expense'" (click)="transactionFilter.set('expense')">Expense</button>
+          </div>
+        </div>
+
+        <div class="transactions-list">
+          @for (transaction of filteredTransactions(); track transaction.id) {
+            <div class="transaction-item" [class]="transaction.type">
+              <div class="transaction-icon" [class]="transaction.type">
+                @if (transaction.type === 'income') {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="19" x2="12" y2="5"></line>
+                    <polyline points="5 12 12 5 19 12"></polyline>
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <polyline points="19 12 12 19 5 12"></polyline>
+                  </svg>
+                }
+              </div>
+              <div class="transaction-details">
+                <div class="transaction-name">{{ transaction.description }}</div>
+                <div class="transaction-meta">
+                  <span class="transaction-category">{{ transaction.category }}</span>
+                  <span class="transaction-date">{{ formatDate(transaction.date) }}</span>
+                </div>
+              </div>
+              <div class="transaction-amount" [class]="transaction.type">
+                {{ transaction.type === 'income' ? '+' : '-' }}{{ formatCurrency(transaction.amount) }}
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state">
+              <div class="empty-icon">📊</div>
+              <p>No transactions found</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="invoices-section">
+        <div class="section-header">
+          <h2>Invoices</h2>
+          <button class="create-btn" (click)="createInvoice()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Create Invoice
+          </button>
+        </div>
+
+        <div class="invoices-list">
+          @for (invoice of invoices(); track invoice.id) {
+            <div class="invoice-card" [class]="invoice.status">
+              <div class="invoice-header">
+                <div class="invoice-number">{{ invoice.invoiceNumber }}</div>
+                <span class="invoice-status-badge" [class]="invoice.status">{{ invoice.status }}</span>
+              </div>
+              <div class="invoice-body">
+                <div class="invoice-client">
+                  <div class="client-avatar">{{ invoice.clientName.charAt(0) }}</div>
+                  <div class="client-info">
+                    <div class="client-name">{{ invoice.clientName }}</div>
+                    <div class="invoice-date">Due: {{ formatDate(invoice.dueDate) }}</div>
+                  </div>
+                </div>
+                <div class="invoice-amount">{{ formatCurrency(invoice.amount) }}</div>
+              </div>
+              <div class="invoice-footer">
+                <button class="invoice-action-btn view">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  View
+                </button>
+                @if (invoice.status === 'draft') {
+                  <button class="invoice-action-btn send">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="22" y1="2" x2="11" y2="13"></line>
+                      <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                    Send
+                  </button>
+                }
+                @if (invoice.status === 'overdue') {
+                  <button class="invoice-action-btn remind">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    Remind
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="sync-info">
+      <div class="sync-status">
+        <div class="sync-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spinning">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+        </div>
+        <div class="sync-details">
+          <div class="sync-label">Last Synced</div>
+          <div class="sync-time">{{ formatDate(lastSyncTime()) }}</div>
+        </div>
+      </div>
+      <button class="sync-now-btn" (click)="syncNow()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+        Sync Now
+      </button>
+    </div>
+  } @else {
+    <div class="disconnected-state">
+      <div class="disconnected-icon">
+        <svg viewBox="0 0 200 200" fill="none">
+          <circle cx="100" cy="100" r="80" stroke="var(--border-color)" stroke-width="3" stroke-dasharray="8 8"/>
+          <path d="M70 100h60M100 70v60" stroke="var(--text-muted)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2>Connect Accounting Software</h2>
+      <p>Integrate with QuickBooks, Xero, or FreshBooks to automate your financial management</p>
+      <div class="platforms-showcase">
+        <div class="platform-option" (click)="connectPlatform('QuickBooks')">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 64px; height: 64px;">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2.182c5.423 0 9.818 4.395 9.818 9.818 0 5.423-4.395 9.818-9.818 9.818-5.423 0-9.818-4.395-9.818-9.818 0-5.423 4.395-9.818 9.818-9.818z" fill="#2CA01C"/>
+            <path d="M11.455 6.545h1.09v10.91h-1.09V6.545zm-3.273 2.182h1.09v8.728h-1.09V8.727zm6.545 0h1.091v8.728h-1.09V8.727z" fill="#2CA01C"/>
+          </svg>
+          <span>QuickBooks</span>
+        </div>
+        <div class="platform-option" (click)="connectPlatform('Xero')">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 64px; height: 64px;">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0z" fill="#13B5EA"/>
+            <path d="M16.5 8.5l-4 4 4 4-1.5 1.5-4-4-4 4L5.5 16.5l4-4-4-4L7 7l4 4 4-4 1.5 1.5z" fill="white"/>
+          </svg>
+          <span>Xero</span>
+        </div>
+        <div class="platform-option" (click)="connectPlatform('FreshBooks')">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 64px; height: 64px;">
+            <rect width="24" height="24" rx="4" fill="#0075DD"/>
+            <path d="M7 8h10v2H7V8zm0 4h10v2H7v-2zm0 4h7v2H7v-2z" fill="white"/>
+          </svg>
+          <span>FreshBooks</span>
+        </div>
+      </div>
+      <div class="features-list">
+        <div class="feature-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Automated transaction sync</span>
+        </div>
+        <div class="feature-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Invoice management</span>
+        </div>
+        <div class="feature-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Real-time financial reports</span>
+        </div>
+        <div class="feature-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Expense tracking</span>
+        </div>
+      </div>
+    </div>
+  }
+</div>

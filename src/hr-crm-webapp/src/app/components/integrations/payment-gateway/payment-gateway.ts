@@ -50,7 +50,7 @@ export class PaymentGateway implements OnInit {
     {
       id: 'stripe',
       name: 'Stripe',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg',
+      logo: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iMjUiIHZpZXdCb3g9IjAgMCA2MCAyNSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNTkuMzc1IDEyLjVjMC02LjkwMy01LjU5Ny0xMi41LTEyLjUtMTIuNXMtMTIuNSA1LjU5Ny0xMi41IDEyLjUgNS41OTcgMTIuNSAxMi41IDEyLjUgMTIuNS01LjU5NyAxMi41LTEyLjV6IiBmaWxsPSIjNjM1QkZGIi8+PHBhdGggZD0iTTQ2Ljg3NSA4Ljc1YTMuNzUgMy43NSAwIDEgMCAwIDcuNSAzLjc1IDMuNzUgMCAwIDAgMC03LjV6IiBmaWxsPSIjZmZmIi8+PC9zdmc+',
       status: 'active',
       transactionCount: 1247,
       totalAmount: 284750.50,
@@ -61,7 +61,7 @@ export class PaymentGateway implements OnInit {
     {
       id: 'paypal',
       name: 'PayPal',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg',
+      logo: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iMjUiIHZpZXdCb3g9IjAgMCA2MCAyNSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNDYuODc1IDIuNWgtMTIuNWMtLjg2MiAwLTEuNTk4LjYyNS0xLjczNCAxLjQ3NWwtNS4xMTYgMzIuNWMtLjEwMi42MjUuMzc1IDEuMTg4IDEgMS4xODhoNi4yNWMuODYyIDAgMS41OTgtLjYyNSAxLjczNC0xLjQ3NWwxLjM5MS04LjgyNWMuMTM2LS44NSAxLjg3Mi0xLjQ3NSAxLjczNC0xLjQ3NWg0LjM3NWM5LjA2MiAwIDE0LjMxMi00LjM3NSAxNS42ODgtMTMuMDYyLjYyNS00LjA2Mi0uMTI1LTcuMjUtMi4xODgtOS41LTIuMzc1LTIuNS02LjU2Mi0zLjc1LTEyLjEyNS0zLjc1em0xLjg3NSAxMi44NzVjLS43NSA0Ljg3NS00LjUgNC44NzUtOC4xMjUgNC44NzVoLTIuMDYybDEuNDM4LTkuMTI1Yy4wODctLjUuNS0uODc1IDEtLjg3NWguODc1YzIuMjUgMCA0LjM3NSAwIDUuNSAxLjI1IDEuMTI1IDEuMTI1IDEuNjI1IDIuNzUgMS4zNzUgMy44NzV6IiBmaWxsPSIjMDAzMDg3Ii8+PC9zdmc+',
       status: 'active',
       transactionCount: 892,
       totalAmount: 156890.25,
@@ -72,7 +72,7 @@ export class PaymentGateway implements OnInit {
     {
       id: 'square',
       name: 'Square',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Square%2C_Inc._logo.svg',
+      logo: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iMjUiIHZpZXdCb3g9IjAgMCA2MCAyNSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB4PSIzNSIgeT0iMiIgd2lkdGg9IjIxIiBoZWlnaHQ9IjIxIiByeD0iMyIgZmlsbD0iIzAwMCIvPjwvc3ZnPg==',
       status: 'active',
       transactionCount: 456,
       totalAmount: 89234.75,
@@ -83,7 +83,7 @@ export class PaymentGateway implements OnInit {
     {
       id: 'razorpay',
       name: 'Razorpay',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/8/89/Razorpay_logo.svg',
+      logo: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iMjUiIHZpZXdCb3g9IjAgMCA2MCAyNSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNDYuODc1IDIuNWgtMTIuNWMtMS4zOCAwLTIuNSAxLjEyLTIuNSAyLjV2MTIuNWMwIDEuMzggMS4xMiAyLjUgMi41IDIuNWgxMi41YzEuMzggMCAyLjUtMS4xMiAyLjUtMi41VjVjMC0xLjM4LTEuMTItMi41LTIuNS0yLjV6IiBmaWxsPSIjMDcyNjU0Ii8+PHBhdGggZD0iTTQwLjYyNSA4Ljc1aDYuMjVsLTYuMjUgNi4yNVY4Ljc1eiIgZmlsbD0iIzNBOTVGRiIvPjwvc3ZnPg==',
       status: 'inactive',
       transactionCount: 0,
       totalAmount: 0,
