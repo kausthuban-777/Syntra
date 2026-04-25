@@ -44,7 +44,7 @@ import { Slack } from './components/integrations/slack/slack';
 import { GoogleWorkspace } from './components/integrations/google-workspace/google-workspace';
 import { PaymentGateway } from './components/integrations/payment-gateway/payment-gateway';
 import { Accounting } from './components/integrations/accounting/accounting';
-import { WhatsappApi } from './components/integrations/whatsapp-api/whatsapp-api';
+import { WhatsappApi } from './components/integrations/whatsapp-api/whatsapp';
 import { ReportsComponent } from './components/home/reports/reports';
 
 

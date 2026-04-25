@@ -34,8 +34,8 @@ interface MessageStats {
   selector: 'app-whatsapp-api',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './whatsapp-api.html',
-  styleUrl: './whatsapp-api.css',
+  templateUrl: './whatsapp.html',
+  styleUrl: './whatsapp.css',
 })
 export class WhatsappApi implements OnInit {
   private navigationService = inject(NavigationService);
